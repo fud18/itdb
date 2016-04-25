@@ -122,11 +122,11 @@ if (isset($_POST['id'])) { //if we came from a post (save) then update agent
   }
 
   if ($_POST['id']=="new")  {//if we came from a post (save) then add agent 
-    $sql="INSERT into agents (type,title,contactadd,contactadd2,contactcity,contactstate,contactzip,urls,salescontactname,salescontactphone,salescontactphone,salescontactfax,salescontactemail,salescontacturl,salescontactnotes,supportcontactname,supportcontactphone,supportcontactphone,supportcontactfax,supportcontactemail,supportcontacturl,supportcontactnotes)".
-         " VALUEs ('$type','$title','$contactadd','$contacts','$urls','$salescontactname','$salescontactphone','$salescontactcellphone','$salescontactfax','$salescontactemail','$salescontacturl','$salescontactnotes',
-		 		   '$supportcontactname','$supportcontactphone','$supportcontactcellphone',$supportcontactfax','$supportcontactemail','$supportcontacturl','$supportcontactnotes')";
-    db_exec($dbh,$sql,0,0,$lastid);
+    $sql="INSERT into agents (type,title,contactadd,contactadd2,contactcity,contactstate,contactzip,urls,salescontactname,salescontactphone,salescontactcellphone,salescontactfax,salescontactemail,salescontacturl,salescontactnotes,supportcontactname,supportcontactphone,supportcontactcellphone,supportcontactfax,supportcontactemail,supportcontacturl,supportcontactnotes)".
+         " VALUEs ('$type','$title','$contactadd','$contactadd2','$contactcity','$contactstate','$contactzip','$urls','$salescontactname','$salescontactphone','$salescontactcellphone','$salescontactfax','$salescontactemail','$salescontacturl','$salescontactnotes',
+		 		   '$supportcontactname','$supportcontactphone','$supportcontactcellphone','$supportcontactfax','$supportcontactemail','$supportcontacturl','$supportcontactnotes')";
     $lastid=$dbh->lastInsertId();
+    db_exec($dbh,$sql,0,0,$lastid);
     print "<br><b>Added Agent <a href='$scriptname?action=$action&amp;id=$lastid'>$lastid</a></b><br>";
     echo "<script>window.location='$scriptname?action=$action&id=$lastid'</script> "; //go to the new item
     $id=$lastid;
@@ -143,8 +143,7 @@ if (isset($_POST['id'])) { //if we came from a post (save) then update agent
 
 }//save pressed
 
-/////////////////////////////
-//// display data now
+///////////////////////////////// display data now
 
 
 if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
@@ -179,8 +178,7 @@ else
                     </h3></td>
                   </tr>
                   <tr>
-                    <td class="tdt" width="20px"><?php te("ID");?>
-                      :</td>
+                    <td class="tdt" width="20px"><?php te("ID");?>:</td>
                     <td><input class='input1' type="text" name='id' value='<?php echo $id?>' size="3" /></td>
                   </tr>
                   <tr>
