@@ -1,5 +1,4 @@
 <SCRIPT LANGUAGE="JavaScript"> 
-
   function confirm_filled($row)
   {
 	  var filled = 0;
@@ -9,16 +8,13 @@
 	  if (filled) return confirm('Do you really want to remove this row?');
 	  return true;
   };
-
  $(document).ready(function() {
-
     //delete table row on image click
     $('.delrow').click(function(){
         var answer = confirm("Are you sure you want to delete this row ?")
         if (answer) 
 	  $(this).parent().parent().remove();
     });
-
     $("#caddrow").click(function($e) {
 	var row = $('#contactstable tr:last').clone(true);
         $e.preventDefault();
@@ -34,7 +30,6 @@
 	row.insertAfter('#urlstable tr:last');
     });
   });
-
   $(document).ready(function() {
     $("#locationid").change(function() {
       var locationid=$(this).val();
@@ -67,7 +62,6 @@
 	  }
       });
     });
-
     $("#vlanid").change(function() {
       var vlanid=$(this).val();
       var vlanname=$('#vlanname').val();
@@ -84,56 +78,43 @@
       });
     });
   });
-
 </SCRIPT>
 <script type="text/javascript" src="../js/ckeditor/ckeditor.js"></script>
 
 <?php 
 if (!isset($initok)) {echo "do not run this script directly";exit;}
-
 /* Spiros Ioannou 2009-2010 , sivann _at_ gmail.com */
 //error_reporting(E_ALL);
 //ini_set('display_errors', '1');
-
 $sql="SELECT * FROM users order by upper(username)";
 $sth=$dbh->query($sql);
 $userlist=$sth->fetchAll(PDO::FETCH_ASSOC);
-
 $sql="SELECT * FROM locations order by name";
 $sth=$dbh->query($sql);
 $locations=$sth->fetchAll(PDO::FETCH_ASSOC);
-
 $sql="SELECT * FROM departments order by name";
 $sth=$dbh->query($sql);
 $departments=$sth->fetchAll(PDO::FETCH_ASSOC);
-
 $sql="SELECT * FROM vlans order by vlanid";
 $sth=$dbh->query($sql);
 $vlans=$sth->fetchAll(PDO::FETCH_ASSOC);
-
 //delete jack
 if (isset($_GET['delid'])) { //if we came from a post (save) the update jack 
   $delid=$_GET['delid'];
   
-
   //delete entry
   $sql="DELETE from jacks where id=".$_GET['delid'];
   $sth=db_exec($dbh,$sql);
-
   echo "<script>document.location='$scriptname?action=listjacks'</script>";
   echo "<a href='$scriptname?action=listjacks'>Go here</a></body></html>"; 
   exit;
-
 }
-
-
 if (isset($_POST['id'])) { //if we came from a post (save) then update jack 
   $id=$_POST['id'];
-
   if ($_POST['id']=="new")  {//if we came from a post (save) then add jack 
     $sql="INSERT INTO jacks (switchname, locareaid, locationid, jackname, departmentsid, departmentabbrsid, userdev, modport, pubipnet, pubiphost, vlanname, privipnet, priviphost, groupname, vlanid, notes, temp_perm, userid,
 		  wallcoord) VALUES ('$switchname', '$locareaid', '$locationid', '$jackname', '$departmentsid', '$departmentabbrsid', '$userdev', '$modport', '$pubipnet', '$pubiphost', '$vlanname', '$privipnet', '$priviphost',
-		  '$groupname', '$vlanid', '$notes', '$temp_perm', '$userid', '$wallcoord')";
+		  '$groupname', '$vlanid', '$notes', '$temp_perm', $userid', '$wallcoord')";
 		  
     db_exec($dbh,$sql,0,0,$lastid);
     $lastid=$dbh->lastInsertId();
@@ -148,23 +129,17 @@ if (isset($_POST['id'])) { //if we came from a post (save) then update jack
 		 temp_perm='$temp_perm', userid='$userid', wallcoord='$wallcoord' WHERE id=$id";
     db_exec($dbh,$sql);
   }
-
-
 }//save pressed
 
 if ($id!="new") {
-  //get current jack data
+  //get current item data
   $id=$_GET['id'];
-  $sql="	SELECT *, departments.name AS deptname
-			FROM jacks
-			JOIN departments
-			ON jacks.departmentsid=departments.id
-			WHERE jacks.id='$id'";
+  $sql="SELECT * FROM jacks WHERE id='$id'";
   $sth=db_execute($dbh,$sql);
-  $jack=$sth->fetchAll(PDO::FETCH_ASSOC);
-
+  $dept=$sth->fetchAll(PDO::FETCH_ASSOC);
+  
 	//  Next & Previous Buttons' Function
-	$curid = intval($jack[0]);
+	$curid = intval($dept[0]);
 
     // Select contents from the selected id
     $sql = "SELECT * FROM jacks WHERE id='$curid'";
@@ -201,27 +176,20 @@ if ($id!="new") {
     }
 }
 
-
-///////////////////////////////// display data now
-
+///////////////////////////////// display data 
 
 if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
 $id=$_REQUEST['id'];
-
 $sql="SELECT * FROM jacks WHERE id='$id'";
 $sth=db_execute($dbh,$sql);
 $r=$sth->fetch(PDO::FETCH_ASSOC);
 if (($id !="new") && (count($r)<5)) {echo "ERROR: non-existent ID";exit;}
-
 $switchname=$r['switchname'];$locareaid=$r['locareaid'];$locationid=$r['locationid'];$jackname=$r['jackname'];$departmentsid=$r['departmentsid'];$departmentabbrsid=$r['departmentabbrsid'];$userdev=$r['userdev'];$modport=$r['modport'];$pubipnet=$r['pubipnet'];$pubiphost=$r['pubiphost'];$vlanname=$r['vlanname'];$privipnet=$r['privipnet'];$priviphost=$r['priviphost'];$groupname=$r['groupname'];$vlanid=$r['vlanid'];$notes=$r['notes'];$temp_perm=$r['temp_perm'];$userid=$r['userid'];$wallcoord=$r['wallcoord'];
-
 echo "\n<form method=post  action='$scriptname?action=$action&amp;id=$id' enctype='multipart/form-data'  name='addfrm'>\n";
-
 if ($id=="new")
   echo "\n<h1>".t("Add Jack")."</h1>\n";
 else
   echo "\n<h1>".t("Edit Jack $id")."</h1>\n";
-
 ?>
 <!-- Jack Properties -->
 	<table border='0' class=tbl1 >
@@ -292,10 +260,7 @@ else
 
 <!-- Location Information -->
 	<tr>
-		<td class='tdt'>
-		<?php echo "<a title='Add New Building' href='$scriptname?action=editlocation&id=new'><img src='images/add.png' alt='+'></a> ";
-			  echo "<a alt='Edit' title='".t("Edit Building or Room")."' href='$scriptname?action=editlocation&id=$locationid'><img src='images/edit2.png'></a> ";?>
-		<?php te("Location");?>:</td>
+		<td class='tdt'><?php te("Location");?>:</td>
 		<td><select style='width:37em' id='locationid' name='locationid'>
 			<option value=''><?php te("Select");?></option>
 			<?php 
@@ -350,10 +315,7 @@ else
                 <tr><td class='tdt'><?php te("Module & Port");?>:</td><td><input type=text size=15 value='<?php echo $modport?>' name='modport'></td></tr>
 <!-- VLAN ID Information -->
 	<tr>
-		<td class='tdt'>
-        <?php echo "<a title='Add New VLAN' href='$scriptname?action=editvlan&id=new'><img src='images/add.png' alt='+'></a> ";
-			  echo "<a alt='Edit' title='".t("Edit VLAN")."' href='$scriptname?action=editvlan&id=$vlanid'><img src='images/edit2.png'></a> ";?>
-			  <?php te("VLAN");?>:</td>
+		<td class='tdt'><?php te("VLAN");?>:</td>
 		<td><select style='width:16em' id='vlanid' name='vlanid'>
 			<option value=''><?php te("Select");?></option>
 			<?php 
@@ -414,10 +376,7 @@ else
 
 <!-- Department Name -->
 	<tr>
-		<td class='tdt'>
-        <?php echo "<a title='Add New Department' href='$scriptname?action=editdepartment&id=new'><img height='10pt' src='images/add.png' alt='+'></a> ";
-			  echo "<a alt='Edit' title='".t("Edit Department")."' href='$scriptname?action=editdepartment&id=$departmentsid'><img height='10pt' src='images/edit2.png'></a> ";?>
-			  <?php te("Department");?>:</td>
+		<td class='tdt'><?php te("Department");?>:</td>
 		<td><select style='width:37em' id='departmentsid' name='departmentsid'>
 			<option value=''><?php te("Select");?></option>
 			<?php 
@@ -471,38 +430,36 @@ else
 			</table>
 		</td>
 	</tr>
-
+    </table>
+    
 <table width="100%"><!-- save buttons -->
-<tr>
-<td>
-<?php if ($previd != "") { ?>
-	<a href='?action=editjack&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php } else {?>
-	<a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php }?>
-</td>
-<td style='text-align: center' colspan=1><button type="submit"><img src="images/save.png" alt="Save" > <?php te("Save");?></button></td>
-<?php 
-if ($id!="new") {
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:delconfirm2(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;delid={$_GET['id']}\");'>".
-       "<img title='Delete' src='images/delete.png' border=0>".t("Delete")."</button></td>\n";
-
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:cloneconfirm(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;cloneid={$_GET['id']}\");'>".
-       "<img  src='images/copy.png' border=0>". t("Clone")."</button></td>\n";
-} 
-else 
-  echo "\n<td>&nbsp;</td>";
-?>
-<td style="text-align:right;">
-<?php if ($nextid != "") { ?>
-<a href='?action=editjack&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-<?php } else {?>
-	<a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-<?php }?>
-</td>
-</tr>
-</table>
-
-</form>
+	<tr>
+		<td>
+			<?php if ($previd != "") { ?>
+                <a href='?action=editjack&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
+            <?php } else {?>
+                <a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
+            <?php }?>
+        </td>
+		<td><button type="submit"><img src="images/save.png" alt="Save" /><?php te("Save");?></button></td>
+			<?php echo "\n<td><button type='button' onclick='javascript:delconfirm2(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid={$r['id']}\");'>"."<img title='Delete' src='images/delete.png' border=0>".t("Delete")."
+		</button></td>";?>
+		<td style="text-align:right;">
+			<?php if ($nextid != "") { ?>
+            <a href='?action=editjack&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
+            <?php } else {?>
+                <a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
+            <?php }?>
+		</td>
+	</tr>
+		<?php
+		echo "\n</table>\n";
+		echo "\n<input type=hidden name='action' value='$action'>";
+		echo "\n<input type=hidden name='id' value='$id'>";
+		?> </tr>
+        </table></td>
+      </tr>
+    </table>
+    </form>
 </body>
 </html>
