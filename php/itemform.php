@@ -100,7 +100,6 @@
 
 if (!isset($initok)) {echo "do not run this script directly";exit;}
 
-
 if ($id!="new") {
   //get current item data
   $id=$_GET['id'];
@@ -113,8 +112,44 @@ if ($id!="new") {
 	WHERE items.id= '$id'";
   $sth=db_execute($dbh,$sql);
   $item=$sth->fetchAll(PDO::FETCH_ASSOC);
-}
+  
+	//  Next & Previous Buttons' Function
+	$curid = intval($item[0]);
 
+    // Select contents from the selected id
+    $sql = "SELECT * FROM items WHERE id='$curid'";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $info = $result->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        die('Not found');
+    }
+
+    // Next Record
+    $sql = "SELECT id FROM items WHERE id>'$id' LIMIT 1";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $nextresults = $result->fetchAll(PDO::FETCH_ASSOC);
+		$nextid = strval($nextresults[0]['id']);
+    }
+
+    // Previous Record
+    $sql = "SELECT id FROM items WHERE id<'$id' ORDER BY id DESC LIMIT 1";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $prevresults = $result->fetchAll(PDO::FETCH_ASSOC);
+		$previd = strval($prevresults[0]['id']);
+    }
+} else {
+    // No form has been submitted so use the lowest id and grab its info
+    $sql = "SELECT * FROM items WHERE id > 0 LIMIT 1";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $inforesults = $result->fetchAll(PDO::FETCH_ASSOC);
+		$info =  strval($inforesults[0]['id']);
+		
+    }
+}
 
 $sql="SELECT * FROM itemtypes order by typedesc";
 $sth=$dbh->query($sql);
@@ -158,7 +193,6 @@ $sql="SELECT items.*
 $sth=$dbh->query($sql);
 $netitems=$sth->fetchAll(PDO::FETCH_ASSOC);
 
-
 //change displayed form items in input fields
 if ($id=="new") {
   $caption=t("Add New Item");
@@ -179,7 +213,7 @@ else if ($action=="edititem") {
 }
 ?>
 
-<h1><?php echo $caption?></h1>
+<h1><?php echo $caption;?></h1>
 <?php echo $disperr;?>
 
 <!-- our error errcontainer -->
@@ -1323,11 +1357,14 @@ $xx=0;
 
 </div><!-- tab container -->
 
-
 <table width="100%"><!-- save buttons -->
 <tr>
 <td>
-<button type='submit' title="Previous Record"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button>
+<?php if ($previd != "") { ?>
+	<a href='?action=edititem&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
+<?php } else {?>
+	<a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
+<?php }?>
 </td>
 <td style='text-align: center' colspan=1><button type="submit"><img src="images/save.png" alt="Save" > <?php te("Save");?></button></td>
 <?php 
@@ -1342,7 +1379,11 @@ else
   echo "\n<td>&nbsp;</td>";
 ?>
 <td style="text-align:right;">
-<button type='button' title="Next Record"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button>
+<?php if ($nextid != "") { ?>
+<a href='?action=edititem&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
+<?php } else {?>
+	<a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
+<?php }?>
 </td>
 </tr>
 </table>

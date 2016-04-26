@@ -157,6 +157,51 @@ if (isset($_POST['id'])) { //if we came from a post (save), update
 
 }//save pressed
 
+if ($id!="new") {
+  //get current item data
+  $id=$_GET['id'];
+  $sql="SELECT * FROM locations WHERE id='$id'";
+  $sth=db_execute($dbh,$sql);
+  $dept=$sth->fetchAll(PDO::FETCH_ASSOC);
+  
+	//  Next & Previous Buttons' Function
+	$curid = intval($dept[0]);
+
+    // Select contents from the selected id
+    $sql = "SELECT * FROM locations WHERE id='$curid'";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $info = $result->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        die('Not found');
+    }
+
+    // Next Record
+    $sql = "SELECT id FROM locations WHERE id>'$id' LIMIT 1";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $nextresults = $result->fetchAll(PDO::FETCH_ASSOC);
+		$nextid = strval($nextresults[0]['id']);
+    }
+
+    // Previous Record
+    $sql = "SELECT id FROM locations WHERE id<'$id' ORDER BY id DESC LIMIT 1";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $prevresults = $result->fetchAll(PDO::FETCH_ASSOC);
+		$previd = strval($prevresults[0]['id']);
+    }
+} else {
+    // No form has been submitted so use the lowest id and grab its info
+    $sql = "SELECT * FROM locations WHERE id > 0 LIMIT 1";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $inforesults = $result->fetchAll(PDO::FETCH_ASSOC);
+		$info =  strval($inforesults[0]['id']);
+		
+    }
+}
+
 ///////////////////////////////// display data now
 
 if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
@@ -246,56 +291,6 @@ else
 
   <br>
   
-<?php  ///////////////////////////////////////////////////////////							Pagination							///////////////////////////////////////////////////////////
-
-//	How many records are in table
-$sth=db_execute($dbh,"SELECT count(locations.id) as totalrows FROM locations WHERE id = '' OR id != ''");
-$totalrows=$sth->fetchColumn();
-
-//	Page Links
-//	Get's the current page number
-$get2=$_GET;
-unset($get2['id']);
-$url=http_build_query($get2);
-
-//	Previous and Next Links
-	$prev = $id - 1;
-	$next = $id + 1;
-
-//	Previous Page
-	if ($get2['id'] < 1){
-	$prevlink .="<a href='$fscriptname?$url&amp;id=$prev'><img src='../images/previous-button.png' width='64' height='25' alt='previous' /></a> ";
-	}else{
-	$prevlink .="";
-	}
-	
-//	Next Page
-	if ($get2['id'] < ceil($totalrows)){
-	$nextlink .="<a href='$fscriptname?$url&amp;id=$next'><img src='../images/next-button.png' width='64' height='25' alt='next' /></a> ";
-	}else{
-	$nextlink .=" <img src='../images/next-button.png' width='64' height='25' alt='next' />";
-	}
-	
-?>
-
-  <button type="submit"><img src="images/save.png" alt="Save"> <?php te("Save");?></button>
-  <?php 
-  echo "\n<button type='button' onclick='javascript:delconfirm2(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid=$id\");'>".
-     "<img title='delete' src='images/delete.png' border=0> ".t("Delete")." </button>\n";
-
-if ($id > 1 && $id != "all"){
-		echo $prevlink;
-	}
-
-if ($id >= 1 && $id != "all" && $id < ceil($totalrows)){
-		echo $nextlink."<br />";
-	}else
-?>
-
-  <input type=hidden name='action' value='<?php echo $action?>'>
-  <input type=hidden name='id' value='<?php echo $id?>'>
-  </form>
-
 <td class="tdtop">
 <h3><?php te("Areas: rooms, offices");?></h3>
   <div class='scrltblcontainer4'  id='locareas'>
@@ -325,6 +320,40 @@ echo "<a href='".$fuploaddirwww.$r['floorplanfn']."' target='_new'><img style=ma
 </tr>
 </table>
 
+<table width="100%"><!-- save buttons -->
+<tr>
+<td>
+<?php if ($previd != "") { ?>
+	<a href='?action=editlocation&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
+<?php } else {?>
+	<a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
+<?php }?>
+</td>
+<td style='text-align: center' colspan=1><button type="submit"><img src="images/save.png" alt="Save" > <?php te("Save");?></button></td>
+<?php 
+if ($id!="new") {
+  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:delconfirm2(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;delid={$_GET['id']}\");'>".
+       "<img title='Delete' src='images/delete.png' border=0>".t("Delete")."</button></td>\n";
+
+  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:cloneconfirm(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;cloneid={$_GET['id']}\");'>".
+       "<img  src='images/copy.png' border=0>". t("Clone")."</button></td>\n";
+} 
+else 
+  echo "\n<td>&nbsp;</td>";
+?>
+<td style="text-align:right;">
+<?php if ($nextid != "") { ?>
+<a href='?action=editlocation&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
+<?php } else {?>
+	<a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
+<?php }?>
+</td>
+</tr>
+</table>
+
+  <input type=hidden name='action' value='<?php echo $action?>'>
+  <input type=hidden name='id' value='<?php echo $id?>'>
+  </form>
 
 </body>
 </html>

@@ -124,6 +124,51 @@ if ($_POST['id']=="new")  {//if we came from a post (save) then add project
 
 }//save pressed
 
+if ($id!="new") {
+  //get current item data
+  $id=$_GET['id'];
+  $sql="SELECT * FROM projects WHERE id='$id'";
+  $sth=db_execute($dbh,$sql);
+  $dept=$sth->fetchAll(PDO::FETCH_ASSOC);
+  
+	//  Next & Previous Buttons' Function
+	$curid = intval($dept[0]);
+
+    // Select contents from the selected id
+    $sql = "SELECT * FROM projects WHERE id='$curid'";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $info = $result->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        die('Not found');
+    }
+
+    // Next Record
+    $sql = "SELECT id FROM projects WHERE id>'$id' LIMIT 1";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $nextresults = $result->fetchAll(PDO::FETCH_ASSOC);
+		$nextid = strval($nextresults[0]['id']);
+    }
+
+    // Previous Record
+    $sql = "SELECT id FROM projects WHERE id<'$id' ORDER BY id DESC LIMIT 1";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $prevresults = $result->fetchAll(PDO::FETCH_ASSOC);
+		$previd = strval($prevresults[0]['id']);
+    }
+} else {
+    // No form has been submitted so use the lowest id and grab its info
+    $sql = "SELECT * FROM projects WHERE id > 0 LIMIT 1";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $inforesults = $result->fetchAll(PDO::FETCH_ASSOC);
+		$info =  strval($inforesults[0]['id']);
+		
+    }
+}
+
 ///////////////////////////////// display data now
 
 //if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
@@ -295,26 +340,38 @@ else
         </table>
 <!-- end, Notes -->
 </table>
-		</td>
-	</tr>
-      <tr>
-        <td><table border="0" class="tbl2">
-          <tr>
-            <td><button type="submit"><img src="images/save.png" alt="Save" /> <?php te("Save");?></button></td>
-				<input type=hidden name='action' value='$action'>
-				<input type=hidden name='id' value='$id'>
 
-		<?php
-            echo "\n<td><button type='button' onclick='javascript:delconfirm2(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid={$r['id']}\");'>"."<img title='Delete' src='images/delete.png' border=0>".t("Delete")."
-		</button></td>\n</tr>\n";
-		echo "\n</table>\n";
-		echo "\n<input type=hidden name='action' value='$action'>";
-		echo "\n<input type=hidden name='id' value='$id'>";
-		?>
-       	  </tr>
-        </table></td>
-      </tr>
-    </table>
+<table width="100%"><!-- save buttons -->
+<tr>
+<td>
+<?php if ($previd != "") { ?>
+	<a href='?action=editproject&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
+<?php } else {?>
+	<a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
+<?php }?>
+</td>
+<td style='text-align: center' colspan=1><button type="submit"><img src="images/save.png" alt="Save" > <?php te("Save");?></button></td>
+<?php 
+if ($id!="new") {
+  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:delconfirm2(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;delid={$_GET['id']}\");'>".
+       "<img title='Delete' src='images/delete.png' border=0>".t("Delete")."</button></td>\n";
+
+  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:cloneconfirm(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;cloneid={$_GET['id']}\");'>".
+       "<img  src='images/copy.png' border=0>". t("Clone")."</button></td>\n";
+} 
+else 
+  echo "\n<td>&nbsp;</td>";
+?>
+<td style="text-align:right;">
+<?php if ($nextid != "") { ?>
+<a href='?action=editproject&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
+<?php } else {?>
+	<a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
+<?php }?>
+</td>
+</tr>
+</table>
+
     </form>
 </body>
 </html>
