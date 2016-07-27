@@ -95,7 +95,7 @@ if (isset($_POST['id'])) { //if we came from a post (save), update
 
     }//insert file
     else { //new and no file defined
-	  $sql="INSERT into locations (name,floor,sortid)".
+	  $sql="INSERT into locations (name,abbr,floor,sortid)".
 	       " VALUES ('$name','$abbr','$floor','$sortid')";
 	  db_exec($dbh,$sql,0,0,$lastid);
 	  $lastid=$dbh->lastInsertId();
