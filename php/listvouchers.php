@@ -114,7 +114,7 @@ if ($export)  {
 if ($export) 
   echo "\n<table border='1'>\n";
 else {
-  echo "<h1>vouchers <a title='Add new voucher' href='$scriptname?action=editvoucher&amp;id=new'>".
+  echo "<h1>Vouchers <a title='Add new voucher' href='$scriptname?action=editvoucher&amp;id=new'>".
        "<img border=0 src='images/add.png'></a></h1>\n";
   echo "<form name='frm'>\n";
   echo "\n<table class='brdr'>\n";
