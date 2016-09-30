@@ -2,3 +2,15 @@
 *
 # Except this file
 !.gitignore
+!agents_import_template.csv
+!contracts_import_template.csv
+!departments_import_template.csv
+!fiber_import_template.csv
+!invoices_import_template.csv
+!items_import_template.csv
+!jacks_import_template.csv
+!locareas_import_template.csv
+!locations_import_template.csv
+!software_import_template.csv
+!vlans_import_template.csv
+!vouchers_import_template.csv

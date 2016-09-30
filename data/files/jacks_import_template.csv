@@ -1,0 +1,2 @@
+id|jackname|wallcoord|temp_perm|notes|departmentsid|departmentabbrsid|userdev|locationid|locareaid|userid|switchname|modport|vlanid|vlanname|pubipnet|pubiphost|privipnet|priviphost|groupname
+100001|Voice Mail Cabinet 3|NULL|Perm|Telecom !!!|152|152|Example, Sample|4|293|2|BLDG&RM-SwitchModel|A1, ge.1.1|1009|1009|NULL|NULL|NULL|NULL|NULL

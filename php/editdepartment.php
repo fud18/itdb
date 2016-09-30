@@ -671,7 +671,6 @@ $ph = "Please Select Or Enter A New Option";  //Placeholder for division
       </tr>
 <!-- end, department Properties Title -->
 </table>
-
 <table width="100%"><!-- save buttons -->
 <tr>
 <td>

@@ -1,0 +1,2 @@
+id|fibertype|intra_inter|light_guide|fiberstrnd|from_locationid|from_locareaid|from_jumper_no|from_dev|to_locationid|to_locareaid|to_jumper_no|to_dev|notes
+10101|MultiMode / SingleMode|Inter - Building|LG01|1,2,3…|1|1|1000|Device name or Light Guide and Strand (e.g. CORE / LG01 - 1)|2|2|1001|Device name or Light Guide and Strand (e.g. Top of Rack Switch / LG02 - 2)|Miscellaneous Notes

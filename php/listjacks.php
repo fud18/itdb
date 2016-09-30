@@ -1,144 +1,67 @@
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
-<script type="text/javascript" src="../js/jquery.blockUI.js"></script>
-
-<script>
-	$(function() {
-		$("#locations a").click(function() {
-			var page = this.hash.substr(1);
-			$.get("php/locations/"+page+".php",function(gotHtml) {
-				$("#content").html(gotHtml);
-				document.getElementById("content").target = "bldg";
-			});
-			return false;
-		});
-	});
-</script>
 <SCRIPT LANGUAGE="JavaScript"> 
+  $(document).ready(function() {
+    $("#tabs").tabs();
+    $("#tabs").show();
+  });
+</script>
 
-			  function confirm_filled($row)
-			  {
-				  var filled = 0;
-				  $row.find('input,select').each(function() {
-					  if (jQuery(this).val()) filled++;
-				  });
-				  if (filled) return confirm('Do you really want to remove this row?');
-				  return true;
-			  };
-
-			 $(document).ready(function() {
-
-				//delete table row on image click
-				$('.delrow').click(function(){
-					var answer = confirm("Are you sure you want to delete this row ?")
-					if (answer) 
-				  $(this).parent().parent().remove();
-				});
-
-				$("#caddrow").click(function($e) {
-				var row = $('#contactstable tr:last').clone(true);
-					$e.preventDefault();
-				row.find("input:text").val("");
-				row.find("img").css("display","inline");
-				row.insertAfter('#contactstable tr:last');
-				});
-				$("#uaddrow").click(function($e) {
-				var row = $('#urlstable tr:last').clone(true);
-					$e.preventDefault();
-				row.find("input:text").val("");
-				row.find("img").css("display","inline");
-				row.insertAfter('#urlstable tr:last');
-				});
-			  });
-
-			  $(document).ready(function() {
-				$("#locationid").change(function() {
-				  var locationid=$(this).val();
-				  var locareaid=$('#locareaid').val();
-				  var dataString = 'locationid='+ locationid;
-				  
-				  $.ajax ({
-				  type: "POST",
-				  url: "php/locarea_options_ajax.php",
-				  data: dataString,
-				  cache: false,
-				  success: function(html) {
-					$("#locareaid").html(html);
-				  }
-				  });
-				});
-			  });
-</SCRIPT>
-
-<style type="text/css">
-ul {
-  margin:0px;
-  padding:0px;
-  overflow:hidden;
-}
-
-li {
-  float:left;
-  list-style:none;
-  padding:8px;
-}
+<style>
+a{
+	text-align:center;
+	}
 </style>
-</head>
 
-
-<body onload ="defContent;">
-  <ul id="locations">
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/AEC.php'" style="cursor:pointer"><?php te("AEC");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/AG.php'" style="cursor:pointer"><?php te("AG");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/AH.php'" style="cursor:pointer"><?php te("AH");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/BB.php'" style="cursor:pointer"><?php te("BB");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/CH.php'" style="cursor:pointer"><?php te("CH");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/CT.php'" style="cursor:pointer"><?php te("CT");?></a></li>
-    <!--<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/DGHH.php'" style="cursor:pointer"><?php te("DGHH");?></a></li>-->
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/DH.php'" style="cursor:pointer"><?php te("DH");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/FL.php'" style="cursor:pointer"><?php te("FL");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/GA.php'" style="cursor:pointer"><?php te("GA");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/GB.php'" style="cursor:pointer"><?php te("GB");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/GC.php'" style="cursor:pointer"><?php te("GC");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/HH.php'" style="cursor:pointer"><?php te("HH");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/HMH.php'" style="cursor:pointer"><?php te("HMH");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/KWEC.php'" style="cursor:pointer"><?php te("KWEC");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/LFE.php'" style="cursor:pointer"><?php te("LFE");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/LFW.php'" style="cursor:pointer"><?php te("LFW");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/MA.php'" style="cursor:pointer"><?php te("MA");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/MC.php'" style="cursor:pointer"><?php te("MC");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/MH.php'" style="cursor:pointer"><?php te("MH");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/MM.php'" style="cursor:pointer"><?php te("MM");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/MU.php'" style="cursor:pointer"><?php te("MU");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/OPP.php'" style="cursor:pointer"><?php te("OPP");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/PH.php'" style="cursor:pointer"><?php te("PH");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/PRES.php'" style="cursor:pointer"><?php te("PRES");?></a></li>
+<div id="tabs"><!-- tab container -->
+  <ul>
+	<li style="display:none"><a href="../php/locations/UA.php" target="import" style="width:35px"><?php te("Start Here");?></a></li>
+    <li style="width:60px"><a href="../php/locations/AEC.php" target="import" style="width:35px" style="width:35px"><?php te("AEC");?></a></li>
+    <li style="width:60px"><a href="../php/locations/AG.php" target="import" style="width:35px" style="width:35px"><?php te("AG");?></a></li>
+    <li style="width:60px"><a href="../php/locations/AH.php" target="import" style="width:35px"><?php te("AH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/BB.php" target="import" style="width:35px"><?php te("BB");?></a></li>
+    <li style="width:60px"><a href="../php/locations/CH.php" target="import" style="width:35px"><?php te("CH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/CT.php" target="import" style="width:35px"><?php te("CT");?></a></li>
+    <li style="width:60px"><a href="../php/locations/HSH.php" target="import" style="width:35px"><?php te("HSH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/DH.php" target="import" style="width:35px"><?php te("DH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/FL.php" target="import" style="width:35px"><?php te("FL");?></a></li>
+    <li style="width:60px"><a href="../php/locations/GA.php" target="import" style="width:35px"><?php te("GA");?></a></li>
+    <li style="width:60px"><a href="../php/locations/GB.php" target="import" style="width:35px"><?php te("GB");?></a></li>
+    <li style="width:60px"><a href="../php/locations/GC.php" target="import" style="width:35px"><?php te("GC");?></a></li>
+    <li style="width:60px"><a href="../php/locations/HH.php" target="import" style="width:35px"><?php te("HH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/HMH.php" target="import" style="width:35px"><?php te("HMH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/KWEC.php" target="import" style="width:35px" style="width:35px"><?php te("KWEC");?></a></li>
+    <li style="width:60px"><a href="../php/locations/LFE.php" target="import" style="width:35px"><?php te("LFE");?></a></li>
+    <li style="width:60px"><a href="../php/locations/LFW.php" target="import" style="width:35px"><?php te("LFW");?></a></li>
+    <li style="width:60px"><a href="../php/locations/MA.php" target="import" style="width:35px"><?php te("MA");?></a></li>
+    <li style="width:60px"><a href="../php/locations/MC.php" target="import" style="width:35px"><?php te("MC");?></a></li>
+    <li style="width:60px"><a href="../php/locations/MH.php" target="import" style="width:35px"><?php te("MH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/MM.php" target="import" style="width:35px"><?php te("MM");?></a></li>
+    <li style="width:60px"><a href="../php/locations/MU.php" target="import" style="width:35px"><?php te("MU");?></a></li>
+    <li style="width:60px"><a href="../php/locations/OPP.php" target="import" style="width:35px"><?php te("OPP");?></a></li>
+    <li style="width:60px"><a href="../php/locations/PH.php" target="import" style="width:35px"><?php te("PH");?></a></li>
     <br /><br />
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/RC.php'" style="cursor:pointer"><?php te("RC");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/RH.php'" style="cursor:pointer"><?php te("RH");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/SB.php'" style="cursor:pointer"><?php te("SB");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/SCM.php'" style="cursor:pointer"><?php te("SCM");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/SF.php'" style="cursor:pointer"><?php te("SF");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/SFP.php'" style="cursor:pointer"><?php te("SFP");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/SH.php'" style="cursor:pointer"><?php te("SH");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/SPA.php'" style="cursor:pointer"><?php te("SPA");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/SPB.php'" style="cursor:pointer"><?php te("SPB");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/SPC.php'" style="cursor:pointer"><?php te("SPC");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/SPD.php'" style="cursor:pointer"><?php te("SPD");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/STH.php'" style="cursor:pointer"><?php te("STH");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/TF.php'" style="cursor:pointer"><?php te("TF");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/TH.php'" style="cursor:pointer"><?php te("TH");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/WH.php'" style="cursor:pointer"><?php te("WH");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/WI.php'" style="cursor:pointer"><?php te("WI");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/WP1.php'" style="cursor:pointer"><?php te("WP1");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/WPA.php'" style="cursor:pointer"><?php te("WPA");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/WPB.php'" style="cursor:pointer"><?php te("WPB");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/WPC.php'" style="cursor:pointer"><?php te("WPC");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/WPD.php'" style="cursor:pointer"><?php te("WPD");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/WPE.php'" style="cursor:pointer"><?php te("WPE");?></a></li>
-    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a onClick="locations.location.href='../php/locations/WPF.php'" style="cursor:pointer"><?php te("WPF");?></a></li>
-<div id="content_wrapper"><div id="content_wrapper">
-	<div id="content" class="tab_content">
-		<iframe src="../php/locations/UA.php" width="100%" height="890" name="locations" frameBorder="0"></iframe>
-    </div>
-</div>
-</body>
+    <li style="width:60px"><a href="../php/locations/PRES.php" target="import" style="width:35px"><?php te("PRES");?></a></li>
+    <li style="width:60px"><a href="../php/locations/RC.php" target="import" style="width:35px"><?php te("RC");?></a></li>
+    <li style="width:60px"><a href="../php/locations/RH.php" target="import" style="width:35px"><?php te("RH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/SB.php" target="import" style="width:35px"><?php te("SB");?></a></li>
+    <li style="width:60px"><a href="../php/locations/SCM.php" target="import" style="width:35px"><?php te("SCM");?></a></li>
+    <li style="width:60px"><a href="../php/locations/SF.php" target="import" style="width:35px"><?php te("SF");?></a></li>
+    <li style="width:60px"><a href="../php/locations/SFP.php" target="import" style="width:35px"><?php te("SFP");?></a></li>
+    <li style="width:60px"><a href="../php/locations/SH.php" target="import" style="width:35px"><?php te("SH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/SPA.php" target="import" style="width:35px"><?php te("SPA");?></a></li>
+    <li style="width:60px"><a href="../php/locations/SPB.php" target="import" style="width:35px"><?php te("SPB");?></a></li>
+    <li style="width:60px"><a href="../php/locations/SPC.php" target="import" style="width:35px"><?php te("SPC");?></a></li>
+    <li style="width:60px"><a href="../php/locations/SPD.php" target="import" style="width:35px"><?php te("SPD");?></a></li>
+    <li style="width:60px"><a href="../php/locations/STH.php" target="import" style="width:35px"><?php te("STH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/TF.php" target="import" style="width:35px"><?php te("TF");?></a></li>
+    <li style="width:60px"><a href="../php/locations/TH.php" target="import" style="width:35px"><?php te("TH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/WH.php" target="import" style="width:35px"><?php te("WH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/WI.php" target="import" style="width:35px"><?php te("WI");?></a></li>
+    <li style="width:60px"><a href="../php/locations/WP1.php" target="import" style="width:35px"><?php te("WP1");?></a></li>
+    <li style="width:60px"><a href="../php/locations/WPA.php" target="import" style="width:35px"><?php te("WPA");?></a></li>
+    <li style="width:60px"><a href="../php/locations/WPB.php" target="import" style="width:35px"><?php te("WPB");?></a></li>
+    <li style="width:60px"><a href="../php/locations/WPC.php" target="import" style="width:35px"><?php te("WPC");?></a></li>
+    <li style="width:60px"><a href="../php/locations/WPD.php" target="import" style="width:35px"><?php te("WPD");?></a></li>
+    <li style="width:60px"><a href="../php/locations/WPE.php" target="import" style="width:35px"><?php te("WPE");?></a></li>
+    <li style="width:60px"><a href="../php/locations/WPF.php" target="import" style="width:35px"><?php te("WPF");?></a></li>
+</div><!-- tab container -->
+	<iframe style="height:850px" width="100%" id="locations" name="locations" frameborder="0"></iframe>
