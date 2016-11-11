@@ -272,28 +272,22 @@ else
 </td>
 <!-- end, User Information -->
 
-<table width="100%"><!-- save buttons -->
-<tr>
-<td>
-<?php if ($previd != "") { ?>
-	<a href='?action=editvoucher&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php } else {?>
-	<a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php }?>
-</td>
-<td style='text-align: center' colspan=1><button type="submit"><img src="images/save.png" alt="Save" > <?php te("Save");?></button></td>
-<?php 
-if ($id!="new") {
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:delconfirm2(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;delid={$_GET['id']}\");'>".
-       "<img title='Delete' src='images/delete.png' border=0>".t("Delete")."</button></td>\n";
-
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:cloneconfirm(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;cloneid={$_GET['id']}\");'>".
-       "<img  src='images/copy.png' border=0>". t("Clone")."</button></td>\n";
-} 
-else 
-  echo "\n<td>&nbsp;</td>";
-?>
-<td style="text-align:right;">
+<table border="0" class="tbl2" width="100%" align="center">
+          <tr>
+			<td>
+				<?php if ($previd != "") { ?>
+                    <a href='?action=editvoucher&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
+                <?php } else {?>
+                    <a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
+                <?php }?>
+            </td>
+            <td><button type="submit"><img src="images/save.png" alt="Save" /><?php te(" Save");?></button></td>
+            <?php echo "\n<td><button type='button' onclick='javascript:delconfirm2(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid={$r['id']}\");'>"."<img title='Delete' src='images/delete.png' border=0>".t(" Delete")."
+		</button></td>";
+		echo "\n<input type=hidden name='action' value='$action'>";
+		echo "\n<input type=hidden name='id' value='$id'>";
+		?>
+        <td>
 <?php if ($nextid != "") { ?>
 <a href='?action=editvoucher&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
 <?php } else {?>

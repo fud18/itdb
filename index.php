@@ -78,6 +78,9 @@ switch ($_GET['action']) {
   case "listagents": 
 	$title="List Agents";
 	break;
+  case "listfiber": 
+	$title="List Fiber";
+	break;
   case "editagent": 
 	$title="Edit Agent";
 	break;
@@ -120,6 +123,15 @@ switch ($_GET['action']) {
   case "editvlan": 
 	$title="Edit VLAN";
 	$stitle="VLAN";
+	$head.="<script language='javascript' type='text/javascript' src='js/jquery.tag.js'></script>\n".
+	   "<link rel='stylesheet' type='text/css' href='css/jquery.tag.css' />\n".
+	   "<script language='javascript' type='text/javascript' src='js/jquery.metadata.js'></script>\n".
+	   "<script language='javascript' type='text/javascript' src='js/jquery.validate.js'></script>\n".
+	   "<script language='javascript' type='text/javascript' src='js/jquery.validate.front.js'></script>\n";
+	break;
+  case "editfiber": 
+	$title="Edit Fiber";
+	$stitle="Fiber";
 	$head.="<script language='javascript' type='text/javascript' src='js/jquery.tag.js'></script>\n".
 	   "<link rel='stylesheet' type='text/css' href='css/jquery.tag.css' />\n".
 	   "<script language='javascript' type='text/javascript' src='js/jquery.metadata.js'></script>\n".
@@ -334,24 +346,21 @@ if ($authstatus) {
 <tr>
 	<td><a style="<?php echo $style_listdepartments; ?>" class='ahdr' href="<?php echo $scriptname?>?action=listdepartments&amp;page=1" ><?php te("Departments");?></a></td>
 	<td><a style="<?php echo $style_editdepartments; ?>" class='ahdr' href="<?php echo $scriptname?>?action=editdepartment&amp;id=new" ><img  alt="+" src='images/add.png'></a></td>
-<<<<<<< HEAD
+</tr>
+
+<tr>
+<td><a style="<?php echo $style_listfiber.$style_editfile; ?>" title='<?php te("Fiber Optic Records");?>' class='ahdr' href="<?php echo $scriptname?>?action=listfiber&amp;page=1" ><?php te("Fiber");?></a> </td>
+<td><a title='<?php te("Add new Fiber");?>' class='ahdr' href="<?php echo $scriptname?>?action=editfiber&amp;id=new" ><img  alt="+" src='images/add.png'></a></td> 
 </tr>
 
 <tr>
 <td><a style="<?php echo $style_listfiles.$style_editfile; ?>" title='<?php te("Documents, Manuals, Offers, Licenses, ...");?>' class='ahdr' href="<?php echo $scriptname?>?action=listfiles&amp;page=1" ><?php te("Files");?></a> </td>
 <td><a title='<?php te("Add new File");?>' class='ahdr' href="<?php echo $scriptname?>?action=editfile&amp;id=new" ><img  alt="+" src='images/add.png'></a></td> 
-=======
->>>>>>> d3425a2... Alphabetized the menu on the left side and fixed the search so that more than one field can be searched at a time
 </tr>
 
 <tr>
-<<<<<<< HEAD
 <td><a style="<?php echo $style_listvouchers.$style_editvouchers; ?>" title='<?php te("Guest WiFi Voucher Informaiton");?>' class='ahdr' href="<?php echo $scriptname?>?action=listvouchers&amp;page=1" ><?php te("Guest Vouchers");?></a> </td>
 <td><a title='<?php te("Add new Voucher");?>' class='ahdr' href="<?php echo $scriptname?>?action=editvoucher&amp;id=new" ><img  alt="+" src='images/add.png'></a></td> 
-=======
-<td><a style="<?php echo $style_listfiles.$style_editfile; ?>" title='<?php te("Documents, Manuals, Offers, Licenses, ...");?>' class='ahdr' href="<?php echo $scriptname?>?action=listfiles&amp;page=1" ><?php te("Files");?></a> </td>
-<td><a title='<?php te("Add new File");?>' class='ahdr' href="<?php echo $scriptname?>?action=editfile&amp;id=new" ><img  alt="+" src='images/add.png'></a></td> 
->>>>>>> d3425a2... Alphabetized the menu on the left side and fixed the search so that more than one field can be searched at a time
 </tr>
 
 <tr>

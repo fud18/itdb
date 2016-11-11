@@ -118,7 +118,7 @@ The expected format is a CSV file.  Please download the template:
     <tr><td>Skip 1st row:</td><td><select name=skip1st>
         <option value=1>Yes</option>
         <option value=0>No</option></select></td></tr>
-    <tr><td colspan=2><input type=submit value='Import File'></td></tr>
+    <tr><td colspan=2><input type="submit" value="Preview"></td></tr>
     <input type=hidden name='nextstep' value='1'>
     <input type=hidden name='imfn' value='<?php echo $imfn?>'>
     </form>

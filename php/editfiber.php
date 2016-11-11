@@ -1,4 +1,7 @@
+<?php /* Cory Funk 2015, cafunk@fhsu.edu */?>
+
 <SCRIPT LANGUAGE="JavaScript"> 
+
   function confirm_filled($row)
   {
 	  var filled = 0;
@@ -8,13 +11,16 @@
 	  if (filled) return confirm('Do you really want to remove this row?');
 	  return true;
   };
+
  $(document).ready(function() {
+
     //delete table row on image click
     $('.delrow').click(function(){
         var answer = confirm("Are you sure you want to delete this row ?")
         if (answer) 
 	  $(this).parent().parent().remove();
     });
+
     $("#caddrow").click(function($e) {
 	var row = $('#contactstable tr:last').clone(true);
         $e.preventDefault();
@@ -30,111 +36,81 @@
 	row.insertAfter('#urlstable tr:last');
     });
   });
-  $(document).ready(function() {
-    $("#locationid").change(function() {
-      var locationid=$(this).val();
-      var locareaid=$('#locareaid').val();
-      var dataString = 'locationid='+ locationid;
-	  
-      $.ajax ({
-	  type: "POST",
-	  url: "php/locarea_options_ajax.php",
-	  data: dataString,
-	  cache: false,
-	  success: function(html) {
-	    $("#locareaid").html(html);
-	  }
-      });
-    });
-	
-	  $("#departmentsid").change(function() {
-      var departmentsid=$(this).val();
-      var departmentabbrid=$('#departmentabbrsid').val();
-      var dataString = 'departmentsid='+ departmentsid;
-	  
-      $.ajax ({
-	  type: "POST",
-	  url: "php/dept_options_ajax.php",
-	  data: dataString,
-	  cache: false,
-	  success: function(html) {
-	    $("#departmentabbrsid").html(html);
-	  }
-      });
-    });
-    $("#vlanid").change(function() {
-      var vlanid=$(this).val();
-      var vlanname=$('#vlanname').val();
-      var dataString = 'vlanid='+ vlanid;
-	  
-      $.ajax ({
-	  type: "POST",
-	  url: "php/vlan_options_ajax.php",
-	  data: dataString,
-	  cache: false,
-	  success: function(html) {
-	    $("#vlanname").html(html);
-	  }
-      });
-    });
-  });
 </SCRIPT>
-<script type="text/javascript" src="../js/ckeditor/ckeditor.js"></script>
-
 <?php 
 if (!isset($initok)) {echo "do not run this script directly";exit;}
-/* Spiros Ioannou 2009-2010 , sivann _at_ gmail.com */
+
 //error_reporting(E_ALL);
 //ini_set('display_errors', '1');
-$sql="SELECT * FROM users order by upper(username)";
+
+// get fiber
+$sql="SELECT * from fiber WHERE id = '' OR id != '' order by id";
+$sth=db_execute($dbh,$sql);
+while ($r=$sth->fetch(PDO::FETCH_ASSOC)) $fiberlist[$r['id']]=$r;
+$sth->closeCursor();
+
+$sql="SELECT * from users order by username";
+$sth=db_execute($dbh,$sql);
+while ($r=$sth->fetch(PDO::FETCH_ASSOC)) $userlist[$r['id']]=$r;
+$sth->closeCursor();
+
+$sql="SELECT * from locations order by name,floor";
 $sth=$dbh->query($sql);
-$userlist=$sth->fetchAll(PDO::FETCH_ASSOC);
-$sql="SELECT * FROM locations order by name";
+while ($r=$sth->fetch(PDO::FETCH_ASSOC)) $locations[$r['id']]=$r;
+$sth->closeCursor();
+
+$sql="SELECT * from locareas order by areaname";
 $sth=$dbh->query($sql);
-$locations=$sth->fetchAll(PDO::FETCH_ASSOC);
-$sql="SELECT * FROM departments order by name";
-$sth=$dbh->query($sql);
-$departments=$sth->fetchAll(PDO::FETCH_ASSOC);
-$sql="SELECT * FROM vlans order by vlanid";
-$sth=$dbh->query($sql);
-$vlans=$sth->fetchAll(PDO::FETCH_ASSOC);
-//delete jack
-if (isset($_GET['delid'])) { //if we came from a post (save) the update jack 
+while ($r=$sth->fetch(PDO::FETCH_ASSOC)) $locareas[$r['id']]=$r;
+$sth->closeCursor();
+
+//delete fiber
+if (isset($_GET['delid'])) { //if we came from a post (save) the update fiber 
   $delid=$_GET['delid'];
   
+
   //delete entry
-  $sql="DELETE from jacks where id=".$_GET['delid'];
+  $sql="DELETE from fiber where id=".$_GET['delid'];
   $sth=db_exec($dbh,$sql);
-  echo "<script>document.location='$scriptname?action=listjacks'</script>";
-  echo "<a href='$scriptname?action=listjacks'>Go here</a></body></html>"; 
+
+  echo "<script>document.location='$scriptname?action=listfiber'</script>";
+  echo "<a href='$scriptname?action=listfiber'></a>"; 
   exit;
+
 }
-if (isset($_POST['id'])) { //if we came from a post (save) then update jack 
+
+
+if (isset($_POST['id'])) { //if we came from a post (save) then update fiber 
   $id=$_POST['id'];
-  if ($_POST['id']=="new")  {//if we came from a post (save) then add jack 
-    $sql="INSERT INTO jacks (switchname, locareaid, locationid, jackname, departmentsid, departmentabbrsid, userdev, modport, pubipnet, pubiphost, vlanname, privipnet, priviphost, groupname, vlanid, notes, temp_perm, userid,
-		  wallcoord) VALUES ('$switchname', '$locareaid', '$locationid', '$jackname', '$departmentsid', '$departmentabbrsid', '$userdev', '$modport', '$pubipnet', '$pubiphost', '$vlanname', '$privipnet', '$priviphost',
-		  '$groupname', '$vlanid', '$notes', '$temp_perm', $userid', '$wallcoord')";
+
+  if ($_POST['id']=="new")  {//if we came from a post (save) then add fiber 
+    $sql="INSERT INTO fiber (fibertype, intra_inter, light_guide, fiberstrnd, from_locationid, from_locareaid, from_jumper_no, from_dev, to_locationid, to_locareaid, to_dev, notes) VALUES ('$fibertype', '$intra_inter', '$light_guide', '$fiberstrnd', '$from_locationid', '$from_locareaid', '$from_jumper_no', '$from_dev', '$to_locationid', '$to_locareaid', '$to_dev', '$notes')";
+	
+/*$fibertype, $intra_inter, $light_guide, $fiberstrnd, $from_locationid, $from_locareaid, $from_jumper_no, $from_dev, $to_locationid, $to_locareaid, $to_dev, $notes*/
 		  
     db_exec($dbh,$sql,0,0,$lastid);
     $lastid=$dbh->lastInsertId();
-    print "<br><b>Added jack <a href='$scriptname?action=$action&amp;id=$lastid'>$lastid</a></b><br>";
+    print "<br><b>Added Fiber <a href='$scriptname?action=$action&amp;id=$lastid'>$lastid</a></b><br>";
     echo "<script>window.location='$scriptname?action=$action&id=$lastid'</script> "; //go to the new item
     $id=$lastid;
   }
   else {
-    $sql="UPDATE jacks SET ".
-       " switchname='$switchname',locareaid='$locareaid',locationid='$locationid',jackname='$jackname',departmentsid='$departmentsid', departmentabbrsid='$departmentabbrsid',
-	   	 userdev='$userdev', modport='$modport', pubipnet='$pubipnet', pubiphost='$pubiphost', vlanname='$vlanname', privipnet='$privipnet', priviphost='$priviphost', groupname='$groupname', vlanid='$vlanid', notes='$notes',	
-		 temp_perm='$temp_perm', userid='$userid', wallcoord='$wallcoord' WHERE id=$id";
+    $sql="UPDATE fiber SET ".
+       " fibertype='$fibertype', intra_inter='$intra_inter',light_guide='$light_guide',fiberstrnd='$fiberstrnd',from_locationid='$from_locationid',from_locareaid='$from_locareaid',from_jumper_no='$from_jumper_no',from_dev='$from_dev',to_locationid='$to_locationid',to_locareaid='$to_locareaid',to_dev='$to_dev',notes='$notes' WHERE id=$id";
     db_exec($dbh,$sql);
+	
+  echo "<script>document.location='$fscriptname?action=editfiber&id=$id'</script>";
+  echo "<a href='$fscriptname?action=editfiber&id=$id'></a>"; 
+  exit;
   }
+
+
 }//save pressed
 
 if ($id!="new") {
   //get current item data
   $id=$_GET['id'];
-  $sql="SELECT * FROM jacks WHERE id='$id'";
+  $sql="SELECT * FROM fiber WHERE id='$id'";
   $sth=db_execute($dbh,$sql);
   $dept=$sth->fetchAll(PDO::FETCH_ASSOC);
   
@@ -142,7 +118,7 @@ if ($id!="new") {
 	$curid = intval($dept[0]);
 
     // Select contents from the selected id
-    $sql = "SELECT * FROM jacks WHERE id='$curid'";
+    $sql = "SELECT * FROM fiber WHERE id='$curid'";
     $result = db_execute($dbh,$sql);
     if ($result>0) {
         $info = $result->fetchAll(PDO::FETCH_ASSOC);
@@ -151,7 +127,7 @@ if ($id!="new") {
     }
 
     // Next Record
-    $sql = "SELECT id FROM jacks WHERE id>'$id' LIMIT 1";
+    $sql = "SELECT id FROM fiber WHERE id>'$id' LIMIT 1";
     $result = db_execute($dbh,$sql);
     if ($result>0) {
         $nextresults = $result->fetchAll(PDO::FETCH_ASSOC);
@@ -159,7 +135,7 @@ if ($id!="new") {
     }
 
     // Previous Record
-    $sql = "SELECT id FROM jacks WHERE id<'$id' ORDER BY id DESC LIMIT 1";
+    $sql = "SELECT id FROM fiber WHERE id<'$id' ORDER BY id DESC LIMIT 1";
     $result = db_execute($dbh,$sql);
     if ($result>0) {
         $prevresults = $result->fetchAll(PDO::FETCH_ASSOC);
@@ -167,7 +143,7 @@ if ($id!="new") {
     }
 } else {
     // No form has been submitted so use the lowest id and grab its info
-    $sql = "SELECT * FROM jacks WHERE id > 0 LIMIT 1";
+    $sql = "SELECT * FROM fiber WHERE id > 0 LIMIT 1";
     $result = db_execute($dbh,$sql);
     if ($result>0) {
         $inforesults = $result->fetchAll(PDO::FETCH_ASSOC);
@@ -176,93 +152,104 @@ if ($id!="new") {
     }
 }
 
-///////////////////////////////// display data 
+///////////////////////////////// display data now
+
 
 if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
 $id=$_REQUEST['id'];
-$sql="SELECT * FROM jacks WHERE id='$id'";
+
+$sql="SELECT * FROM fiber WHERE id='$id'";
 $sth=db_execute($dbh,$sql);
 $r=$sth->fetch(PDO::FETCH_ASSOC);
-if (($id !="new") && (count($r)<5)) {echo "ERROR: non-existent ID";exit;}
-$switchname=$r['switchname'];$locareaid=$r['locareaid'];$locationid=$r['locationid'];$jackname=$r['jackname'];$departmentsid=$r['departmentsid'];$departmentabbrsid=$r['departmentabbrsid'];$userdev=$r['userdev'];$modport=$r['modport'];$pubipnet=$r['pubipnet'];$pubiphost=$r['pubiphost'];$vlanname=$r['vlanname'];$privipnet=$r['privipnet'];$priviphost=$r['priviphost'];$groupname=$r['groupname'];$vlanid=$r['vlanid'];$notes=$r['notes'];$temp_perm=$r['temp_perm'];$userid=$r['userid'];$wallcoord=$r['wallcoord'];
+
+if ($id !="new")
+$fiberid=$r['id'];
+
 echo "\n<form method=post  action='$scriptname?action=$action&amp;id=$id' enctype='multipart/form-data'  name='addfrm'>\n";
+
 if ($id=="new")
-  echo "\n<h1>".t("Add Jack")."</h1>\n";
+  echo "\n<h1>".t("Add Fiber")."</h1>\n";
 else
-  echo "\n<h1>".t("Edit Jack $id")."</h1>\n";
+  echo "\n<h1>".t("Edit Fiber $id")."</h1>\n";
+
 ?>
-<!-- Jack Properties -->
-	<table border='0' class=tbl1 >
+<!-- Fiber Properties -->
+	<table border='0' class=tbl1 width="100%">
 	<tr>
 
-<!-- Jack Name -->
+<!-- General Fiber Info -->
 		<td class='tdtop'>
 			<table border='0' class=tbl2>
-				<tr><td colspan=2><h3><?php te("Jack Properties");?></h3></td></tr>
-				<tr>
-					<td class='tdt'><?php te("Jack");?>:</td>
-					<td title='<?php te("Jack name on wall plate (e.g. 1A-200-1a");?>'><input type='text' value="<?php echo $jackname?>" name='jackname'></td>
-				</tr>
-<!-- end, Jack Name -->
-
-<!-- Temporary or Permanent Change -->
-				<tr>
-					<?php 
-						$T="";$P="";
-						if ($temp_perm=="Temp") {$T="checked";$P="";}
-						if ($temp_perm=="Perm") {$P="checked";$T="";}
-					?>
-					<td class='tdt'><?php te("Temp / Perm Change");?>:<br /></td>
-					<td title='Select (T)emporary / (P)ermanent'>
-                    	<input <?php echo $T?> class='radio' type=radio name='temp_perm' value='Temp'><?php te("Temporary");?>
-                    	<input <?php echo $P?> class='radio' type=radio name='temp_perm' value='Perm'><?php te("Permanent");?>
- 					</td>
-				</tr>
-<!-- end, Temporary or Permanent Change -->
-
-<!-- Wall Location -->
-				<tr>
-					<?php 
-						$N="";$S="";$E="";$W="";
-						if ($wallcoord=="N") {$N="checked";$S="";$E="";$W="";}
-						if ($wallcoord=="S") {$S="checked";$N="";$E="";$W="";}
-						if ($wallcoord=="E") {$E="checked";$N="";$S="";$W="";}
-						if ($wallcoord=="W") {$W="checked";$N="";$S="";$E="";}
-					?>
-					<td class='tdt'><?php te("Wall Location");?>:</td>
-					<td title='Select (N)orth, (S)outh, (E)ast, (W)est'>
-                    	<input <?php echo $N?> class='radio' type=radio name='wallcoord' value='N'><?php te("N");?>
-                    	<input <?php echo $S?> class='radio' type=radio name='wallcoord' value='S'><?php te("S");?>
-                    	<input <?php echo $E?> class='radio' type=radio name='wallcoord' value='E'><?php te("E");?>
-                    	<input <?php echo $W?> class='radio' type=radio name='wallcoord' value='W'><?php te("W");?>
-					</td>
-				</tr>
-<!-- end, Wall Location -->
-
-<!-- Notes -->
-                <tr>
-					<td class='tdt'><?php te("Notes");?>:</td><td><textarea style='width:33em;height:20em' wrap='soft' class=tarea1  id='notes' name='notes'><?php echo $notes?></textarea></td>
-<!--						<script>
-                            CKEDITOR.replace( 'notes' );
-                        </script>
--->				</tr>
-<!-- end, Notes -->
-			</table>
+				<tr><td colspan=2><h3><?php te("General Fiber Information");?></h3></td></tr>
+<!-- Fiber Type -->
+	<tr>
+		<td class='tdt'><?php te("Fiber Type");?>:</td>
+		<td><select style='width:20em' id='fibertype' name='fibertype'>
+			<option value='<?php echo $r['fibertype']?>'><?php echo $r['fibertype']?></option>
+			<option value=''></option>
+			<option value='MultiMode'>MultiMode</option>
+			<option value='SingleMode'>SingleMode</option>
+			</select>
 		</td>
-<!-- end, Jack Properties -->
+	</tr>
+<!-- end, Fiber Type -->
 
-<!-- Building Information -->
+	  <tr>
+		<td class='tdt'><?php te("Intra/Inter Building");?>:</td>
+      	<td title='IntraBuilding or InterBuilding Connectivity' ><select style='width:20em' name='intra_inter'>
+  		<option value='<?php echo $r['intra_inter']?>'><?php echo $r['intra_inter']?></option>
+  		<option value=''></option>
+  		<option value='Intra-Building'>Intra-Building</option>
+  		<option value='Inter-Building'>Inter-Building</option>
+        </select>
+        </td>
+      </tr>
+	  <tr>
+		<td class='tdt'><?php te("Light Guide");?>:</td>
+        <td><select style='width:20em' id='light_guide' name='light_guide'>
+			<option value='<?php echo $r['light_guide']?>'><?php echo $r['light_guide']?></option>
+			<?php 
+			foreach ($fiber as $key=>$f ) {
+				$dbid=$f['id']; 
+				$itype=$f['light_guide'];
+				$s="";
+				if (($id=="$dbid")) $s=" SELECTED "; 
+				echo "    <option $s value='$dbid'>$itype</option>\n";
+			}
+			?>
+			</select>
+		</td>
+      </tr>
+	  <tr>
+		<td class='tdt'><?php te("Fiber Strand Number");?>:</td>
+        <td title='Fiber Strand Number'><select style='width:20em' id='fiberstrnd' name='fiberstrnd'>
+				<option value='<?php echo $r['fiberstrnd']?>'><?php echo $r['fiberstrnd']?></option>
+				<option value=''></option>
+				<?php
+					for( $i= 1 ; $i < 289 ; $i++ )
+					{
+						echo '<option ' . ($i == 0 ? 'selected=\'selected\'' : '') . ' value="' . $i . '" >' . $i . '</option>';
+					}
+                ?></select></td>
+		</tr>
+        
+	  <tr>
+		<td class='tdt'><?php te("Notes");?>:</td>
+		<td title='Notes'><textarea style='width:19.5em' wrap='soft' class=tarea1  id='notes' name='notes'><?php echo $r['notes']?></textarea></td>
+      </tr>
+	</table>
+
+<!-- From Information -->
+<!-- General Fiber Info -->
 		<td class='tdtop'>
 			<table border='0' class=tbl2>
-				<tr>
-                	<td colspan=2 ><h3><?php te("Building Information");?></h3></td>
-				</tr>
+				<tr><td colspan=2><h3><?php te("From");?></h3></td></tr>
 
-<!-- Location Information -->
-	<tr>
-		<td class='tdt'><?php te("Location");?>:</td>
-		<td><select style='width:37em' id='locationid' name='locationid'>
-			<option value=''><?php te("Select");?></option>
+	  <tr>
+		<td class='tdt' width="auto"><?php te("Building");?>:</td>
+		<td ><select id='from_locationid' name='from_locationid' style="width:20em">
+			<option value='<?php echo $r['from_locationid']?>'><?php echo $locations[$r['from_locationid']]['name']?></option>
+			<option value=''></option>
 			<?php 
 			foreach ($locations  as $key=>$location ) {
 				$dbid=$location['id']; 
@@ -274,22 +261,17 @@ else
 			?>
 			</select>
 		</td>
-	</tr>
+      </tr>
 <!-- end, Location Information -->
 
+
 <!-- Room/Area Information -->
-	<tr>
-		<?php if (is_numeric($locationid)) {
-			$sql="SELECT * FROM locareas WHERE locationid=$locationid order by areaname";
-			$sth=$dbh->query($sql);
-			$locareas=$sth->fetchAll(PDO::FETCH_ASSOC);
-		} 
-		else 
-			$locareas=array();
-		?>
+	  <tr>
 		<td class='tdt'><?php te("Area/Room");?>:</td>
-		<td><select style='width:37em' id='locareaid' name='locareaid'>
-			<option value=''><?php te("Select");?></option>
+		<?php if (is_numeric($from_locationid))?>
+		<td><center><select id='from_locareaid' name='from_locareaid' style="width:20em">
+			<option value='<?php echo $r['from_locareaid']?>'><?php echo $locareas[$r['from_locareaid']]['areaname']?></option>
+			<option value=''></option>
 			<?php 
 			foreach ($locareas  as $key=>$locarea ) {
 				$dbid=$locarea['id']; 
@@ -299,167 +281,123 @@ else
 				echo "    <option $s value='$dbid'>$itype</option>\n";
 			}
 			?>
-			</select>
+			</select></center>
 		</td>
-	</tr>
-</table>
-</td>
-<!-- end, Room/Area Information -->
-<!-- end, Building Information -->
+      </tr>
+	  <tr>
+		<td class='tdt'><?php te("Jumper Number");?>:</td>
+		<td title='Jumper Number (From)'><center><select id='from_jumper_no' name='from_jumper_no' style="width:20em">
+				<option value='<?php echo $r['from_jumper_no']?>'><?php echo $r['from_jumper_no']?></option>
+				<option value=''><?php te("");?></option>
+				<?php
+					for( $i= 1000 ; $i < 2501 ; $i++ )
+					{
+						echo '<option ' . ($i == 0 ? 'selected=\'selected\'' : '') . ' value="' . $i . '" >' . $i . '</option>';
+					}
+                ?></select></center>
+                </td>
+       </tr>
 
-<!-- Switch Information -->
+	  <tr>
+		<td class='tdt'><?php te("Device");?>:</td>
+		<td title='From Device'><input type=text name='from_dev' id='from_dev' value='<?php echo $r['from_dev']?>' style="width:20em"></td>
+      </tr>
+	</table>
+    
+<!-- To Information -->
 		<td class='tdtop'>
 			<table border='0' class=tbl2>
-				<tr><td colspan=2 ><h3><?php te("Switch Information");?></h3></td></tr>
-                <tr><td class='tdt'><?php te("Switch Name");?>:</td><td><input type=text size=15 value='<?php echo $switchname?>' name='switchname'></td></tr>
-                <tr><td class='tdt'><?php te("Module & Port");?>:</td><td><input type=text size=15 value='<?php echo $modport?>' name='modport'></td></tr>
-<!-- VLAN ID Information -->
-	<tr>
-		<td class='tdt'><?php te("VLAN");?>:</td>
-		<td><select style='width:16em' id='vlanid' name='vlanid'>
-			<option value=''><?php te("Select");?></option>
+				<tr><td colspan=2><h3><?php te("To");?></h3></td></tr>
+	  <tr>
+		<td class='tdt' width="auto"><?php te("Building");?>:</td>
+		<td><select id='to_locationid' name='to_locationid' style="width:20em">
+			<option value='<?php echo $r['to_locationid']?>'><?php echo $locations[$r['to_locationid']]['name']?></option>
+			<option value=''></option>
 			<?php 
-			foreach ($vlans as $key=>$v) {
-				$dbid=$v['id']; 
-				$itype=$v['vlanid'];
+			foreach ($locations  as $key=>$location ) {
+				$dbid=$location['id']; 
+				$itype=$location['name'];
 				$s="";
-				if (($vlanid=="$dbid")) $s=" SELECTED "; 
-				echo "<option $s value='$dbid'>$itype</option>\n";
+				if (($locationid=="$dbid")) $s=" SELECTED "; 
+				echo "    <option $s value='$dbid'>$itype</option>\n";
 			}
 			?>
 			</select>
 		</td>
-	</tr>
-<!-- end, VLAN ID Information -->
+      </tr>
+<!-- end, Location Information -->
 
-<!-- VLAN Name Information -->
-	<tr>
-		<?php if (is_numeric($vlanid)) {
-			$sql="SELECT * FROM vlans WHERE id=$vlanid order by vlanid";
-			$sth=$dbh->query($sql);
-			$vlans=$sth->fetchAll(PDO::FETCH_ASSOC);
-		} 
-		else 
-			$vlans=array();
-		?>
-		<td class='tdt'><?php te("VLAN Name");?>:</td>
-		<td><select style='width:16em' id='vlanname' name='vlanname'>
-			<option value=''><?php te("Select");?></option>
+
+<!-- Room/Area Information -->
+	  <tr>
+		<td class='tdt'><?php te("Area/Room");?>:</td>
+		<?php if (is_numeric($to_locationid))?>
+		<td><center><select id='to_locationid' name='to_locationid' style="width:20em">
+			<option value='<?php echo $r['to_locationid']?>'><?php echo $locareas[$r['to_locationid']]['areaname']?></option>
+			<option value=''></option>
 			<?php 
-			foreach ($vlans as $key=>$v ) {
-				$dbid=$v['id']; 
-				$itype=$v['vlanname'];
+			foreach ($locareas  as $key=>$locarea ) {
+				$dbid=$locarea['id']; 
+				$itype=$locarea['areaname'];
 				$s="";
-				if (($vlanid=="$dbid")) $s=" SELECTED "; 
-				echo "<option $s value='$dbid'>$itype</option>\n";
+				if (($locareaid=="$dbid")) $s=" SELECTED "; 
+				echo "    <option $s value='$dbid'>$itype</option>\n";
 			}
 			?>
-			</select>
+			</select></center>
 		</td>
-	</tr>
-<!-- end, VLAN Name Information -->
-                <tr><td class='tdt'><?php te("Public IP Network");?>:</td><td><input type=text size=15 value='<?php echo $pubipnet?>' name='pubipnet'></td></tr>
-                <tr><td class='tdt'><?php te("Public IP Host");?>:</td><td><input type=text size=15 value='<?php echo $pubiphost?>' name='pubiphost'></td></tr>
-                <tr><td class='tdt'><?php te("Private IP Network");?>:</td><td><input type=text size=15 value='<?php echo $privipnet?>' name='privipnet'></td></tr>
-                <tr><td class='tdt'><?php te("Priavte IP Host");?>:</td><td><input type=text size=15 value='<?php echo $priviphost?>' name='priviphost'></td></tr>
-                <tr><td class='tdt'><?php te("Group Name");?>:</td><td><input type=text size=15 value='<?php echo $groupname?>' name='groupname'></td></tr>
-			</table>
-		</td>
+      </tr>
 
-<!-- Department Information -->
-	<tr>
-        <td class='tdtop'>
-            <table border='0' class=tbl2>
-                <tr>
-                    <td colspan=2><h3><?php te("Department Information");?></h3></td>
-                </tr>
+	  <tr>
+		<td class='tdt'><?php te("Jumper Number");?>:</td>
+		<td title='Jumper Number (From)'><center><select id='to_jumper_no' name='to_jumper_no' style="width:20em">
+				<option value='<?php echo $r['to_jumper_no']?>'><?php echo $r['to_jumper_no']?></option>
+				<option value=''><?php te("");?></option>
+				<?php
+					for( $i= 1000 ; $i < 2501 ; $i++ )
+					{
+						echo '<option ' . ($i == 0 ? 'selected=\'selected\'' : '') . ' value="' . $i . '" >' . $i . '</option>';
+					}
+                ?></select></center>
+                </td>
+       </tr>
 
-<!-- Department Name -->
-	<tr>
-		<td class='tdt'><?php te("Department");?>:</td>
-		<td><select style='width:37em' id='departmentsid' name='departmentsid'>
-			<option value=''><?php te("Select");?></option>
-			<?php 
-			foreach ($departments as $key=>$department ) {
-				$dbid=$department['id']; 
-				$itype=$department['name'];
-				$s="";
-				if (($departmentsid=="$dbid")) $s=" SELECTED "; 
-				echo "<option $s value='$dbid'>$itype</option>\n";
-			}
-			?>
-			</select>
-		</td>
-	</tr>
-<!-- end, Department Name -->
+	  <tr>
+		<td class='tdt'><?php te("Device");?>:</td>
+		<td title='From Device'><input type=text name='to_dev' id='to_dev' value='<?php echo $r['to_dev']?>' style="width:20em"></td>
+      </tr>
+      </table>
+	</td>
+</tr>
+            
+<!-- end, fiber Properties Title -->
+</table>
 
-<!-- Department Abbreviation -->
-	<tr>
-		<?php if (is_numeric($departmentsid)) {
-			$sql="SELECT * FROM departments WHERE id=$departmentsid order by abbr";
-			$sth=$dbh->query($sql);
-			$departments=$sth->fetchAll(PDO::FETCH_ASSOC);
-		} 
-		else 
-			$departments=array();
-		?>
-		<td class='tdt'><?php te("Department Abbr");?>:</td>
-		<td><select style='width:37em' id='departmentabbrsid' name='departmentabbrsid'>
-			<option value=''><?php te("Select");?></option>
-			<?php 
-			foreach ($departments as $key=>$d ) {
-				$dbid=$d['id']; 
-				$itype=$d['abbr'];
-				$s="";
-				if (($departmentsid=="$dbid")) $s=" SELECTED "; 
-				echo "<option $s value='$dbid'>$itype</option>\n";
-			}
-			?>
-			</select>
-		</td>
-	</tr>
-<!-- end, Department Abbreviation -->
-
-<!-- User/Device Information -->
-				<tr>
-					<td class='tdt'><?php te("User/Device");?>:</td>
-					<td><input style='width:35em' type='text' value="<?php echo $userdev?>" name='userdev'></td>
-				</tr>
-<!-- end, User/Device Information -->
-
-			</table>
-		</td>
-	</tr>
-    </table>
-    
-<table width="100%"><!-- save buttons -->
-	<tr>
-		<td>
-			<?php if ($previd != "") { ?>
-                <a href='?action=editjack&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-            <?php } else {?>
-                <a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-            <?php }?>
-        </td>
-		<td><button type="submit"><img src="images/save.png" alt="Save" /><?php te("Save");?></button></td>
-			<?php echo "\n<td><button type='button' onclick='javascript:delconfirm2(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid={$r['id']}\");'>"."<img title='Delete' src='images/delete.png' border=0>".t("Delete")."
-		</button></td>";?>
-		<td style="text-align:right;">
-			<?php if ($nextid != "") { ?>
-            <a href='?action=editjack&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-            <?php } else {?>
-                <a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-            <?php }?>
-		</td>
-	</tr>
-		<?php
-		echo "\n</table>\n";
+<table border="0" class="tbl2" width="100%" align="center">
+          <tr>
+			<td>
+				<?php if ($previd != "") { ?>
+                    <a href='?action=editfiber&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
+                <?php } else {?>
+                    <a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
+                <?php }?>
+            </td>
+            <td><button type="submit"><img src="images/save.png" alt="Save" /><?php te(" Save");?></button></td>
+            <?php echo "\n<td><button type='button' onclick='javascript:delconfirm2(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid={$r['id']}\");'>"."<img title='Delete' src='images/delete.png' border=0>".t(" Delete")."
+		</button></td>";
 		echo "\n<input type=hidden name='action' value='$action'>";
 		echo "\n<input type=hidden name='id' value='$id'>";
-		?> </tr>
-        </table></td>
-      </tr>
-    </table>
+		?>
+        <td>
+<?php if ($nextid != "") { ?>
+<a href='?action=editfiber&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
+<?php } else {?>
+	<a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
+<?php }?>
+</td>
+</tr>
+</table>
+
     </form>
 </body>
 </html>

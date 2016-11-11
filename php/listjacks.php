@@ -14,8 +14,8 @@ a{
 <div id="tabs"><!-- tab container -->
   <ul>
 	<li style="display:none"><a href="../php/locations/UA.php" target="import" style="width:35px"><?php te("Start Here");?></a></li>
-    <li style="width:60px"><a href="../php/locations/AEC.php" target="import" style="width:35px" style="width:35px"><?php te("AEC");?></a></li>
-    <li style="width:60px"><a href="../php/locations/AG.php" target="import" style="width:35px" style="width:35px"><?php te("AG");?></a></li>
+    <li style="width:60px"><a href="../php/locations/AEC.php" target="import" style="width:35px"><?php te("AEC");?></a></li>
+    <li style="width:60px"><a href="../php/locations/AG.php" target="import" style="width:35px"><?php te("AG");?></a></li>
     <li style="width:60px"><a href="../php/locations/AH.php" target="import" style="width:35px"><?php te("AH");?></a></li>
     <li style="width:60px"><a href="../php/locations/BB.php" target="import" style="width:35px"><?php te("BB");?></a></li>
     <li style="width:60px"><a href="../php/locations/CH.php" target="import" style="width:35px"><?php te("CH");?></a></li>
@@ -28,7 +28,7 @@ a{
     <li style="width:60px"><a href="../php/locations/GC.php" target="import" style="width:35px"><?php te("GC");?></a></li>
     <li style="width:60px"><a href="../php/locations/HH.php" target="import" style="width:35px"><?php te("HH");?></a></li>
     <li style="width:60px"><a href="../php/locations/HMH.php" target="import" style="width:35px"><?php te("HMH");?></a></li>
-    <li style="width:60px"><a href="../php/locations/KWEC.php" target="import" style="width:35px" style="width:35px"><?php te("KWEC");?></a></li>
+    <li style="width:60px"><a href="../php/locations/KWEC.php" target="import" style="width:35px"><?php te("KWEC");?></a></li>
     <li style="width:60px"><a href="../php/locations/LFE.php" target="import" style="width:35px"><?php te("LFE");?></a></li>
     <li style="width:60px"><a href="../php/locations/LFW.php" target="import" style="width:35px"><?php te("LFW");?></a></li>
     <li style="width:60px"><a href="../php/locations/MA.php" target="import" style="width:35px"><?php te("MA");?></a></li>
@@ -64,4 +64,4 @@ a{
     <li style="width:60px"><a href="../php/locations/WPE.php" target="import" style="width:35px"><?php te("WPE");?></a></li>
     <li style="width:60px"><a href="../php/locations/WPF.php" target="import" style="width:35px"><?php te("WPF");?></a></li>
 </div><!-- tab container -->
-	<iframe style="height:850px" width="100%" id="locations" name="locations" frameborder="0"></iframe>
+	<iframe style="height:100%" width="100%" id="locations" name="locations" frameborder="0"></iframe>

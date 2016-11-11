@@ -353,7 +353,7 @@ else if ($action=="editjack") {
 </div>    
 <table width="100%"><!-- save buttons -->
 <tr>
-<td style='text-align: center' colspan=1><button type="submit"><img src="images/save.png" alt="Save" > <?php te("Save");?></button></td>
+<td style='text-align: center' colspan=1><button type="submit"><img src="images/save.png" alt="test" > <?php te("Save");?></button></td>
 <?php 
 if ($id!="new") {
   echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:delconfirm2(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;delid={$_GET['id']}\");'>".
