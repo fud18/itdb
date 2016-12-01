@@ -58,3 +58,4 @@ data/pure.db.bak
 /php/locations/WPE.php
 /php/locations/WPF.php
 php/import - Copy.php
+*.bak
