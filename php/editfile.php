@@ -127,9 +127,9 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the file
       $path_parts = pathinfo($_FILES['file']["name"]);
       $fileext=$path_parts['extension'];
       $ftypestr=ftype2str($_POST['type'],$dbh);
-      //$unique=substr(uniqid(),-4,4);
+      $unique=substr(uniqid(),-4,4);
 
-      $filefn=/*strtolower*/("$ftypestr-"."$title.$fileext");//Saves file as filetype-Title.file extension
+      $filefn=strtolower("$ftypestr-".validfn($title)."-$unique.$fileext");
       $uploadfile = $uploaddir.$filefn;
       $result = '';
 
@@ -195,54 +195,7 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the file
 
 }//save pressed
 
-if ($id!="new") {
-  //get current item data
-  $id=$_GET['id'];
-  $sql="SELECT * FROM files WHERE id='$id'";
-  $sth=db_execute($dbh,$sql);
-  $dept=$sth->fetchAll(PDO::FETCH_ASSOC);
-  
-	//  Next & Previous Buttons' Function
-	$curid = intval($dept[0]);
-
-    // Select contents from the selected id
-    $sql = "SELECT * FROM files WHERE id='$curid'";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $info = $result->fetchAll(PDO::FETCH_ASSOC);
-    } else {
-        die('Not found');
-    }
-
-    // Next Record
-    $sql = "SELECT id FROM files WHERE id>'$id' LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $nextresults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$nextid = strval($nextresults[0]['id']);
-    }
-
-    // Previous Record
-    $sql = "SELECT id FROM files WHERE id<'$id' ORDER BY id DESC LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $prevresults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$previd = strval($prevresults[0]['id']);
-    }
-} else {
-    // No form has been submitted so use the lowest id and grab its info
-    $sql = "SELECT * FROM files WHERE id > 0 LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $inforesults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$info =  strval($inforesults[0]['id']);
-		
-    }
-}
-
 ///////////////////////////////// display data now
-
-
 if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
 $id=$_REQUEST['id'];
 
@@ -256,7 +209,7 @@ else
   $mytype="";
 
 if (($id !="new") && (count($r)<3)) {echo "ERROR: non-existent ID<br>($sql)";exit;}
-echo "\n<form id='mainform' method=post  action='$scriptname?action=$action&amp;id=$id' enctype='multipart/form-data'  name='addfrm'>\n";
+echo "\n<form id='mainform' method=post action='$scriptname?action=$action&amp;id=$id' enctype='multipart/form-data'  name='addfrm'>\n";
 
 ?>
 
@@ -428,16 +381,18 @@ else
       if ($id=="new") {
 	$tip="";
 	echo t("Upload a File");
+  $file_validate_required='true';
       }
       else{
 	$tip=t("If you select a new file, it will replace the current one, <br>while keeping its associations.");
 	echo t("Replace File");
+  $file_validate_required='false';
       }
       ?>
     </h3></td></tr>
     <!-- file upload -->
     <tr> 
-      <td class="tdt">File:</td> <td><input validate='required:false' name="file" id="file" size="25" type="file"></td>
+      <td class="tdt">File:</td> <td><input validate='required:<?php echo $file_validate_required;?>' name="file" id="file" size="25" type="file"></td>
     </tr>
     </table>
 <?php echo $tip?>
@@ -718,19 +673,56 @@ else
      echo t("<br>-Files of type 'invoice' can be associated only with invoices and only using the 'invoice' menu ");
   }
 ?>
-
-
-
-
-
 </div><!-- tab3 contracts associations -->
 
 </div><!-- tab container -->
-
-
-
 </td></tr>
+<?php
+if ($id!="new") {
+  //get current item data
+  $id=$_GET['id'];
+  $sql="SELECT * FROM files WHERE id='$id'";
+  $sth=db_execute($dbh,$sql);
+  $file=$sth->fetchAll(PDO::FETCH_ASSOC);
+  
+	//  Next & Previous Buttons' Function
+	$curid = intval($dept[0]);
 
+    // Select contents from the selected id
+    $sql = "SELECT * FROM files WHERE id='$curid'";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $info = $result->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        die('Not found');
+    }
+
+    // Next Record
+    $sql = "SELECT id FROM files WHERE id>'$id' LIMIT 1";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $nextresults = $result->fetchAll(PDO::FETCH_ASSOC);
+		$nextid = strval($nextresults[0]['id']);
+    }
+
+    // Previous Record
+    $sql = "SELECT id FROM files WHERE id<'$id' ORDER BY id DESC LIMIT 1";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $prevresults = $result->fetchAll(PDO::FETCH_ASSOC);
+		$previd = strval($prevresults[0]['id']);
+    }
+} else {
+    // No form has been submitted so use the lowest id and grab its info
+    $sql = "SELECT * FROM files WHERE id > 0 LIMIT 1";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $inforesults = $result->fetchAll(PDO::FETCH_ASSOC);
+		$info =  strval($inforesults[0]['id']);
+		
+    }
+}
+?>
 <table width="100%"><!-- save buttons -->
 <tr>
 <td>
@@ -740,34 +732,26 @@ else
 	<a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
 <?php }?>
 </td>
-<td style='text-align: center' colspan=1><button type="submit"><img src="images/save.png" alt="Save" > <?php te("Save");?></button></td>
+<td><button type="submit"><img src="images/save.png" alt="Save"> <?php te("Save");?></button></td>
 <?php 
-if ($id!="new") {
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:delconfirm2(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;delid={$_GET['id']}\");'>".
-       "<img title='Delete' src='images/delete.png' border=0>".t("Delete")."</button></td>\n";
 
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:cloneconfirm(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;cloneid={$_GET['id']}\");'>".
-       "<img  src='images/copy.png' border=0>". t("Clone")."</button></td>\n";
-} 
-else 
-  echo "\n<td>&nbsp;</td>";
-?>
+echo "\n<td style='text-align:right'><button type='button' onclick='javascript:delconfirm2(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid=$id\");'>".
+     "<img title='delete' src='images/delete.png' border=0>".t("Delete"). "</button></td>";?>
+     
 <td style="text-align:right;">
 <?php if ($nextid != "") { ?>
 <a href='?action=editfile&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
 <?php } else {?>
 	<a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
 <?php }?>
-</td>
-</tr>
-</table>
-
-<?
+</td></tr>
+<?php
+// end of item links
+//////////////////////////////////////////////
+echo "\n</table>\n";
 echo "\n<input type=hidden name='action' value='$action'>";
 echo "\n<input type=hidden name='id' value='$id'>";
-
 ?>
-
 </form>
 </body>
 </html>
