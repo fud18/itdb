@@ -42,7 +42,7 @@ $sql="SELECT count(items.id) AS population, sum(items.usize) as occupation,racks
 	FROM racks 
 	LEFT OUTER JOIN items 
 	ON items.rackid=racks.id
-	WHERE items.rackposdepth IN (7,4) OR items.rackposdepth is NULL
+	WHERE items.rackposdepth IN (7,4)
 	GROUP BY racks.id";
 $sth=db_execute($dbh,$sql);
 ?>
@@ -57,7 +57,7 @@ $sth=db_execute($dbh,$sql);
 <tr>
   <th width='40'><?php te("Edit");?></th>
   <th width="100"><?php te("Occupation");?></th>
-  <th width="40" title='<?php te("how many items are assigned to this rack");?>'> <?php te("Items");?></th>
+  <th width="40" title='<?php te("How many items are assigned to this rack");?>'> <?php te("Items");?></th>
   <th width='40'><?php te("Size (U)");?><sup>*</sup></th>
   <th width="40"><?php te("Depth");?></th>
   <th width="300"><?php te("Location");?></th>

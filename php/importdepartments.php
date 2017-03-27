@@ -89,7 +89,7 @@ if(!$dbh->query($sqlTable)){
 The expected format is a CSV file.  Please download the template:
 <br />
 <br />
-<a href='data/files/departments_import_template.csv'><img src='../images/xcel2.jpg' height=25 border=0></a> <a href='data/files/departments_import_template.csv'>Template</a>
+<a href='../data/files/departments_import_template.csv'><img src='../images/xcel2.jpg' height=25 border=0></a> <a href='../data/files/departments_import_template.csv'>Template</a>
 <br />
 <br />
 </p>
