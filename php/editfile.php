@@ -397,6 +397,26 @@ else
     </table>
 <?php echo $tip?>
 </td>
+	<td class='tdtop'>
+<!-- 4-Device Image -->
+
+		<table border='0' class=tbl2> 
+		<tr>
+			<td colspan=2 ><h3><?php te("Device Image");?></h3></td>
+		</tr>
+		<tr>
+			<td>
+				    <?php 
+					      $pictureName=$r['fname'];
+					echo "<a href='../data/files/".$pictureName."'><img style='max-width: 400px; max-height: 400px' src='data/files/".$pictureName."'>";
+					?>
+			</td>
+		</tr>
+	</td>
+    </tr>
+      </table>
+
+    </td>
 <!-- upload -->
 </tr>
 
