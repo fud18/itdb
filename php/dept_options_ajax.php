@@ -1,5 +1,5 @@
 <?php
-/* display areas of specific location on select list*/
+/* display departments on select list*/
 include('../init.php');
 
 if(is_numeric($_POST['departmentsid'])) {

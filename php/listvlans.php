@@ -120,8 +120,8 @@ if (!$export) {
   $url=http_build_query($get2);
 }
 
-if (!isset($orderby) && empty($orderby)) 
-  $orderby="vlans.id asc";
+if (!isset($orderby) && empty($orderby))
+  $orderby="vlans.vlanid asc, vlans.id asc";
 elseif (isset($orderby)) {
 
   if (stristr($orderby,"FROM")||stristr($orderby,"WHERE")) {
@@ -137,6 +137,10 @@ echo "<thead>\n";
 $thead= "\n<tr><th><a href='$fscriptname?$url&amp;orderby=vlans.id$ob'>ID</a></th>".
      "<th><a href='$fscriptname?$url&amp;orderby=vlans.vlanid$ob'>VLAN</a></th>".
      "<th><a href='$fscriptname?$url&amp;orderby=vlans.vlanname$ob'>VLAN Name</a></th>".
+     "<th><a href='$fscriptname?$url&amp;orderby=vlans.vlanip$ob'>VLAN IP</a></th>".
+     "<th><a href='$fscriptname?$url&amp;orderby=vlans.vlancidr$ob'>VLAN CIDR</a></th>".
+     "<th><a href='$fscriptname?$url&amp;orderby=vlans.vlansubnet$ob'>VLAN Subnet</a></th>".
+     "<th><a href='$fscriptname?$url&amp;orderby=vlans.vlannotes$ob'>VLAN Notes</a></th>".
 	 "<th><button type='submit'><img border=0 src='images/search.png'></button></th>";
 
 if ($export) {
@@ -163,6 +167,10 @@ if (!$export) {
   echo "\n<td title='ID'><input type=text size=3 style='width:8em;' value='$id' name='id'></td>";
   echo "<td title='VLAN ID'><input style='width:auto' type=text value='$vlanid' name='vlanid'></td>";
   echo "<td title='VLAN Name'><input type=text value='$vlaname' name='vlanname'></td>";
+  echo "<td title='VLAN IP'><input type=text value='$vlanip' name='vlanip'></td>";
+  echo "<td title='VLAN CIDR'><input type=text value='$vlancidr' name='vlancidr'></td>";
+  echo "<td title='VLAN Subnet'><input type=text value='$vlansubnet' name='vlansubnet'></td>";
+  echo "<td title='VLAN Notes'><input type=text value='$vlannotes' name='vlannotes'></td>";
   echo "<td></td>";
     $url=http_build_query($_GET);
   echo "<td style='vertical-align:top;' rowspan=".($perpage+1).">";
@@ -175,6 +183,10 @@ $where="";
 if (strlen($id)) $where.="AND id = '$id' ";
 if (isset($vlanid) && strlen($vlanid)) $where.="AND vlanid='$vlanid' ";
 if (isset($vlanname) && strlen($vlanname)) $where.="AND vlanname LIKE '%$vlanname%' ";
+if (isset($vlanname) && strlen($vlanname)) $where.="AND vlanip LIKE '%$vlanip%' ";
+if (isset($vlanname) && strlen($vlanname)) $where.="AND vlancidr LIKE '%$vlancidr%' ";
+if (isset($vlanname) && strlen($vlanname)) $where.="AND vlansubnet LIKE '%$vlansubnet%' ";
+if (isset($vlanname) && strlen($vlanname)) $where.="AND vlannotes LIKE '%$vlannotes%' ";
 
 ///////////////////////////////////////////////////////////							Pagination							///////////////////////////////////////////////////////////
 
@@ -247,7 +259,7 @@ $currow++;
   else $c="";
 
   echo "\n<tr $c>".
-       "<td><a class='editiditm icon edit' title='Edit' href='$fscriptname?action=editvlan&amp;id=".$r['id']."'><span>".$r['id']."</span></a>";
+       "<td><a class='editiditm icon edit' title='Edit' href='$fscriptname?action=editvlan&amp;id=".$r['id']."'><span>Edit</span></a>";
 
   //username
   $user=isset($userlist[$r['userid']])?$userlist[$r['userid']]['username']:"";
@@ -255,7 +267,11 @@ $currow++;
 
   echo "</td>".
        "\n  <td><center>".$r['vlanid']."</center></td>".
-       "\n  <td>".$r['vlanname']."</td>";?>
+       "\n  <td>".$r['vlanname']."</td>".
+       "\n  <td>".$r['vlanip']."</td>".
+       "\n  <td><center>".$r['vlancidr']."</center></td>".
+       "\n  <td>".$r['vlansubnet']."</td>".
+       "\n  <td>".$r['vlannotes']."</td>";?>
 		<?php
 			echo "<td><center><input type='image' src='images/delete.png' onclick='javascript:delconfirm2(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid={$r['id']}\");'></td>\n</tr>\n";
 			echo "\n<input type=hidden name='action' value='$action'>";
@@ -274,7 +290,7 @@ else {
   if ($expand) 
     $cs=25;
   else 
-    $cs=4;
+    $cs=8;
 
 ?>
   <tr><td colspan='<?php echo $cs?>' class=tdc><button type=submit><img src='images/search.png'>Search

@@ -62,7 +62,7 @@ while ($r=$sth->fetch(PDO::FETCH_ASSOC)) {
   if ($r['type']&16) $type.="<span style='color:#44e;'>Contractor<br></span>";
 
   echo "\n <tr id='trid{$r['id']}'>
-  			<td><a class='editiditm icon edit' href='$scriptname?action=editagent&amp;id=".$r['id']."'><span>{$r['id']}</span></a></td>
+  			<td><a class='editiditm icon edit' href='$scriptname?action=editagent&amp;id=".$r['id']."'><span>Edit</span></a></td>
 			<td style='padding-left:2px;padding-right:2px;'>$type</td>
 			<td style='padding-left:2px;padding-right:2px;'>
 					{$r['title']}<br>

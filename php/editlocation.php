@@ -44,12 +44,6 @@ if (isset($_GET['delid'])) { //if we came from delete
 
 
 if (isset($_POST['id'])) { //if we came from a post (save), update 
-  $id=$_POST['id'];
-  $sortid=$_POST['sortid'];
-  $name=$_POST['name'];
-  $abbr=$_POST['abbr'];
-  $floor=$_POST['floor'];
-
 
   //don't accept empty fields
   if ((empty($_POST['name']))|| empty($_POST['floor']) ) {
@@ -108,8 +102,7 @@ if (isset($_POST['id'])) { //if we came from a post (save), update
     }
   }//new location
   else {
-    $sql="UPDATE locations set name='$name',abbr='$abbr', floor='$floor', sortid='$sortid' ".
-       " WHERE id=$id";
+    $sql="UPDATE locations SET name='$name',abbr='$abbr', floor='$floor', sortid='$sortid' WHERE locations.id='$id'";
     db_exec($dbh,$sql);
 
     if (strlen($_FILES['file']['name'])>2) { //update file
@@ -162,10 +155,10 @@ if ($id!="new") {
   $id=$_GET['id'];
   $sql="SELECT * FROM locations WHERE id='$id'";
   $sth=db_execute($dbh,$sql);
-  $dept=$sth->fetchAll(PDO::FETCH_ASSOC);
+  $locs=$sth->fetchAll(PDO::FETCH_ASSOC);
   
 	//  Next & Previous Buttons' Function
-	$curid = intval($dept[0]);
+	$curid = intval($locs[0]);
 
     // Select contents from the selected id
     $sql = "SELECT * FROM locations WHERE id='$curid'";
@@ -203,15 +196,13 @@ if ($id!="new") {
 }
 
 ///////////////////////////////// display data now
-
 if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
-$id=$_REQUEST['id'];
 
-$sql="SELECT * FROM locations where locations.id='$id'";
+$sql="SELECT * FROM locations WHERE locations.id='$id'";
 $sth=db_execute($dbh,$sql);
 $r=$sth->fetch(PDO::FETCH_ASSOC);
 
-if (($id !="new") && (count($r)<3)) {echo "ERROR: non-existent ID<br>($sql)";exit;}
+if (($r['id'] !="new") && (count($r)<3)) {echo "ERROR: non-existent ID<br>($sql)";exit;}
 echo "\n<form method=post  action='$scriptname?action=$action&amp;id=$id' enctype='multipart/form-data'  name='addfrm'>\n";
 
 ?>

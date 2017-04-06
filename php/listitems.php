@@ -466,7 +466,7 @@ $currow++;
   if ($currow%2) $c="class='dark'";
   else $c="";
   echo "\n<tr $c>".
-       "<td><a class='editiditm icon edit' title='Edit' href='$fscriptname?action=edititem&amp;id=".$r['id']."'><span>".$r['id']."</span></a><span $attr></span>";
+       "<td><a class='editiditm icon edit' title='Edit' href='$fscriptname?action=edititem&amp;id=".$r['id']."'><span>Edit</span></a><span $attr></span>";
   $sn="";
   if (strlen($r['sn'])) $sn.=$r['sn'];
   if (strlen($r['sn2'])) {if (strlen($sn)) $sn.=", ";} $sn.=$r['sn2'];

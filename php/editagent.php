@@ -41,7 +41,8 @@
 <?php 
 if (!isset($initok)) {echo "do not run this script directly";exit;}
 
-/* Spiros Ioannou 2009-2010 , sivann _at_ gmail.com */
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
 
 //delete agent
 if (isset($_GET['delid'])) { //if we came from a post (save) the update agent 

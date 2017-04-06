@@ -120,7 +120,7 @@ while ($r=$sth->fetch(PDO::FETCH_ASSOC)) {
 ?>
 
   <tr>
-  <td><div class='editiditm icon edit'><a title='<?php te("Edit Software");?>' href='<?php echo $scriptname?>?action=editsoftware&amp;id=<?php echo $r['id']?>'><span><?php echo $id?></span></a></div>
+  <td><div class='editiditm icon edit'><a title='<?php te("Edit Software");?>' href='<?php echo $scriptname?>?action=editsoftware&amp;id=<?php echo $r['id']?>'><span>Edit</span></a></div>
   </td>
 
 <?php 

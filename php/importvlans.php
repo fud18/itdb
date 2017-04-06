@@ -24,6 +24,10 @@ else
 			/*0*/	'id',
 			/*1*/	'vlanid',
 			/*2*/	'vlanname',
+			/*3*/	'vlanip',
+			/*4*/	'vlancidr',
+			/*5*/	'vlansubnet',
+			/*6*/	'vlannotes'
         );
 
 $name2fno=array_flip($fno2name);
@@ -64,7 +68,7 @@ if ($nextstep==1 && strlen($_FILES['file']['name'])>2) { //insert file
 	}
 }//insert file
 
-		$sqlTable = "CREATE TABLE IF NOT EXISTS agents(id INTEGER PRIMARY KEY AUTOINCREMENT,vlanid VARCHAR,vlanname VARCHAR)";
+		$sqlTable = "CREATE TABLE IF NOT EXISTS vlans(id INTEGER PRIMARY KEY AUTOINCREMENT,vlanid INTEGER,vlanname VARCHAR,vlanip VARCHAR,vlancidr VARCHAR,vlansubnet VARCHAR,vlannotes VARCHAR)";
 		
 		if(!$dbh->query($sqlTable)){
 			echo "Table creation failed: (" . $dbh->errno . ") " . $dbh->error;
@@ -114,7 +118,7 @@ The expected format is a CSV file.  Please download the template:
 	<thead>
     <tr>
     <?php
-        echo "<th>ID</th><th>VLAN ID</th><th>VLAN Name</th>";
+        echo "<th>ID</th><th>VLAN ID</th><th>VLAN Name</th><th>VLAN IP</th><th>VLAN CIDR</th><th>VLAN Subnet</th><th>VLAN Notes</th>";
    ?>
     </tr>
 	</thead>
@@ -179,17 +183,25 @@ if ($nextstep==2) {
 		$id=$cols[$name2fno['id']];
 		$vlanid=$cols[$name2fno['vlanid']];
 		$vlanname=$cols[$name2fno['vlanname']];
+		$vlanip=$cols[$name2fno['vlanip']];
+		$vlancidr=$cols[$name2fno['vlancidr']];
+		$vlansubnet=$cols[$name2fno['vlansubnet']];
+		$vlannotes=$cols[$name2fno['vlannotes']];
 
 	$sql=	"INSERT into vlans ".
-			"(id,vlanid,vlanname) ".
+			"(id,vlanid,vlanname,vlanip,vlancidr,vlansubnet,vlannotes) ".
 			" VALUES ".
-			"(:id,:vlanid,:vlanname)";
+			"(:id,:vlanid,:vlanname,:vlanip,:vlancidr,:vlansubnet,:vlannotes)";
 			
         $stmt=db_execute2($dbh,$sql,
             array(
 				'id'=>$id,
 				'vlanid'=>$vlanid,
 				'vlanname'=>$vlanname,
+				'vlanip'=>$vlanip,
+				'vlancidr'=>$vlancidr,
+				'vlansubnet'=>$vlansubnet,
+				'vlannotes'=>$vlannotes,
 			)
         );
 		 //echo "<br>Isql=$sql<br>";

@@ -122,7 +122,7 @@
 	      /* departments after filtering */
 	      $sQueryCnt = "
 		  SELECT count(departments.id) as count, departments.id AS id
-		  FROM jacks
+		  FROM departments
 		  $sWhere";
 	      $sth=db_execute($dbh,$sQueryCnt);
 	      $rResultTotal=$sth->fetch(PDO::FETCH_ASSOC);

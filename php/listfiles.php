@@ -69,7 +69,7 @@ while ($r=$sth->fetch(PDO::FETCH_ASSOC)) {
   if (!($i%2)) $cl="class=dark";else $cl="";
  
   echo "\n<tr $cl id='trid{$r['id']}'>";
-  echo "<td><a class='editiditm icon edit' href='$scriptname?action=editfile&amp;id=".$r['id']."'><span>{$r['id']}</span></a></td>\n";
+  echo "<td><a class='editiditm icon edit' href='$scriptname?action=editfile&amp;id=".$r['id']."'><span>Edit</span></a></td>\n";
   echo "<td style='padding-left:2px;padding-right:2px;'>$type</td>\n";
   echo "<td style='padding-left:2px;padding-right:2px;'>{$r['title']}</td>\n";
   echo "<td><a class='smaller' target=_blank href='$uploaddirwww{$r['fname']}'>{$r['fname']}</a></td>\n";

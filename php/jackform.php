@@ -1,359 +1,242 @@
-<!-- Spiros Ioannou 2009 , sivann _at_ gmail.com -->
-<SCRIPT LANGUAGE="JavaScript"> 
-
-  $(document).ready(function() {
-    $("#locationid").change(function() {
-      var locationid=$(this).val();
-      var locareaid=$('#locareaid').val();
-      var dataString = 'locationid='+ locationid;
-	  
-      $.ajax ({
-	  type: "POST",
-	  url: "php/locarea_options_ajax.php",
-	  data: dataString,
-	  cache: false,
-	  success: function(html) {
-	    $("#locareaid").html(html);
-	  }
-      });
-    });
-	
-	  $("#departmentsid").change(function() {
-      var departmentsid=$(this).val();
-      var departmentabbrid=$('#departmentabbrsid').val();
-      var dataString = 'departmentsid='+ departmentsid;
-	  
-      $.ajax ({
-	  type: "POST",
-	  url: "php/dept_options_ajax.php",
-	  data: dataString,
-	  cache: false,
-	  success: function(html) {
-	    $("#departmentabbrsid").html(html);
-	  }
-      });
-    });
-
-    $("#vlanid").change(function() {
-      var vlanid=$(this).val();
-      var vlanname=$('#vlanname').val();
-      var dataString = 'vlanid='+ vlanid;
-	  
-      $.ajax ({
-	  type: "POST",
-	  url: "php/vlan_options_ajax.php",
-	  data: dataString,
-	  cache: false,
-	  success: function(html) {
-	    $("#vlanname").html(html);
-	  }
-      });
-    });
-  });
-
-</SCRIPT>
-
 <?php 
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
 
 if (!isset($initok)) {echo "do not run this script directly";exit;}
 
+/* Spiros Ioannou 2009-2010 , sivann _at_ gmail.com */
+
+//delete user
+if (isset($_GET['delid'])) {
+  $delid=$_GET['delid'];
+  if (!is_numeric($delid)) {
+    echo "Non numeric id delid=($delid)";
+    exit;
+  }
+
+  //first handle item associations
+  /*
+  $nitems=countitemsofuser($delid);
+  if ($nitems>0) {
+    echo "<b>User not deleted: Please reassign $nitems items first from this user<br></b>\n";
+    echo "<br><a href='javascript:history.go(-1);'>Go back</a>\n</body></html>";
+    exit;
+  }
+  else {
+  }
+    */
+
+  deluser($delid,$dbh); //reassigns items to administrator
+  echo "<script>document.location='$scriptname?action=listusers'</script>\n";
+  echo "<a href='$scriptname?action=listusers'>Go here</a>\n</body></html>"; 
+  exit;
+
+}
+
+if (isset($_POST['id'])) { //if we came from a post (save), update the user 
+  $id=$_POST['id'];
+  $username=$_POST['username'];
+  $usertype=$_POST['usertype'];
+
+  //don't accept empty fields
+  if (empty($_POST['username']))  {
+    echo "<br><b><span class='mandatory'>Username</span> field cannot be empty.</b><br>".
+         "<a href='javascript:history.go(-1);'>Go back</a></body></html>";
+    exit;
+  }
+
+
+  if ($_POST['id']=="new")  {//if we came from a post (save) the add user 
+    $sql="INSERT into users (username , userdesc , pass, usertype) ".
+	 " VALUES ('$username','$userdesc','$pass', '$usertype')";
+    db_exec($dbh,$sql,0,0,$lastid);
+    $lastid=$dbh->lastInsertId();
+    print "<br><b>Added user <a href='$scriptname?action=$action&amp;id=$lastid'>$lastid</a></b><br>";
+    echo "<script>window.location='$scriptname?action=$action&id=$lastid'</script> "; //go to the new user
+    echo "\n</body></html>";
+    //$id=$lastid;
+    exit;
+
+  }//new rack
+  else {
+    //check for duplicate username
+    $sql="SELECT count(id) AS count from users where username='{$_POST['username']}' AND id<>{$_POST['id']}";
+    $sth1=db_execute($dbh,$sql);
+    $r1=$sth1->fetch(PDO::FETCH_ASSOC);
+    $sth1->closeCursor();
+    $c=$r1['count'];
+    if ($c) {
+      echo "<b>Not saved -- Username already exists</b>";
+    }
+    //else if ($_POST['id']==1 && $_POST['username']!="admin") { echo "<b>Cannot change admin username</b>"; }
+    else {
+        if ($username=='admin' && $usertype) {
+            echo "<h2>".t("user admin has always full access")."</h2><br>";
+            $usertype=0;
+        }
+          $sql="UPDATE users set ".
+        " username='".$_POST['username']."', ".
+        " userdesc='".$_POST['userdesc']."', ".
+        " pass='".$_POST['pass']."', ".
+        " usertype='".$usertype."' ".
+        " WHERE id=$id";
+          db_exec($dbh,$sql);
+    }
+  }
+}//save pressed
 
 if ($id!="new") {
-  //get current jack data
-  $id=$_POST['id'];
-  $sql="	SELECT *, departments.name AS deptname
-			FROM jacks
-			JOIN departments
-			ON jacks.departmentsid=departments.id
-			WHERE jacks.id='$id'";
+  //get current item data
+  $id=$_GET['id'];
+  $sql="SELECT * FROM users WHERE id='$id'";
   $sth=db_execute($dbh,$sql);
-  $jack=$sth->fetchAll(PDO::FETCH_ASSOC);
+  $dept=$sth->fetchAll(PDO::FETCH_ASSOC);
+  
+	//  Next & Previous Buttons' Function
+	$curid = intval($dept[0]);
+
+    // Select contents from the selected id
+    $sql = "SELECT * FROM users WHERE id='$curid'";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $info = $result->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        die('Not found');
+    }
+
+    // Next Record
+    $sql = "SELECT id FROM users WHERE id>'$id' LIMIT 1";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $nextresults = $result->fetchAll(PDO::FETCH_ASSOC);
+		$nextid = strval($nextresults[0]['id']);
+    }
+
+    // Previous Record
+    $sql = "SELECT id FROM users WHERE id<'$id' ORDER BY id DESC LIMIT 1";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $prevresults = $result->fetchAll(PDO::FETCH_ASSOC);
+		$previd = strval($prevresults[0]['id']);
+    }
+} else {
+    // No form has been submitted so use the lowest id and grab its info
+    $sql = "SELECT * FROM users WHERE id > 0 LIMIT 1";
+    $result = db_execute($dbh,$sql);
+    if ($result>0) {
+        $inforesults = $result->fetchAll(PDO::FETCH_ASSOC);
+		$info =  strval($inforesults[0]['id']);
+		
+    }
 }
 
-$sql="SELECT * FROM users order by upper(username)";
-$sth=$dbh->query($sql);
-$userlist=$sth->fetchAll(PDO::FETCH_ASSOC);
+///////////////////////////////// display data 
 
-$sql="SELECT * FROM locations order by name";
-$sth=$dbh->query($sql);
-$locations=$sth->fetchAll(PDO::FETCH_ASSOC);
+if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
+$id=$_REQUEST['id'];
 
-$sql="SELECT * FROM departments order by id";
-$sth=$dbh->query($sql);
-$departments=$sth->fetchAll(PDO::FETCH_ASSOC);
+//$sql="SELECT * FROM racks where racks.id='$id'";
+$sql="SELECT * from users where users.id='$id'";
+$sth=db_execute($dbh,$sql);
+$r=$sth->fetch(PDO::FETCH_ASSOC);
 
-$sql="SELECT * FROM departmentabbrs order by id";
-$sth=$dbh->query($sql);
-$departmentabbrs=$sth->fetchAll(PDO::FETCH_ASSOC);
+if (($id !="new") && (count($r)<2)) {echo "ERROR: non-existent ID<br>($sql)";exit;}
 
-$sql="SELECT * FROM vlans order by vlanid";
-$sth=$dbh->query($sql);
-$vlans=$sth->fetchAll(PDO::FETCH_ASSOC);
+echo "\n<form id='mainform' method=post  action='$scriptname?action=$action&amp;id=$id' enctype='multipart/form-data'  name='addfrm'>\n";
 
-//change displayed form items in input fields
-if ($id=="new") {
-  $caption=t("Add New Jack");
-  foreach ($formvars as $formvar){
-    $$formvar="";
-  }
-  $d="";
-}
-//if editing, fill in form with data from supplied jack id
-else if ($action=="editjack") {
-  $caption=t("Jack Data")." ($id)";
-  foreach ($formvars as $formvar){
-    $$formvar=$jack[0][$formvar];
-  }
-}
+if ($id=="new")
+  echo "\n<h1>".t("Add User")."</h1>\n";
+else
+  echo "\n<h1>".t("Edit User")."  ($id)"."</h1>\n";
+
 ?>
 
-<h1><?php echo $caption?></h1>
-<?php
-	if (!empty($disperr))
-	{
-		echo $disperr;
-	}
-?>
-
-<!-- our error errcontainer -->
+<!-- error errcontainer -->
 <div class='errcontainer ui-state-error ui-corner-all' style='padding: 0 .7em;width:700px;margin-bottom:3px;'>
-	<p><span class='ui-icon ui-icon-alert' style='float: left; margin-right: .3em;'></span>
-	<h4><?php te("There are errors in your form submission, please see below for details");?>.</h4>
-	<ol>
-		<li><label for="locationid" class="error"><?php te("Please select a location");?></label></li>
-		<li><label for="locareaid" class="error"><?php te("Please select a room/area");?></label></li>
-		<li><label for="modport" class="error"><?php te("Please select a module & port");?></label></li>
-	</ol>
+        <p><span class='ui-icon ui-icon-alert' style='float: left; margin-right: .3em;'></span>
+        <h4><?php te("There are errors in your form submission, please see below for details");?>.</h4>
+        <ol>
+                <li><label for="username" class="error"><?php te("Username is missing");?></label></li>
+        </ol>
 </div>
-  <form class='frm1' enctype='multipart/form-data' method='post' name='addjckfrm' id='mainform'>
 
-<!-- Jack Properties -->
-	<table border='0' class=tbl1 >
-	<tr>
+<table style='width:100%' border=0>
 
-<!-- Jack Name -->
-		<td class='tdtop'>
-			<table border='0' class=tbl2>
-				<tr><td colspan=2><h3><?php te("Jack Properties");?></h3></td></tr>
-				<tr>
-					<td class='tdt'><?php te("Jack");?>:</td>
-					<td title='<?php te("Jack name on wall plate (e.g. 1A-200-1a");?>'><input type='text' value="<?php echo $jackname?>" name='jackname'></td>
-				</tr>
-<!-- end, Jack Name -->
 
-<!-- Jack Name -->
-				<tr>
-					<?php 
-						$N="";$S="";$E="";$W="";
-						if ($wallcoord=="N") {$N="checked";$S="";$E="";$W="";}
-						if ($wallcoord=="S") {$S="checked";$N="";$E="";$W="";}
-						if ($wallcoord=="E") {$E="checked";$N="";$S="";$W="";}
-						if ($wallcoord=="W") {$W="checked";$N="";$S="";$E="";}
-					?>
-					<td class='tdt'><?php te("Wall Location");?>:</td>
-					<td title='Select (N)orth, (S)outh, (E)ast, (W)est'>
-                    	<input <?php echo $N?> class='radio' type=radio name='wallcoord' value='N'><?php te("N");?>
-                    	<input <?php echo $S?> class='radio' type=radio name='wallcoord' value='S'><?php te("S");?>
-                    	<input <?php echo $E?> class='radio' type=radio name='wallcoord' value='E'><?php te("E");?>
-                    	<input <?php echo $W?> class='radio' type=radio name='wallcoord' value='W'><?php te("W");?>
-					</td>
-				</tr>
-<!-- end, Wall Location -->
+<tr>
+<td class="tdtop" width=20%>
 
-<!-- Notes -->
-                <tr>
-					<td class='tdt'><?php te("Notes");?>:</td><td><textarea style='width:37em' wrap='soft' class=tarea1  name='notes'><?php echo $notes?></textarea></td>
-				</tr>
-<!-- end, Notes -->
-			</table>
-		</td>
-<!-- end, Jack Properties -->
+    <table class="tbl2" style='width:300px;'>
+    <tr><td colspan=2><h3>User Properties</h3></td></tr>
+    <tr><td class="tdt">ID:</td> 
+        <td><input  style='display:none' type=text name='id' 
+	     value='<?php echo $id?>' readonly size=3><?php echo $id?></td></tr>
+    <tr><td class="tdt"><?php te("Username");?>:</td> <td><input  class='input2 mandatory' validate='required:true' size=20 type=text name='username' value="<?php echo $r['username']?>"></td></tr>
+    <tr><td class="tdt"><?php te("Type")?></td>
+        <td>
+	<select class='mandatory' validate='required:true' name='usertype'>
+	<?php
+	if ($r['usertype']==1 || empty($r['username'])) {$s1="selected"; $s0="";} else {$s0="selected"; $s1="";} 
+	echo " <option value=1 $s1>".t("Read Only")."</option>\n".
+	     " <option value=0 $s0>".t("Full Access")."</option>\n".
+	     "</select></td>";
+	?>
+	</select>
+    </td></tr>
 
-<!-- Building Information -->
-		<td class='tdtop'>
-			<table border='0' class=tbl2>
-				<tr>
-                	<td colspan=2 ><h3><?php te("Building Information");?></h3></td>
-				</tr>
-
-<!-- Location Information -->
-	<tr>
-		<td class='tdt'><?php te("Location");?>:</td>
-		<td><select style='width:37em' id='locationid' name='locationid'>
-			<option value=''><?php te("Select");?></option>
-			<?php 
-			foreach ($locations  as $key=>$location ) {
-				$dbid=$location['id']; 
-				$itype=$location['name'].", Floor:".$location['floor'];
-				$s="";
-				if (($locationid=="$dbid")) $s=" SELECTED "; 
-				echo "    <option $s value='$dbid'>$itype</option>\n";
-			}
-			?>
-			</select>
-		</td>
-	</tr>
-<!-- end, Location Information -->
-
-<!-- Room/Area Information -->
-	<tr>
-		<?php if (is_numeric($locationid)) {
-			$sql="SELECT * FROM locareas WHERE locationid=$locationid order by areaname";
-			$sth=$dbh->query($sql);
-			$locareas=$sth->fetchAll(PDO::FETCH_ASSOC);
-		} 
-		else 
-			$locareas=array();
-		?>
-		<td class='tdt'><?php te("Area/Room");?>:</td>
-		<td><select style='width:37em' id='locareaid' name='locareaid'>
-			<option value=''><?php te("Select");?></option>
-			<?php 
-			foreach ($locareas  as $key=>$locarea ) {
-				$dbid=$locarea['id']; 
-				$itype=$locarea['areaname'];
-				$s="";
-				if (($locareaid=="$dbid")) $s=" SELECTED "; 
-				echo "    <option $s value='$dbid'>$itype</option>\n";
-			}
-			?>
-			</select>
-		</td>
-	</tr>
-</table>
+    <tr><td class="tdt"><?php te("User Description");?>:</td> 
+        <td><input autocomplete="off" class='input2' size=20 
+	     type=text name='userdesc' value="<?php echo $r['userdesc']?>">
+        </td></tr>
+    <tr><td class="tdt"><?php te("Password");?>:</td> 
+        <td><input autocomplete="off" class='input2' size=20 type="password"
+	     name='pass' value="<?php echo $r['pass']?>">
+	 </td></tr>
+    <tr><td class="tdt"><?php te("Items");?>:</td> <td><?php echo countitemsofuser($r['id']) ?></td>
+    </table>
+    <ul>
+      <li><b><?php te("Users are used for both web login and as item assignees");?></b></li>
+      <li><sup>1</sup><?php te("Blank passwords prohibit login");?></li>
+    </ul>
 </td>
-<!-- end, Room/Area Information -->
-<!-- end, Building Information -->
 
-<!-- Switch Information -->
-		<td class='tdtop'>
-			<table border='0' class=tbl2>
-				<tr><td colspan=2 ><h3><?php te("Switch Information");?></h3></td></tr>
-                <tr><td class='tdt'><?php te("Switch Name");?>:</td><td><input type=text size=15 value='<?php echo $switchname?>' name='switchname'></td></tr>
-                <tr><td class='tdt'><?php te("Module & Port");?>:</td><td><input type=text size=15 value='<?php echo $modport?>' name='modport'></td></tr>
-<!-- Location Information -->
-	<tr>
-		<td class='tdt'><?php te("VLAN");?>:</td>
-		<td><select style='width:16em' id='vlanid' name='vlanid'>
-			<option value=''><?php te("Select");?></option>
-			<?php 
-			foreach ($vlans as $key=>$v) {
-				$dbid=$v['id']; 
-				$itype=$v['vlanid'];
-				$s="";
-				if (($vlanid=="$dbid")) $s=" SELECTED "; 
-				echo "<option $s value='$dbid'>$itype</option>\n";
-			}
-			?>
-			</select>
-		</td>
-	</tr>
-<!-- end, Location Information -->
+<td class='smallrack' style='padding-left:10px;border-left:1px dashed #aaa'>
+    <div class=scrltblcontainer>
+      <div  id='items' class='relatedlist'><?php te("ITEMS");?></div>
+      <?php 
+      if (is_numeric($id)) {
+        $sql="SELECT items.id, agents.title || ' ' || items.model || ' [' || itemtypes.typedesc || ', ".
+             " ID:' || items.id || ']' as txt ".
+             "FROM agents,items,itemtypes WHERE ".
+             " agents.id=items.manufacturerid AND items.itemtypeid=itemtypes.id AND ".
+             " items.userid='$id' ";
+        $sthi=db_execute($dbh,$sql);
+        $ri=$sthi->fetchAll(PDO::FETCH_ASSOC);
+        $nitems=count($ri);
+        $institems="";
+        for ($i=0;$i<$nitems;$i++) {
+          $x=($i+1).": ".$ri[$i]['txt'];
+          if ($i%2) $bcolor="#D9E3F6"; else $bcolor="#ffffff";
+          $institems.="\t<div style='margin:0;padding:0;background-color:$bcolor'>".
+                      "<a href='$scriptname?action=edititem&amp;id={$ri[$i]['id']}'>$x</a></div>\n";
+        }
+        echo $institems;
+      }
+      ?>
+      </div>
+    </div>
+</td>
+</tr>
+</table>
 
-<!-- Room/Area Information -->
-	<tr>
-		<?php if (is_numeric($vlanid)) {
-			$sql="SELECT * FROM vlans WHERE id=$vlanid order by vlanid";
-			$sth=$dbh->query($sql);
-			$vlans=$sth->fetchAll(PDO::FETCH_ASSOC);
-		} 
-		else 
-			$vlans=array();
-		?>
-		<td class='tdt'><?php te("VLAN Name");?>:</td>
-		<td><select style='width:16em' id='vlanname' name='vlanname'>
-			<option value=''><?php te("Select");?></option>
-			<?php 
-			foreach ($vlans as $key=>$v ) {
-				$dbid=$v['id']; 
-				$itype=$v['vlanname'];
-				$s="";
-				if (($vlanid=="$dbid")) $s=" SELECTED "; 
-				echo "<option $s value='$dbid'>$itype</option>\n";
-			}
-			?>
-			</select>
-		</td>
-	</tr>
-<!-- end, Room/Area Information -->
-                <tr><td class='tdt'><?php te("Public IP Network");?>:</td><td><input type=text size=15 value='<?php echo $pubipnet?>' name='pubipnet'></td></tr>
-                <tr><td class='tdt'><?php te("Public IP Host");?>:</td><td><input type=text size=15 value='<?php echo $pubiphost?>' name='pubiphost'></td></tr>
-                <tr><td class='tdt'><?php te("Private IP Network");?>:</td><td><input type=text size=15 value='<?php echo $privipnet?>' name='privipnet'></td></tr>
-                <tr><td class='tdt'><?php te("Priavte IP Host");?>:</td><td><input type=text size=15 value='<?php echo $priviphost?>' name='priviphost'></td></tr>
-                <tr><td class='tdt'><?php te("Group Name");?>:</td><td><input type=text size=15 value='<?php echo $groupname?>' name='groupname'></td></tr>
-			</table>
-		</td>
-
-<!-- Department Information -->
-	<tr>
-        <td class='tdtop'>
-            <table border='0' class=tbl2>
-                <tr>
-                    <td colspan=2><h3><?php te("Department Information");?></h3></td>
-                </tr>
-
-<!-- Location Information -->
-	<tr>
-		<td class='tdt'><?php te("Department");?>:</td>
-		<td><select style='width:37em' id='departmentsid' name='departmentsid'>
-			<option value=''><?php te("Select");?></option>
-			<?php 
-			foreach ($departments as $key=>$department ) {
-				$dbid=$department['id']; 
-				$itype=$department['name'];
-				$s="";
-				if (($departmentsid=="$dbid")) $s=" SELECTED "; 
-				echo "    <option $s value='$dbid'>$itype</option>\n";
-			}
-			?>
-			</select>
-		</td>
-	</tr>
-<!-- end, Location Information -->
-
-<!-- Room/Area Information -->
-	<tr>
-		<?php if (is_numeric($departmentsid)) {
-			$sql="SELECT * FROM departmentabbrs WHERE departmentsid=$departmentsid order by abbr";
-			$sth=$dbh->query($sql);
-			$departmentabbrs=$sth->fetchAll(PDO::FETCH_ASSOC);
-		} 
-		else 
-			$departmentabbrs=array();
-		?>
-		<td class='tdt'><?php te("Department Abbr");?>:</td>
-		<td><select style='width:37em' id='departmentabbrsid' name='departmentabbrsid'>
-			<option value=''><?php te("Select");?></option>
-			<?php 
-			foreach ($departmentabbrs as $key=>$departmentabbr) {
-				$dbid=$departmentabbr['id']; 
-				$itype=$departmentabbr['abbr'];
-				$s="";
-				if (($departmentabbr=="$dbid")) $s=" SELECTED "; 
-				echo "    <option $s value='$dbid'>$itype</option>\n";
-			}
-			?>
-			</select>
-		</td>
-	</tr>
-<!-- end, Room/Area Information -->
-
-<!-- User/Device Information -->
-				<tr>
-					<td class='tdt'><?php te("User/Device");?>:</td>
-					<td><input style='width:35em' type='text' value="<?php echo $userdev?>" name='userdev'></td>
-				</tr>
-<!-- end, User/Device Information -->
-
-			</table>
-		</td>
-	</tr>
-</div>    
 <table width="100%"><!-- save buttons -->
 <tr>
-<td style='text-align: center' colspan=1><button type="submit"><img src="images/save.png" alt="test" > <?php te("Save");?></button></td>
+<td>
+<?php if ($previd != "") { ?>
+	<a href='?action=edituser&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
+<?php } else {?>
+	<a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
+<?php }?>
+</td>
+<td style='text-align: center' colspan=1><button type="submit"><img src="images/save.png" alt="Save" > <?php te("Save");?></button></td>
 <?php 
 if ($id!="new") {
   echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:delconfirm2(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;delid={$_GET['id']}\");'>".
@@ -362,9 +245,23 @@ if ($id!="new") {
   echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:cloneconfirm(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;cloneid={$_GET['id']}\");'>".
        "<img  src='images/copy.png' border=0>". t("Clone")."</button></td>\n";
 } 
+else 
+  echo "\n<td>&nbsp;</td>";
 ?>
+<td style="text-align:right;">
+<?php if ($nextid != "") { ?>
+<a href='?action=edituser&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
+<?php } else {?>
+	<a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
+<?php }?>
+</td>
 </tr>
 </table>
 
-<input type=hidden name=action value='<?php echo $_GET["action"]?>'>
+<input type=hidden name='id' value='<?php echo $id ?>'>
+<input type=hidden name='action' value='<?php echo $action ?>'>
+
 </form>
+
+</body>
+</html>

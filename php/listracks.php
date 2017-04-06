@@ -77,7 +77,7 @@ while ($r=$sth->fetch(PDO::FETCH_ASSOC)) {
   $occupation=(int)$r['occupation'];
   echo "\n<tr>";
   //echo "<td class='tdc' ><a href='$scriptname?action=viewrack&amp;id={$r['id']}'><img src='images/eye.png' width=20></a></td>\n";
-  echo "<td><a class='editiditm icon edit' href='$scriptname?action=editrack&amp;id=".$r['id']."'><span>{$r['id']}</span></a></td>\n";
+  echo "<td><a class='editiditm icon edit' href='$scriptname?action=editrack&amp;id=".$r['id']."'><span>Edit</span></a></td>\n";
   //echo "<td><a href='javascript:delconfirm(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid={$r['id']}\");'><img title='delete' src='images/delete.png' border=0></a></td>\n";
   echo "<td title='$occupation U occupied' >".
        "<div style='width:70px;border:1px solid #888;padding:0;'>\n".

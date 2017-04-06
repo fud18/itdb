@@ -192,6 +192,7 @@ if (get_magic_quotes_gpc()) {
 
 
 ///////////cookies///////////
+$inputPass = $authpassword;
 $authstatus=0;
 $authmsg="Not logged in";
 if (!$demomode ) {
@@ -251,6 +252,8 @@ if (!$demomode ) {
            else { //wrong password
              $authstatus=0;
              $authmsg="Wrong Password";
+			 echo $hashedPass. "<br />";
+			 echo $pass;
            }
         }
 

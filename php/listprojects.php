@@ -312,7 +312,7 @@ $currow++;
   else $c="";
 
   echo "\n<tr $c>".
-       "<td><a class='editiditm icon edit' title='Edit' href='$fscriptname?action=editproject&amp;id=".$r['id']."'><span>".$r['id']."</span></a></td>".
+       "<td><a class='editiditm icon edit' title='Edit' href='$fscriptname?action=editproject&amp;id=".$r['id']."'><span>Edit</span></a></td>".
        "\n  <td>".$r['projectname']."</td>".
        "\n  <td>".$locations[$r['locationid']]['name']."</td>".	   
        "\n  <td><center>".$locareas[$r['locareaid']]['areaname']."</center></td>".

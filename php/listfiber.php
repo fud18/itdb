@@ -392,7 +392,7 @@ $currow++;
   else $c="";
 
   echo "\n<tr $c>".
-       "<td><a class='editiditm icon edit' title='Edit' href='$fscriptname?action=editfiber&amp;id=".$r['id']."'><span>".$r['id']."</span></a>";
+       "<td><a class='editiditm icon edit' title='Edit' href='$fscriptname?action=editfiber&amp;id=".$r['id']."'><span>Edit</span></a>";
 
   //username
   $user=isset($userlist[$r['userid']])?$userlist[$r['userid']]['username']:"";

@@ -44,9 +44,13 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the user
   }
 
 
-  if ($_POST['id']=="new")  {//if we came from a post (save) the add user 
+  if ($_POST['id']=="new")  {//if we came from a post (save) the add user
+  	$options = array(
+		'cost' => 11,
+		'salt' => mcrypt_create_iv(22, MCRYPT_DEV_URANDOM));
+	$hashpass = password_hash($pass, PASSWORD_BCRYPT, $options);
     $sql="INSERT into users (username , userdesc , pass, usertype) ".
-	 " VALUES ('$username','$userdesc','$pass', '$usertype')";
+	 " VALUES ('$username','$userdesc','$hashpass', '$usertype')";
     db_exec($dbh,$sql,0,0,$lastid);
     $lastid=$dbh->lastInsertId();
     print "<br><b>Added user <a href='$scriptname?action=$action&amp;id=$lastid'>$lastid</a></b><br>";
@@ -68,6 +72,10 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the user
     }
     //else if ($_POST['id']==1 && $_POST['username']!="admin") { echo "<b>Cannot change admin username</b>"; }
     else {
+		$options = array(
+			'cost' => 9,
+			'salt' => mcrypt_create_iv(22, MCRYPT_DEV_URANDOM));
+		$hashpass = password_hash($_POST['pass'], PASSWORD_BCRYPT, $options);
         if ($username=='admin' && $usertype) {
             echo "<h2>".t("user admin has always full access")."</h2><br>";
             $usertype=0;
@@ -75,7 +83,7 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the user
           $sql="UPDATE users set ".
         " username='".$_POST['username']."', ".
         " userdesc='".$_POST['userdesc']."', ".
-        " pass='".$_POST['pass']."', ".
+        " pass='".$hashpass."', ".
         " usertype='".$usertype."' ".
         " WHERE id=$id";
           db_exec($dbh,$sql);
@@ -181,21 +189,66 @@ else
 	?>
 	</select>
     </td></tr>
-
     <tr><td class="tdt"><?php te("User Description");?>:</td> 
         <td><input autocomplete="off" class='input2' size=20 
 	     type=text name='userdesc' value="<?php echo $r['userdesc']?>">
         </td></tr>
     <tr><td class="tdt"><?php te("Password");?>:</td> 
         <td><input autocomplete="off" class='input2' size=20 type="password"
-	     name='pass' value="<?php echo $r['pass']?>">
+	     name='pass' value="">
+	 </td></tr>
+	<?php
+    function IsChecked($chkname,$value)
+    {
+        if(!empty($_POST[$chkname]))
+        {
+            foreach($_POST[$chkname] as $chkval)
+            {
+                if($chkval == $value)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+?>
+    <tr><td class="tdt"><?php te("Change Password");?>:</td> 
+        <td><input type="checkbox" name="chngpass" value="Yes" />
 	 </td></tr>
     <tr><td class="tdt"><?php te("Items");?>:</td> <td><?php echo countitemsofuser($r['id']) ?></td>
     </table>
     <ul>
       <li><b><?php te("Users are used for both web login and as item assignees");?></b></li>
       <li><sup>1</sup><?php te("Blank passwords prohibit login");?></li>
+      <li><?php te("Add user image from the files page Type = Avatar");?></li>
     </ul>
+    <br />
+    <br />
+    
+    <?php
+	$sql="SELECT *
+	FROM users, files
+	WHERE fname LIKE '%{$r['username']}%'
+	AND username='".$r['username']."'
+	AND type='12'";
+  $sth=db_execute($dbh,$sql);
+  $u=$sth->fetchAll(PDO::FETCH_ASSOC);
+	?>
+    
+		<center>
+				    <?php 
+					$pictureName=$u[0]['fname'];
+					if ($pictureName != ""){
+						echo "<a href='../data/files/avatar/".$pictureName."'><img style='max-width: 400px; max-height: 400px' src='data/files/avatar/".$pictureName."'>";	
+					}else{
+						echo "<a href='../data/files/avatar/na-avatar.png'><img style='max-width: 400px; max-height: 400px' src='data/files/avatar/na-avatar.png'>";
+					}
+					?>
+		</center>
+	<br />
+    <br />
+
 </td>
 
 <td class='smallrack' style='padding-left:10px;border-left:1px dashed #aaa'>

@@ -77,9 +77,8 @@
 <?php 
 if (!isset($initok)) {echo "do not run this script directly";exit;}
 
-/* Spiros Ioannou 2009-2010 , sivann _at_ gmail.com */
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
+//error_reporting(E_ALL);
+//ini_set('display_errors', '1');
 
 $sql="SELECT * FROM users order by upper(username)";
 $sth=$dbh->query($sql);

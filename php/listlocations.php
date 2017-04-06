@@ -58,9 +58,9 @@ while ($r=$sth->fetch(PDO::FETCH_ASSOC)) {
   $i++;
   echo "\n<tr>";
   if (empty ($r['sortid']))
-	  echo "<td><a class='editiditm icon edit' href='$scriptname?action=editlocation&amp;id=".$r['id']."'><span>{$r['id']}</span></a></td>\n";
+	  echo "<td><a class='editiditm icon edit' href='$scriptname?action=editlocation&amp;id=".$r['id']."'><span>Edit</span></a></td>\n";
   else
-	  echo "<td><a class='editiditm icon edit' href='$scriptname?action=editlocation&amp;id=".$r['id']."'><span>{$r['sortid']}</span></a></td>\n";
+	  echo "<td><a class='editiditm icon edit' href='$scriptname?action=editlocation&amp;id=".$r['id']."'><span>Edit</span></a></td>\n";
   echo "<td>{$r['name']}</td>\n";
   echo "<td>{$r['floor']}</td>\n";
   echo "<td>{$r['areaname']}</td>\n";
