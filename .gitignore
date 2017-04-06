@@ -59,3 +59,9 @@ data/pure.db.bak
 /php/locations/WPF.php
 php/import - Copy.php
 *.bak
+php/EditableGrid.php
+php/import_csv_to_sqlite.php
+php/importwlecome.php
+php/listjacksgrid.php
+php/listjacksorg.php
+php/Quick_CSV_import.php
