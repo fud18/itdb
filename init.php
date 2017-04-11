@@ -44,7 +44,7 @@ else
   $prot="http";
 
 $fscriptname="$prot://$servername:$serverport$scriptname";
-$fuploaddirwww="$prot://$servername:$serverport".dirname($scriptname)."/$uploaddirwww";
+$fuploaddirwww="$prot://$servername:$serverport".dirname($scriptname)."/".$uploaddirwww;
 
 // find out our username
 $procusername="";
@@ -192,7 +192,6 @@ if (get_magic_quotes_gpc()) {
 
 
 ///////////cookies///////////
-$inputPass = $authpassword;
 $authstatus=0;
 $authmsg="Not logged in";
 if (!$demomode ) {
@@ -201,9 +200,8 @@ if (!$demomode ) {
      header("Location: $scriptname"); //eat get parameters
   }
   elseif (isset($_POST['authusername'])){ //logging in
-       $username=$_POST['authusername'];
-       $password=$_POST['authpassword'];
-
+		$username=$_POST['authusername'];
+		$password=$_POST['authpassword'];
         if ($settings['useldap'] && $username != 'admin') {
             $r=connect_to_ldap_server($settings['ldap_server'],$username,$password,$settings['ldap_dn']);
             //echo "HERE. r=".var_dump($r)."\n";
@@ -228,6 +226,7 @@ if (!$demomode ) {
         }
 
         if (!$authstatus) { //try local users
+		   $password=$_POST['authpassword'];
 		   $username=str_replace(";","",$username);
 		   $username=str_replace("%","",$username);
 		   $username=str_replace("'","",$username);
@@ -238,7 +237,7 @@ if (!$demomode ) {
               $authstatus=0;
               $authmsg="Invalid username";
            }
-           elseif (($userdata[0]['pass']==$password) && strlen($password)) { //correct password
+           elseif (password_verify($password, $userdata[0]['pass'])) { //correct password
              $rnd=mt_rand(); //create a random
              //store random in db
              db_exec($dbh,"UPDATE users set cookie1='$rnd' where username='$username'",1,1);
@@ -252,8 +251,6 @@ if (!$demomode ) {
            else { //wrong password
              $authstatus=0;
              $authmsg="Wrong Password";
-			 echo $hashedPass. "<br />";
-			 echo $pass;
            }
         }
 

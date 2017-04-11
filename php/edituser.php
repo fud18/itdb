@@ -1,8 +1,8 @@
-<?php 
-
-if (!isset($initok)) {echo "do not run this script directly";exit;}
-
+<?php
 /* Spiros Ioannou 2009-2010 , sivann _at_ gmail.com */
+
+//error_reporting(E_ALL);				//***UNCOMMENT THESE 2 LINES TO SEE ERRORS ON THE PAGE***
+//ini_set('display_errors', '1');
 
 //delete user
 if (isset($_GET['delid'])) {
@@ -42,21 +42,15 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the user
          "<a href='javascript:history.go(-1);'>Go back</a></body></html>";
     exit;
   }
-
-
   if ($_POST['id']=="new")  {//if we came from a post (save) the add user
-  	$options = array(
-		'cost' => 11,
-		'salt' => mcrypt_create_iv(22, MCRYPT_DEV_URANDOM));
-	$hashpass = password_hash($pass, PASSWORD_BCRYPT, $options);
     $sql="INSERT into users (username , userdesc , pass, usertype) ".
-	 " VALUES ('$username','$userdesc','$hashpass', '$usertype')";
+	 " VALUES ('$username','$userdesc','$hashedPass', '$usertype')";
     db_exec($dbh,$sql,0,0,$lastid);
     $lastid=$dbh->lastInsertId();
     print "<br><b>Added user <a href='$scriptname?action=$action&amp;id=$lastid'>$lastid</a></b><br>";
     echo "<script>window.location='$scriptname?action=$action&id=$lastid'</script> "; //go to the new user
     echo "\n</body></html>";
-    //$id=$lastid;
+    $id=$lastid;
     exit;
 
   }//new rack
@@ -70,23 +64,28 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the user
     if ($c) {
       echo "<b>Not saved -- Username already exists</b>";
     }
-    //else if ($_POST['id']==1 && $_POST['username']!="admin") { echo "<b>Cannot change admin username</b>"; }
     else {
-		$options = array(
-			'cost' => 9,
-			'salt' => mcrypt_create_iv(22, MCRYPT_DEV_URANDOM));
-		$hashpass = password_hash($_POST['pass'], PASSWORD_BCRYPT, $options);
+		$hashedPass = password_hash($pass, PASSWORD_BCRYPT);
         if ($username=='admin' && $usertype) {
-            echo "<h2>".t("user admin has always full access")."</h2><br>";
+            echo "<h2>".t("User Admin has always full access")."</h2><br>";
             $usertype=0;
         }
+			if ($chngpass==''){
           $sql="UPDATE users set ".
         " username='".$_POST['username']."', ".
         " userdesc='".$_POST['userdesc']."', ".
-        " pass='".$hashpass."', ".
         " usertype='".$usertype."' ".
         " WHERE id=$id";
           db_exec($dbh,$sql);
+		}else{
+			  $sql="UPDATE users set ".
+			" username='".$_POST['username']."', ".
+			" userdesc='".$_POST['userdesc']."', ".
+			" pass='".$hashedPass."', ".
+			" usertype='".$usertype."' ".
+			" WHERE id=$id";
+			  db_exec($dbh,$sql);
+		}
     }
   }
 }//save pressed
@@ -96,10 +95,10 @@ if ($id!="new") {
   $id=$_GET['id'];
   $sql="SELECT * FROM users WHERE id='$id'";
   $sth=db_execute($dbh,$sql);
-  $dept=$sth->fetchAll(PDO::FETCH_ASSOC);
+  $user=$sth->fetchAll(PDO::FETCH_ASSOC);
   
 	//  Next & Previous Buttons' Function
-	$curid = intval($dept[0]);
+	$curid = intval($user[0]);
 
     // Select contents from the selected id
     $sql = "SELECT * FROM users WHERE id='$curid'";
@@ -141,7 +140,6 @@ if ($id!="new") {
 if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
 $id=$_REQUEST['id'];
 
-//$sql="SELECT * FROM racks where racks.id='$id'";
 $sql="SELECT * from users where users.id='$id'";
 $sth=db_execute($dbh,$sql);
 $r=$sth->fetch(PDO::FETCH_ASSOC);
@@ -189,6 +187,7 @@ else
 	?>
 	</select>
     </td></tr>
+
     <tr><td class="tdt"><?php te("User Description");?>:</td> 
         <td><input autocomplete="off" class='input2' size=20 
 	     type=text name='userdesc' value="<?php echo $r['userdesc']?>">
@@ -240,9 +239,9 @@ else
 				    <?php 
 					$pictureName=$u[0]['fname'];
 					if ($pictureName != ""){
-						echo "<a href='../data/files/avatar/".$pictureName."'><img style='max-width: 400px; max-height: 400px' src='data/files/avatar/".$pictureName."'>";	
+						echo "<a href='../data/files/avatar/".$pictureName."'><img style='max-width: 400px; max-height: 200px' src='data/files/avatar/".$pictureName."'><br />";$pictureName;	
 					}else{
-						echo "<a href='../data/files/avatar/na-avatar.png'><img style='max-width: 400px; max-height: 400px' src='data/files/avatar/na-avatar.png'>";
+						echo "<a href='../data/files/avatar/na-avatar.png'><img style='max-width: 400px; max-height: 200px' src='data/files/avatar/na-avatar.png'>";
 					}
 					?>
 		</center>

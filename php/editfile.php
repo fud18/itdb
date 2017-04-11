@@ -74,8 +74,9 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the file
       $ftypestr=ftype2str($_POST['type'],$dbh);
       //$unique=substr(uniqid(),-4,4);
 
-      $filefn=/*strtolower*/("$ftypestr-"."$title.$fileext");
-      $uploadfile = $uploaddir.$filefn;
+      $filefn=strtolower("$ftypestr-".validfn($title).".$fileext");
+	  $lowftype=strtolower($ftypestr);
+      $uploadfile = $uploaddir.$lowftype."/".$filefn;
       $result = '';
 
       //Move the file from the stored location to the new location
@@ -127,10 +128,11 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the file
       $path_parts = pathinfo($_FILES['file']["name"]);
       $fileext=$path_parts['extension'];
       $ftypestr=ftype2str($_POST['type'],$dbh);
-      $unique=substr(uniqid(),-4,4);
+      //$unique=substr(uniqid(),-4,4);
 
-      $filefn=strtolower("$ftypestr-".validfn($title)."-$unique.$fileext");
-      $uploadfile = $uploaddir.$filefn;
+      $filefn=strtolower("$ftypestr-".validfn($title).".$fileext");
+	  $lowftype=strtolower($ftypestr);
+      $uploadfile = $uploaddir.$lowftype."/".$filefn;
       $result = '';
 
       //Move the file from the stored location to the new location
@@ -408,7 +410,7 @@ else
 			<td>
 				    <?php 
 					      $pictureName=$r['fname'];
-					echo "<a href='../data/files/".$r['typedesc']."/".$r['fname']."'><img style='max-width: 400px; max-height: 400px' src='data/files/".$r['typedesc']."/".$r['fname']."'>";
+					echo "<a href='../data/files/".$r['typedesc']."/".$r['fname']."'><img style='max-width: 400px; max-height: 200px' src='data/files/".$r['typedesc']."/".$r['fname']."'>";
 					?>
 			</td>
 		</tr>

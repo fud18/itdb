@@ -524,10 +524,7 @@ else {
 $itdb_end=getmicrotime();
 
 echo "</div>";// <!-- end of #mainpage -->
-
-			 echo $hashedPass. "<br />";
-			 echo $authpass. "<br />";
-
+			 
 echo "<span style='color:#aaa'>server time = ".number_format(($itdb_end - $itdb_start),3)." secs</span>"; 
 
 ?>

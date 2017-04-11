@@ -337,9 +337,10 @@ else {
     $cs=7;
 
 ?>
-  <tr><td colspan='<?php echo $cs?>' class=tdc><button type=submit><img src='images/search.png'>Search</button></td></tr>
+  <tr><tr><td colspan='<?php echo $cs?>' class=tdc></td></tr>
   </tbody>
   </table>
+  <tr><td colspan='<?php echo $cs?>' class=tdc><button type=submit><img src='images/search.png'>Search</button></td></tr>
   <input type='hidden' name='action' value='<?php echo $_GET['action']?>'>
   </form>
 

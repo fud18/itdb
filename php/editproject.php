@@ -77,6 +77,7 @@
 <?php 
 if (!isset($initok)) {echo "do not run this script directly";exit;}
 
+/* Spiros Ioannou 2009-2010 , sivann _at_ gmail.com */
 //error_reporting(E_ALL);
 //ini_set('display_errors', '1');
 
@@ -113,6 +114,7 @@ if ($_POST['id']=="new")  {//if we came from a post (save) then add project
     $lastid=$dbh->lastInsertId();
     print "<br><b>Added project <a href='$scriptname?action=$action&amp;id=$lastid'>$lastid</a></b><br>";
     echo "<script>window.location='$scriptname?action=$action&id=$lastid'</script> "; //go to the new item
+							
     $id=$lastid;
   }
   else {
@@ -122,16 +124,15 @@ if ($_POST['id']=="new")  {//if we came from a post (save) then add project
 
 
 }//save pressed
-
 if ($id!="new") {
   //get current item data
   $id=$_GET['id'];
   $sql="SELECT * FROM projects WHERE id='$id'";
   $sth=db_execute($dbh,$sql);
-  $dept=$sth->fetchAll(PDO::FETCH_ASSOC);
+  $proj=$sth->fetchAll(PDO::FETCH_ASSOC);
   
 	//  Next & Previous Buttons' Function
-	$curid = intval($dept[0]);
+	$curid = intval($proj[0]);
 
     // Select contents from the selected id
     $sql = "SELECT * FROM projects WHERE id='$curid'";
@@ -168,7 +169,7 @@ if ($id!="new") {
     }
 }
 
-///////////////////////////////// display data now
+///////////////////////////////// display data 
 
 //if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
 //$id=$_REQUEST['id'];
@@ -274,6 +275,7 @@ else
 	  $s="";
 	  if (($locationid=="$dbid")) $s=" SELECTED "; 
 	  echo "    <option $s value='$dbid'>$itype</option>\n";
+
 	}
 	?>
 	</select>
@@ -339,12 +341,11 @@ else
         </table>
 <!-- end, Notes -->
 </table>
-
 <table width="100%"><!-- save buttons -->
 <tr>
 <td>
 <?php if ($previd != "") { ?>
-	<a href='?action=editproject&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
+	<a href='?action=editvlan&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
 <?php } else {?>
 	<a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
 <?php }?>
@@ -363,7 +364,7 @@ else
 ?>
 <td style="text-align:right;">
 <?php if ($nextid != "") { ?>
-<a href='?action=editproject&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
+<a href='?action=editvlan&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
 <?php } else {?>
 	<a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
 <?php }?>
@@ -371,6 +372,14 @@ else
 </tr>
 </table>
 
-    </form>
+<input type=hidden name='id' value='<?php echo $id ?>'>
+<input type=hidden name='action' value='<?php echo $action ?>'>
+
+			   
+					 
+		   
+			
+</form>
+
 </body>
 </html>
