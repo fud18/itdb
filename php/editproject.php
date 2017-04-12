@@ -71,10 +71,13 @@
     });
   });
 
+//remove invalid filename characters
+
 
 </SCRIPT>
 <script type="text/javascript" src="../js/ckeditor/ckeditor.js"></script>
 <?php 
+
 if (!isset($initok)) {echo "do not run this script directly";exit;}
 
 /* Spiros Ioannou 2009-2010 , sivann _at_ gmail.com */
@@ -103,7 +106,13 @@ if (isset($_GET['delid'])) { //if we came from a post (save) the update project
   exit;
 
 }
-
+$projectname=htmlentities($projectname, ENT_QUOTES);
+$proj_submitter=htmlentities($proj_submitter, ENT_QUOTES);
+$proj_status=htmlentities($proj_status, ENT_QUOTES);
+$locationid=htmlentities($locationid, ENT_QUOTES);
+$locareaid=htmlentities($locareaid, ENT_QUOTES);
+$summary=htmlentities($summary, ENT_QUOTES);
+$notes=htmlentities($notes, ENT_QUOTES);
 
 if (isset($_POST['id'])) { //if we came from a post (save) then update project 
   $id=$_POST['id'];
@@ -187,9 +196,8 @@ if ($id=="new")
   echo "\n<h1>".t("Add Project")."</h1>\n";
 else
   echo "\n<h1>".t("Edit Project $id")."</h1><left>
-    	  <p align='left' style='color:#DF0101'>NOTE: The use of single/double quotes will cause an error posting to the database if you must use these characters<br/>
-  								                   please escape them by doubling them (e.g. ' = '')  **If you miss doing this just use your [Back] Button to fix the problem.</p>";
-  
+"/*    	  <p align='left' style='color:#DF0101'>NOTE: The use of single/double quotes will cause an error posting to the database if you must use these characters<br/>
+  								                   please escape them by doubling them (e.g. ' = '')  **If you miss doing this just use your [Back] Button to fix the problem.</p>"; */
 ?>
 
 <table border="0" cellpadding="5" cellspacing="5" class="tbl1">
