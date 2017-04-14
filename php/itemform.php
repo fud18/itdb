@@ -109,7 +109,8 @@ if ($id!="new") {
 	ON items.id = item2file.itemid
 	LEFT OUTER JOIN files
 	ON files.id = item2file.fileid
-	WHERE items.id= '$id'";
+	WHERE items.id= '$id'
+	AND fname LIKE '%{$r['username']}%'";
   $sth=db_execute($dbh,$sql);
   $item=$sth->fetchAll(PDO::FETCH_ASSOC);
   
@@ -797,8 +798,8 @@ else if ($action=="edititem") {
 		<tr>
 			<td>
 				    <?php 
-					      $pictureName=$item[0]['fname'];
-					echo "<a href='../data/files/".$pictureName."'><img style='max-width: 400px; max-height: 400px' src='data/files/".$pictureName."'>";
+			        $pictureName=$item[0]['fname'];
+					echo "<a href='../data/files/photo/".$pictureName."'><img style='max-width: 400px; max-height: 400px' src='../data/files/photo/".$pictureName."'>";
 					?>
 			</td>
 		</tr>

@@ -303,7 +303,7 @@ else
 <td>
 <?php 
 if (strlen($r['floorplanfn'])) {
-echo "<a href='".$fuploaddirwww.$r['floorplanfn']."' target='_new'><img style=max-height:700px;max-width:600px; src='".$fuploaddirwww.$r['floorplanfn']."'>";
+echo "<a href='".$fuploaddirwww."floorplan/".$r['floorplanfn']."' target='_new'><img style=max-height:700px;max-width:600px; src='".$fuploaddirwww."floorplan/".$r['floorplanfn']."'>";
 }?>
 </td>
 

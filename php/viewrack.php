@@ -15,11 +15,12 @@ $rack=$sth->fetch(PDO::FETCH_ASSOC);
 
 //$sql="SELECT items.*,agents.title as agtitle from items,agents WHERE agents.id=items.manufacturerid AND rackid='$id'";
 
-$sql="SELECT items.*,agents.title as agtitle,files.fname as fname, item2file.itemid
-	FROM items,agents,files,item2file
+$sql="SELECT items.*,agents.title as agtitle,files.fname as fname, filetypes.typedesc, item2file.itemid
+	FROM items,agents,files,filetypes,item2file
 	WHERE agents.id=items.manufacturerid 
 	AND item2file.itemid = items.id 
 	AND files.id = item2file.fileid
+	AND fname LIKE '%{$r['typedesc']}%' 
 	AND rackid='$id'";
 
 $sth=$dbh->query($sql);
@@ -133,10 +134,10 @@ function printitemcell($rr,$depth) {
   $label=$items[$rackrow[$rr][$depth]]['label'];
   $dr=explode(".",$dns); if(count($dr)) $dr=$dr[0];
   $itemid=$items[$rackrow[$rr][$depth]]['id'];
+  $pictureType = $items[$rackrow[$rr][$depth]]['typedesc'];
   $pictureName = $items[$rackrow[$rr][$depth]]['fname'];
   $pictureSize = ($items[$rackrow[$rr][$depth]]['usize']*10)+($items[$rackrow[$rr][$depth]]['usize']*15);
   $abbr;
-  
 
   $mixlabel=" ";
   if (strlen($label)) $mixlabel=" $label ";
@@ -151,15 +152,15 @@ function printitemcell($rr,$depth) {
 
 if (strpos($pictureName, 'Vertical') !== false)
 {
-   $imageString = "<img width='auto' height='288px' src='data/files/".$pictureName."'>";
+   $imageString = "<img width='auto' height='288px' src='../data/files/photo/".$pictureName."'>";
 }
 elseif (strpos($pictureName, 'Small') !== false)
 {
-   $imageString = "<img width='auto'".$pictureSize."' src='data/files/".$pictureName."'>";
+   $imageString = "<img width='auto'".$pictureSize."' src='../data/files/photo/".$pictureName."'>";
 }
 else
 {
-   $imageString = "<img width='325px'".$pictureSize."' src='data/files/".$pictureName."'>";
+   $imageString = "<img width='325px'".$pictureSize."' src='../data/files/photo/".$pictureName."'>";
 }
 
 //This is Display
