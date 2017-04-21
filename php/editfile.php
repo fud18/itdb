@@ -143,7 +143,7 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the file
 	  } elseif(!is_writable($uploaddir)) {
 	      $result .= " : Folder not writable.";
 	  } elseif(!is_writable($uploadfile)) {
-	      $result .= " : File not writable.";
+	      $result .= " : File not writable<br /><font color='red'>Possibility the file size is too large.</font>";
 	  }
 	  $filefn = '';
 

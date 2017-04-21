@@ -352,7 +352,7 @@ $currow++;
   $user=isset($userlist[$r['userid']])?$userlist[$r['userid']]['username']:"";
 
   echo "\n<tr $c>".
-  	"<td><a class='editiditm icon edit' title='Edit' href='../../index.php?action=editjack&amp;id=".$r['id']."' target='_top'><span>".$r['id']."</span></a></td>"?>
+  	"<td><a class='editiditm icon edit' title='Edit' href='../../index.php?action=editjack&amp;id=".$r['id']."' target='_top'><span>Edit</span></a></td>"?>
 	<?php /*<td><input style="width:25em" type=text value='<?php echo $r['userdev']?>' name='userdev'></td>*/?>
 	<td style="width:25em"><?php echo $r['userdev']?></td>
 	<td style="width:auto"><?php echo $r['switchname']?></td>

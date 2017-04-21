@@ -20,7 +20,6 @@ a{
     <li style="width:60px"><a href="../php/locations/BB.php" target="import" style="width:35px"><?php te("BB");?></a></li>
     <li style="width:60px"><a href="../php/locations/CH.php" target="import" style="width:35px"><?php te("CH");?></a></li>
     <li style="width:60px"><a href="../php/locations/CT.php" target="import" style="width:35px"><?php te("CT");?></a></li>
-    <li style="width:60px"><a href="../php/locations/HSH.php" target="import" style="width:35px"><?php te("HSH");?></a></li>
     <li style="width:60px"><a href="../php/locations/DH.php" target="import" style="width:35px"><?php te("DH");?></a></li>
     <li style="width:60px"><a href="../php/locations/FL.php" target="import" style="width:35px"><?php te("FL");?></a></li>
     <li style="width:60px"><a href="../php/locations/GA.php" target="import" style="width:35px"><?php te("GA");?></a></li>
@@ -28,6 +27,7 @@ a{
     <li style="width:60px"><a href="../php/locations/GC.php" target="import" style="width:35px"><?php te("GC");?></a></li>
     <li style="width:60px"><a href="../php/locations/HH.php" target="import" style="width:35px"><?php te("HH");?></a></li>
     <li style="width:60px"><a href="../php/locations/HMH.php" target="import" style="width:35px"><?php te("HMH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/HSH.php" target="import" style="width:35px"><?php te("HSH");?></a></li>
     <li style="width:60px"><a href="../php/locations/KWEC.php" target="import" style="width:35px"><?php te("KWEC");?></a></li>
     <li style="width:60px"><a href="../php/locations/LFE.php" target="import" style="width:35px"><?php te("LFE");?></a></li>
     <li style="width:60px"><a href="../php/locations/LFW.php" target="import" style="width:35px"><?php te("LFW");?></a></li>
@@ -63,5 +63,11 @@ a{
     <li style="width:60px"><a href="../php/locations/WPD.php" target="import" style="width:35px"><?php te("WPD");?></a></li>
     <li style="width:60px"><a href="../php/locations/WPE.php" target="import" style="width:35px"><?php te("WPE");?></a></li>
     <li style="width:60px"><a href="../php/locations/WPF.php" target="import" style="width:35px"><?php te("WPF");?></a></li>
+    <br /><br />
+    <li style="width:60px"><a href="../php/locations/_AT.php" target="import" style="width:35px"><?php te("AT");?></a></li>
+    <li style="width:60px"><a href="../php/locations/_RLM.php" target="import" style="width:35px"><?php te("WPD");?></a></li>
+    <li style="width:60px"><a href="../php/locations/_ThH.php" target="import" style="width:35px"><?php te("ThH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/_WH2.php" target="import" style="width:35px"><?php te("WH2");?></a></li>
+
 </div><!-- tab container -->
 	<iframe style="height:100%" width="100%" id="locations" name="locations" frameborder="0"></iframe>

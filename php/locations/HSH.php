@@ -319,7 +319,7 @@ if (isset($notes) && strlen($notes)) $where.="AND notes LIKE '%$notes%' ";
 ///////////////////////////////////////////////////////////							Pagination							///////////////////////////////////////////////////////////
 
 //	How many records are in table
-$sth=db_execute($dbh,"SELECT count(jacks.id) as totalrows, locations.nameid FROM jacks JOIN locations WHERE locations.id = locationid AND nameid = 11000 $where");
+$sth=db_execute($dbh,"SELECT count(jacks.id) as totalrows, locations.nameid FROM jacks JOIN locations WHERE locations.id = locationid AND nameid = 58000 $where");
 $totalrows=$sth->fetchColumn();
 
 //	Page Links
@@ -336,7 +336,7 @@ unset($get2['page']);
 $url=http_build_query($get2);
 
 $t=time();
-$sql="SELECT jacks.*, locations.nameid FROM jacks JOIN locations WHERE locations.id = locationid AND nameid = 11000 $where order by $orderby LIMIT $totalrows";
+$sql="SELECT jacks.*, locations.nameid FROM jacks JOIN locations WHERE locations.id = locationid AND nameid = 58000 $where order by $orderby LIMIT $totalrows";
 $sth=db_execute($dbh,$sql);
 
 // Display Results
@@ -352,7 +352,7 @@ $currow++;
   $user=isset($userlist[$r['userid']])?$userlist[$r['userid']]['username']:"";
 
   echo "\n<tr $c>".
-  	"<td><a class='editiditm icon edit' title='Edit' href='../../index.php?action=editjack&amp;id=".$r['id']."' target='_top'><span>".$r['id']."</span></a></td>"?>
+  	"<td><a class='editiditm icon edit' title='Edit' href='../../index.php?action=editjack&amp;id=".$r['id']."' target='_top'><span>Edit</span></a></td>"?>
 	<?php /*<td><input style="width:25em" type=text value='<?php echo $r['userdev']?>' name='userdev'></td>*/?>
 	<td style="width:25em"><?php echo $r['userdev']?></td>
 	<td style="width:auto"><?php echo $r['switchname']?></td>
