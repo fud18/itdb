@@ -65,3 +65,7 @@ php/importwlecome.php
 php/listjacksgrid.php
 php/listjacksorg.php
 php/Quick_CSV_import.php
+php/locations/_AT.php
+php/locations/_RLM.php
+php/locations/_ThH.php
+php/locations/_WH2.php
