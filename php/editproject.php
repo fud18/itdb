@@ -118,7 +118,7 @@ if (isset($_POST['id'])) { //if we came from a post (save) then update project
   $id=$_POST['id'];
 
 if ($_POST['id']=="new")  {//if we came from a post (save) then add project 
-	$sql="INSERT INTO projects (projectname, proj_submitter, proj_status, locationid, locareaid, summary, notes) VALUES ('$projectname', '$proj_submitter', $proj_status', '$locationid', '$locareaid', '$summary', '$notes')";
+	$sql="INSERT INTO projects (projectname, proj_submitter, proj_status, locationid, locareaid, summary, notes) VALUES ('$projectname', '$proj_submitter', '$proj_status', '$locationid', '$locareaid', '$summary', '$notes')";
     db_exec($dbh,$sql,0,0,$lastid);
     $lastid=$dbh->lastInsertId();
     print "<br><b>Added project <a href='$scriptname?action=$action&amp;id=$lastid'>$lastid</a></b><br>";
