@@ -241,14 +241,14 @@ elseif (isset($_POST['itemtypeid']) && ($_GET['id']=="new")&&isvalidfrm()) {
 
   //// STORE DATA
   $sql="INSERT into items (label, itemtypeid, function, manufacturerid, ".
-  " warrinfo, model, asset, sn, sn2, sn3, origin, warrantymonths, purchasedate, purchprice, ".
+  " warrinfo, model, asset, departmentsid, departmentabbrsid, sn, sn2, sn3, origin, warrantymonths, purchasedate, purchprice, ".
   " dnsname, userid, locationid,locareaid, maintenanceinfo,  ".
   " comments,ispart, rackid, rackposition,rackposdepth, rackmountable, ".
   " usize, status, macs, ipv4, ipv6, remadmip, ".
   " hd, cpu,cpuno,corespercpu, ram, ".
   " panelport, switchid, switchport, ports) VALUES ".
   " ('$label', '$itemtypeid', '$function', '$manufacturerid', ".
-  " '$warrinfo', '$model', '$asset', '$sn', '$sn2', '$sn3', '$origin', ".
+  " '$warrinfo', '$model', '$asset', '$departmentsid', '$departmentabbrsid', '$sn', '$sn2', '$sn3', '$origin', ".
   "  $warrantymonths, '$purchasedate2', ".
   " '$purchprice', '$dnsname', $userid, $locationid,$locareaid, '$maintenanceinfo', ".
   " '". htmlspecialchars($comments,ENT_QUOTES,'UTF-8')  ."',$ispart, $rackid, $rackposition,$rackposdepth, $rackmountable, " .

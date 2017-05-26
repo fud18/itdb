@@ -95,7 +95,7 @@
 </SCRIPT>
 
 <?php 
-//error_reporting(E_ALL);				***UNCOMMENT THESE 2 LINES TO SEE ERRORS ON THE PAGE***
+//error_reporting(E_ALL);				//***UNCOMMENT THESE 2 LINES TO SEE ERRORS ON THE PAGE***
 //ini_set('display_errors', '1');
 
 if (!isset($initok)) {echo "do not run this script directly";exit;}
@@ -109,8 +109,7 @@ if ($id!="new") {
 	ON items.id = item2file.itemid
 	LEFT OUTER JOIN files
 	ON files.id = item2file.fileid
-	WHERE items.id= '$id'
-	AND fname LIKE '%{$r['username']}%'";
+	WHERE items.id= '$id'";
   $sth=db_execute($dbh,$sql);
   $item=$sth->fetchAll(PDO::FETCH_ASSOC);
   

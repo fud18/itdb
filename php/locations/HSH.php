@@ -150,7 +150,7 @@ if ($export)  {
 if ($export) 
   echo "\n<table border='1'>\n";
 else {
-  echo "<h1>Akers Energy Center <a title='Add new jack' href='../../index.php?action=editjack&amp;id=new'>".
+  echo "<h1>Hansen Scholarship Hall <a title='Add new jack' href='../../index.php?action=editjack&amp;id=new'>".
        "<img border=0 src='../../images/add.png'></a></h1>\n";
   echo "<form name='frm'>\n";
   echo "\n<table class='brdr'>\n";
@@ -225,7 +225,7 @@ if (!$export) {
   echo "<td title='Switch Name'><input type=text value='$switchname' name='switchname' id='srchSwitchname'></td>";?>
 
 <!-- Location Information -->
-		<td><center><?php te("AEC");?></center></td>
+		<td><center><?php te("HSH");?></center></td>
 <!-- end, Location Information -->
 
 <!-- Room/Area Information -->
@@ -351,10 +351,8 @@ $currow++;
 // Username
   $user=isset($userlist[$r['userid']])?$userlist[$r['userid']]['username']:"";
 
-  echo "\n<tr $c>".
-  	"<td><a class='editiditm icon edit' title='Edit' href='../../index.php?action=editjack&amp;id=".$r['id']."' target='_top'><span>Edit</span></a></td>"?>
-	<?php /*<td><input style="width:25em" type=text value='<?php echo $r['userdev']?>' name='userdev'></td>*/?>
-	<td style="width:25em"><?php echo $r['userdev']?></td>
+  echo "\n<tr $c>".  	"<td><a class='editiditm icon edit' title='Edit' href='../../index.php?action=editjack&amp;id=".$r['id']."' target='_top'><span>Edit</span></a></td>"?>
+<td style="width:25em"><?php echo $r['userdev']?></td>
 	<td style="width:auto"><?php echo $r['switchname']?></td>
 <!-- Location Information -->
 		<td><center><?php echo $locations[$r['locationid']]['abbr']." [".$locations[$r['locationid']]['floor']."]"?></center></td>
@@ -364,20 +362,24 @@ $currow++;
 		<td><center><?php echo $locareas[$r['locareaid']]['areaname']?></center></td>
 <!-- end, Room/Area Information -->
 
+<!-- Wall Location -->
 		<?php 
-			$N="";$S="";$E="";$W="";
-				if ($r['wallcoord']=="N") {$N="checked";$S="";$E="";$W="";}
-				if ($r['wallcoord']=="S") {$S="checked";$N="";$E="";$W="";}
-				if ($r['wallcoord']=="E") {$E="checked";$N="";$S="";$W="";}
-				if ($r['wallcoord']=="W") {$W="checked";$N="";$S="";$E="";}
-		?>
-	<td title='Select (N)orth, (S)outh, (E)ast, (W)est'>
-		<input <?php echo $N?> class='radio' type=radio name='wallcoord' value='N'><?php te("N");?>
-		<input <?php echo $S?> class='radio' type=radio name='wallcoord' value='S'><?php te("S");?>
-		<input <?php echo $E?> class='radio' type=radio name='wallcoord' value='E'><?php te("E");?>
-		<input <?php echo $W?> class='radio' type=radio name='wallcoord' value='W'><?php te("W");?>
-	</td>
-	<td style='width:uato'><?php echo $r['jackname']?></td>
+			if ($r['wallcoord']=="N") {$N="checked='checked'";$S="";$E="";$W="";}
+			if ($r['wallcoord']=="S") {$S="checked='checked'";$N="";$E="";$W="";}
+			if ($r['wallcoord']=="E") {$E="checked='checked'";$N="";$S="";$W="";}
+			if ($r['wallcoord']=="W") {$W="checked='checked'";$N="";$S="";$E="";}
+		
+	echo "<td title='Select (N)orth, (S)outh, (E)ast, (W)est'>";
+		echo "<input ".$N."class='radio' type=radio name='".$r['id']."wallcoord' value='N'>".te("N");
+		echo "<input ".$S."class='radio' type=radio name='".$r['id']."wallcoord' value='S'>".te("S");
+		echo "<input ".$E."class='radio' type=radio name='".$r['id']."wallcoord' value='E'>".te("E");
+		echo "<input ".$W."class='radio' type=radio name='".$r['id']."wallcoord' value='W'>".te("W");
+	echo"</td>";
+        
+        ?>
+<!-- end, Wall Location -->
+
+<td style='width:uato'><?php echo $r['jackname']?></td>
 	<td style='width:auto'><center><?php echo $departments[$r['departmentsid']]['abbr']?></center></td>
 	<td style='width:7em'><center><?php echo $r['modport']?></center></td>
 <!-- VLAN ID Information -->

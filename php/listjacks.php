@@ -17,6 +17,7 @@ a{
     <li style="width:60px"><a href="../php/locations/AEC.php" target="import" style="width:35px"><?php te("AEC");?></a></li>
     <li style="width:60px"><a href="../php/locations/AG.php" target="import" style="width:35px"><?php te("AG");?></a></li>
     <li style="width:60px"><a href="../php/locations/AH.php" target="import" style="width:35px"><?php te("AH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/AT.php" target="import" style="width:35px"><?php te("AT");?></a></li>
     <li style="width:60px"><a href="../php/locations/BB.php" target="import" style="width:35px"><?php te("BB");?></a></li>
     <li style="width:60px"><a href="../php/locations/CH.php" target="import" style="width:35px"><?php te("CH");?></a></li>
     <li style="width:60px"><a href="../php/locations/CT.php" target="import" style="width:35px"><?php te("CT");?></a></li>
@@ -37,11 +38,12 @@ a{
     <li style="width:60px"><a href="../php/locations/MM.php" target="import" style="width:35px"><?php te("MM");?></a></li>
     <li style="width:60px"><a href="../php/locations/MU.php" target="import" style="width:35px"><?php te("MU");?></a></li>
     <li style="width:60px"><a href="../php/locations/OPP.php" target="import" style="width:35px"><?php te("OPP");?></a></li>
-    <li style="width:60px"><a href="../php/locations/PH.php" target="import" style="width:35px"><?php te("PH");?></a></li>
     <br /><br />
+    <li style="width:60px"><a href="../php/locations/PH.php" target="import" style="width:35px"><?php te("PH");?></a></li>
     <li style="width:60px"><a href="../php/locations/PRES.php" target="import" style="width:35px"><?php te("PRES");?></a></li>
     <li style="width:60px"><a href="../php/locations/RC.php" target="import" style="width:35px"><?php te("RC");?></a></li>
     <li style="width:60px"><a href="../php/locations/RH.php" target="import" style="width:35px"><?php te("RH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/RLM.php" target="import" style="width:35px"><?php te("RLM");?></a></li>
     <li style="width:60px"><a href="../php/locations/SB.php" target="import" style="width:35px"><?php te("SB");?></a></li>
     <li style="width:60px"><a href="../php/locations/SCM.php" target="import" style="width:35px"><?php te("SCM");?></a></li>
     <li style="width:60px"><a href="../php/locations/SF.php" target="import" style="width:35px"><?php te("SF");?></a></li>
@@ -54,20 +56,18 @@ a{
     <li style="width:60px"><a href="../php/locations/STH.php" target="import" style="width:35px"><?php te("STH");?></a></li>
     <li style="width:60px"><a href="../php/locations/TF.php" target="import" style="width:35px"><?php te("TF");?></a></li>
     <li style="width:60px"><a href="../php/locations/TH.php" target="import" style="width:35px"><?php te("TH");?></a></li>
+    <li style="width:60px"><a href="../php/locations/TV.php" target="import" style="width:35px"><?php te("TV");?></a></li>
+    <li style="width:60px"><a href="../php/locations/VV.php" target="import" style="width:35px"><?php te("VV");?></a></li>
     <li style="width:60px"><a href="../php/locations/WH.php" target="import" style="width:35px"><?php te("WH");?></a></li>
     <li style="width:60px"><a href="../php/locations/WI.php" target="import" style="width:35px"><?php te("WI");?></a></li>
     <li style="width:60px"><a href="../php/locations/WP1.php" target="import" style="width:35px"><?php te("WP1");?></a></li>
     <li style="width:60px"><a href="../php/locations/WPA.php" target="import" style="width:35px"><?php te("WPA");?></a></li>
     <li style="width:60px"><a href="../php/locations/WPB.php" target="import" style="width:35px"><?php te("WPB");?></a></li>
+    <br /><br />
     <li style="width:60px"><a href="../php/locations/WPC.php" target="import" style="width:35px"><?php te("WPC");?></a></li>
     <li style="width:60px"><a href="../php/locations/WPD.php" target="import" style="width:35px"><?php te("WPD");?></a></li>
     <li style="width:60px"><a href="../php/locations/WPE.php" target="import" style="width:35px"><?php te("WPE");?></a></li>
     <li style="width:60px"><a href="../php/locations/WPF.php" target="import" style="width:35px"><?php te("WPF");?></a></li>
-    <br /><br />
-    <li style="width:60px"><a href="../php/locations/_AT.php" target="import" style="width:35px"><?php te("AT");?></a></li>
-    <li style="width:60px"><a href="../php/locations/_RLM.php" target="import" style="width:35px"><?php te("WPD");?></a></li>
-    <li style="width:60px"><a href="../php/locations/_ThH.php" target="import" style="width:35px"><?php te("ThH");?></a></li>
-    <li style="width:60px"><a href="../php/locations/_WH2.php" target="import" style="width:35px"><?php te("WH2");?></a></li>
 
 </div><!-- tab container -->
 	<iframe style="height:100%" width="100%" id="locations" name="locations" frameborder="0"></iframe>

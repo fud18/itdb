@@ -81,7 +81,7 @@ if ($nextstep==1 && strlen($_FILES['file']['name'])>2) { //insert file
 	}
 }//insert file
 
-		$sqlTable = "CREATE TABLE IF NOT EXISTS agents(id INTEGER PRIMARY KEY AUTOINCREMENT,jackname VARCHAR,wallcoord VARCHAR,temp_perm VARCHAR,notes VARCHAR,departmentsid VARCHAR,departmentabbrsid VARCHAR,userdev VARCHAR,locationid VARCHAR,locareaid VARCHAR,userid VARCHAR,switchname VARCHAR,modport VARCHAR,vlanid VARCHAR,vlanname VARCHAR,pubipnet VARCHAR,pubiphost VARCHAR,privipnet VARCHAR,priviphost VARCHAR,groupname VARCHAR)";
+		$sqlTable = "CREATE TABLE IF NOT EXISTS jacks(id INTEGER PRIMARY KEY AUTOINCREMENT,jackname VARCHAR,wallcoord VARCHAR,temp_perm VARCHAR,notes VARCHAR,departmentsid VARCHAR,departmentabbrsid VARCHAR,userdev VARCHAR,locationid VARCHAR,locareaid VARCHAR,userid VARCHAR,switchname VARCHAR,modport VARCHAR,vlanid VARCHAR,vlanname VARCHAR,pubipnet VARCHAR,pubiphost VARCHAR,privipnet VARCHAR,priviphost VARCHAR,groupname VARCHAR)";
 		
 		if(!$dbh->query($sqlTable)){
 			echo "Table creation failed: (" . $dbh->errno . ") " . $dbh->error;
@@ -131,7 +131,7 @@ The expected format is a CSV file.  Please download the template:
 	<thead>
     <tr>
     <?php
-        echo "<th>ID</th><th>Jack Name</th><th>Wall Coordinates</th><th>Temporary/Permanent</th><th>Notes</th><th>Departments ID</th><th>Department Abbreviation ID</th><th>User/Device</th><th>Location ID</th><th>Locarea ID</th><th>User ID</th><th>Switch Name</th><th>Module & Port</th><th>Vlan ID</th><th>Vlan Name</th><th>Public IP Network</th><th>Public IP Host</th><th>Private IP Network</th><th>Private IP Host</th><th>Group Name</th>";
+        echo "<th>ID</th><th>Jack Name</th><th>Wall Coordinates</th><th>Temporary/Permanent</th><th>Notes</th><th>Departments ID</th><th>Department Abbreviation ID</th><th>User/Device</th><th>Location ID</th><th>Locarea ID</th><th>User ID</th><th>Switch Name</th><th>Module & Port</th><th>Vlan ID</th><th>VLAN Name</th><th>Public IP Network</th><th>Public IP Host</th><th>Private IP Network</th><th>Private IP Host</th><th>Group Name</th>";
    ?>
     </tr>
 	</thead>
@@ -188,8 +188,6 @@ if ($nextstep==2) {
 	// Add jacks Records
 	foreach ($imlines as $line_num => $jacks) {
 		if ($line_num==0 && $_POST['skip1st']) {
-			echo "<br>Skipped the first line (header)<br>";
-			echo "<br><h2>jacks Data Imported Successfully</h2><br>";	
 			continue;
 		}
 
@@ -219,7 +217,7 @@ if ($nextstep==2) {
 	$sql=	"INSERT into jacks ".
 			"(id,jackname,wallcoord,temp_perm,notes,departmentsid,departmentabbrsid,userdev,locationid,locareaid,userid,switchname,modport,vlanid,vlanname,pubipnet,pubiphost,privipnet,priviphost,groupname) ".
 			" VALUES ".
-			"(id,:jackname,:wallcoord,:temp_perm,:notes,:departmentsid,:departmentabbrsid,:userdev,:locationid,:locareaid,:userid,:switchname,:modport,:vlanid,:vlanname,:pubipnet,:pubiphost,:privipnet,:priviphost,:groupname)";
+			"(:id,:jackname,:wallcoord,:temp_perm,:notes,:departmentsid,:departmentabbrsid,:userdev,:locationid,:locareaid,:userid,:switchname,:modport,:vlanid,:vlanname,:pubipnet,:pubiphost,:privipnet,:priviphost,:groupname)";
 			
         $stmt=db_execute2($dbh,$sql,
             array(
