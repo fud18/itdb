@@ -23,7 +23,6 @@ $reports=array (
 'softwareperagent' => t('Number of installed Software per Manufacturer (Agent)'),
 'invoicesperagent' => t('Number of invoices per Vendor (Agent)'),
 'itemsperlocation' => t('Number of items per Location'),
-'itemslistforinventory' => t('List of items for inventory'),
 'percsupitems' => t('Number of Items under support'),
 'itemlistperlocation' => t('Item list per location'),
 'itemsendwarranty' => t('Items with warranty end date close to (before or after) today'),
@@ -125,27 +124,20 @@ switch ($query) {
   break;
 
   case "itemlistperlocation":
-    $sql="select items.id as ID, typedesc as type, agents.title as manufacturer, model, dnsname, ".
-         " locations.name || ' Floor:' || locations.floor  as Location  ".
-         " FROM items,agents,locations,itemtypes ".
-         " WHERE itemtypes.id=items.itemtypeid AND agents.id=items.manufacturerid ".
-         " AND items.locationid=locations.id order by locationid,typedesc desc;";
-    $editlnk="$scriptname?action=editlocations";
+	$sql="select items.id as ID, typedesc as type, agents.title as manufacturer, model, dnsname, ".
+	"locations.name || ' Floor:' || locations.floor || ' Area:' || (select locareas.areaname from locareas where locareas.id=items.locareaid) as Location  ".
+	"FROM items ".
+	"INNER JOIN agents on agents.id=items.manufacturerid ".
+	"INNER JOIN locations on items.locationid=locations.id ".
+	"INNER JOIN itemtypes on itemtypes.id=items.itemtypeid ".
+	"order by items.locationid,typedesc desc";
+    $editlnk="$scriptname?action=edititem&id";
     $graph['type']="pie";
     $graph['colx']="Location";
     $graph['coly']="totalcount";
     $graph['limit']=15;
   break;
 
-  case "itemslistforinventory":
-    $sql="select model || ' - ' || typedesc AS 'Model & Type', dnsname AS 'Switch Name', sn AS 'Serial #', asset AS 'Asset Tag', locations.name AS 'Building Name [Floor]', statusdesc AS Status ".
-         " FROM items,locations,itemtypes ".
-		 " LEFT OUTER JOIN statustypes ".
-		 " ON statustypes.id=items.status AND statustypes.id NOT IN (2,3,5,6)".
-		 " WHERE itemtypes.id=items.itemtypeid AND itemtypes.id NOT IN (1,2,3,4,5,6,15,17,24,25,27)".
-         " AND items.locationid=locations.id order by locationid,typedesc desc; ";
-    $editlnk="$scriptname?action=editlocations";
-  break;
 
   case "itemperagent":
     $sql="select count(*) as totalcount,agents.title as Agent, agents.id as ID from items,agents ".
@@ -180,7 +172,7 @@ switch ($query) {
   case "itemsendwarranty":
     $t=time();
     $sql="select items.id as ID,ipv4, typedesc as type, agents.title as manufacturer, model, dnsname, label,  ".
-         " (purchasedate+warrantymonths*30*24*60*60-$t)/(60*60*24) RemainingDays FROM items,itemtypes,agents ".
+         " (strftime('%s',purchasedate,'unixepoch','+'||warrantymonths||' months')-$t)/(60*60*24)  RemainingDays FROM items,itemtypes,agents ".
          " WHERE  agents.id=manufacturerid AND itemtypes.id=items.itemtypeid  AND RemainingDays>-360 AND RemainingDays<360 order by RemainingDays ";
     $editlnk="$scriptname?action=edititem&id";
   break;
@@ -245,7 +237,7 @@ switch ($query) {
     echo "\n\t<td>".($row+1)."</td>";
     foreach($r as $k => $v) {   //values
       if ($k=="ID")
-	echo "\n\t<td><a class='editiditm icon edit' href='$editlnk=$v'><span>$v</span></a></td>";
+	echo "\n\t<td><a class='editid' href='$editlnk=$v'>$v</a></td>";
       else {
 	echo "\n\t<td>$v</td>";
       }

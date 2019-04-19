@@ -9,7 +9,7 @@
 	/* Array of database columns which should be read and sent back to DataTables. Use a space where
 	 * you want to insert a non-database field (for example a counter or static image)
 	 */
-	$aColumns = array('itemid','itemlabel','typedesc','title','itemmodel','dnsname','asset','serial','purchasedate',
+	$aColumns = array('itemid','itemlabel','typedesc','title','itemmodel','dnsname','serial','purchasedate',
 	'remdays','username','statusdesc','locationname','areaname','rackinfo','purchprice','macs','ipv4','ipv6',
 	'remadmip','taginfo','softinfo');
 	
@@ -128,8 +128,8 @@
 		  items.model AS itemmodel,
 		  items.label AS itemlabel,
                   locations.name as locationname,
-                  coalesce(asset,'') || ' ' || coalesce(sn,'') || ' ' || coalesce(sn2,'') || ' ' || coalesce(sn3,'') AS serial,
-                  (purchasedate+warrantymonths*30*24*60*60-$t)/(60*60*24) AS remdays,
+                  coalesce(sn,'') || ' ' || coalesce(sn2,'') || ' ' || coalesce(sn3,'') AS serial,
+				  '' as remdays, purchasedate, warrantymonths, 
                   coalesce(racks.label,'') || ' ' || coalesce(racks.usize,'') || ' ' || coalesce(racks.model,'') AS rackinfo,
                   (SELECT group_concat( tags.name ,',') from tags,tag2item WHERE tag2item.itemid=items.id AND tags.id=tag2item.tagid) AS taginfo,
                   (SELECT group_concat( software.stitle ,'|') from software,item2soft WHERE item2soft.itemid=items.id AND software.id=item2soft.softid) AS softinfo
@@ -157,6 +157,7 @@
 	//if ( $sWhere == "" ) $sWhere = " WHERE 1=1 ";
 	
 
+  //(purchasedate+warrantymonths*30*24*60*60-$t)/(60*60*24) AS remdays,
 	$sQuery = "
 		  SELECT 
 		  items.id AS itemid,
@@ -170,9 +171,8 @@
                   statustypes.statusdesc,
                   locations.name as locationname,
                   locareas.areaname,
-				  items.asset,
                   coalesce(sn,'') || ' ' || coalesce(sn2,'') || ' ' || coalesce(sn3,'') AS serial,
-                  (purchasedate+warrantymonths*30*24*60*60-$t)/(60*60*24) AS remdays,
+				  '' as remdays, warrantymonths, 
                   coalesce(racks.label,'') || ' ' || coalesce(racks.usize,'') || ' ' || coalesce(racks.model,'') AS rackinfo,
                   (SELECT group_concat( tags.name ,', ') FROM tags,tag2item WHERE tag2item.itemid=items.id AND tags.id=tag2item.tagid) AS taginfo,
                   (SELECT group_concat( software.stitle ,',') FROM software,item2soft WHERE item2soft.itemid=items.id and software.id=item2soft.softid) AS softinfo,
@@ -219,14 +219,16 @@
 				$x=attrofstatus($statusid,$dbh); $attr=$x[0]; $statustxt=$x[1];
 
 				$r="<div style='width:60px'><span $attr>&nbsp;</span>".
-				   "<span><a class='editiditm icon edit' title='Edit' href='?action=edititem&amp;id=".$aRow['itemid']."'>".
+				   "<span><a class='editid' title='Edit' href='?action=edititem&amp;id=".$aRow['itemid']."'>".
 				   $aRow['itemid']."</a></span></div>";
 				$row[] = $r;
 			}
 			elseif ( $aColumns[$i] == "remdays" ) {
-				$remdays=$aRow['remdays'];
-				$rdstr=showremdays($remdays);
-				$row[] = "<small><div title='$remdays'>". $rdstr. "</div></small>"; // title attribute used for sorting
+				//$remdays=$aRow['remdays'];
+				$remdays_r=calcremdays($aRow['purchasedate'],$aRow['warrantymonths']);
+				$rdstr=$remdays_r['string'];
+				$rd=$remdays_r['days'];
+				$row[] = "<small><div title='$rd'>". $rdstr. "</div></small>"; // title attribute used for sorting
 			}
 
 			elseif ( $aColumns[$i] == "purchasedate" ) {

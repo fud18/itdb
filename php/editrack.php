@@ -109,69 +109,15 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the rack
 
 }//save pressed
 
-if ($id!="new") {
-  //get current item data
-  $id=$_GET['id'];
-  $sql="SELECT * FROM racks WHERE id='$id'";
-  $sth=db_execute($dbh,$sql);
-  $dept=$sth->fetchAll(PDO::FETCH_ASSOC);
-  
-	//  Next & Previous Buttons' Function
-	$curid = intval($dept[0]);
-
-    // Select contents from the selected id
-    $sql = "SELECT * FROM racks WHERE id='$curid'";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $info = $result->fetchAll(PDO::FETCH_ASSOC);
-    } else {
-        die('Not found');
-    }
-
-    // Next Record
-    $sql = "SELECT id FROM racks WHERE id>'$id' LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $nextresults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$nextid = strval($nextresults[0]['id']);
-    }
-
-    // Previous Record
-    $sql = "SELECT id FROM racks WHERE id<'$id' ORDER BY id DESC LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $prevresults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$previd = strval($prevresults[0]['id']);
-    }
-} else {
-    // No form has been submitted so use the lowest id and grab its info
-    $sql = "SELECT * FROM racks WHERE id > 0 LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $inforesults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$info =  strval($inforesults[0]['id']);
-		
-    }
-}
-
-///////////////////////////////// display data 
+/////////////////////////////
+//// display data 
 
 
 if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
 $id=$_REQUEST['id'];
 
 //$sql="SELECT * FROM racks where racks.id='$id'";
-$sql="SELECT count(items.id) AS population, sum(items.usize) as occupation,racks.* 
-FROM racks 
-LEFT OUTER JOIN items 
-ON items.rackid=racks.id 
-WHERE items.id IN 
-(
-	SELECT items.id
-	FROM items  
-	WHERE items.rackid ='$id'
-	GROUP BY items.rackposition
-)";
+$sql="SELECT count(items.id) AS population, sum(items.usize) as occupation,racks.* FROM racks LEFT OUTER JOIN items ON items.rackid=racks.id WHERE racks.id='$id'";
 $sth=db_execute($dbh,$sql);
 $r=$sth->fetch(PDO::FETCH_ASSOC);
 
@@ -247,10 +193,7 @@ else
         <td><input  class='input2 mandatory' size=20 type=text name='model' value="<?php echo $r['model']?>"></td></tr>
     <tr><td class="tdt"><?php te("Comments");?>:</td> 
         <td><textarea class='tarea1' wrap=soft name=comments><?php echo $r['comments']?></textarea></td></tr>
-    <tr><td class="tdt">
-		<?php echo "<a title='Add New Building' href='$scriptname?action=editlocation&id=new'><img src='images/add.png' alt='+'></a> ";
-			  echo "<a alt='Edit' title='".t("Edit Building or Room")."' href='$scriptname?action=editlocation&id=$locationid'><img src='images/edit2.png'></a> ";?>
-			  <?php te("Location");?>:</td> 
+    <tr><td class="tdt"><?php te("Location");?>:</td> 
 
     <td>
       <select id='locationid' name='locationid' validate='required:true'>
@@ -259,7 +202,11 @@ else
       $locationid=$r['locationid'];
       foreach ($locations  as $key=>$location ) {
 	$dbid=$location['id'];
-	$itype=$location['name'].", Floor:".$location['floor'];
+
+    if (is_numeric($location['floor']))
+            $itype=$location['name'].", ".t("Floor").":".$location['floor'];
+    else
+            $itype=$location['name'];
 	$s="";
 	if (($locationid=="$dbid")) $s=" SELECTED ";
 	echo "    <option $s value='$dbid'>$itype</option>\n";
@@ -300,14 +247,13 @@ else
        <?php $occupation=(int)$r['occupation'];
 	     if ($id!="new")
 	       $width=(int)($occupation/$r['usize']*100/(100/150));
-		//$width=100;
 	      else 
 	        $width=0;
        ?>
        <td class='tdt'><?php te("Occupation");?></td>
        <td title='<?php echo $occupation?> U occupied'>
 	 <div style='width:150px;border:1px solid #888;padding:0;'>
-	 <div style='background-color:#EAAF0F;width:<?php echo $width?>px'>&nbsp;</div></div>
+	 <div style='background-color:#8ECE03;width:<?php echo $width?>px'>&nbsp;</div></div>
        </td>
     </tr>
     </table>
@@ -321,39 +267,22 @@ else
   if ($id!="new")
     include('viewrack.php');
   ?>
-  </td>
-  </tr>
-  </table>
-
-<table width="100%"><!-- save buttons -->
-<tr>
-<td>
-<?php if ($previd != "") { ?>
-	<a href='?action=editrack&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php } else {?>
-	<a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php }?>
-</td>
-<td style='text-align: center' colspan=1><button type="submit"><img src="images/save.png" alt="Save" > <?php te("Save");?></button></td>
-<?php 
-if ($id!="new") {
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:delconfirm2(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;delid={$_GET['id']}\");'>".
-       "<img title='Delete' src='images/delete.png' border=0>".t("Delete")."</button></td>\n";
-
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:cloneconfirm(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;cloneid={$_GET['id']}\");'>".
-       "<img  src='images/copy.png' border=0>". t("Clone")."</button></td>\n";
-} 
-else 
-  echo "\n<td>&nbsp;</td>";
-?>
-<td style="text-align:right;">
-<?php if ($nextid != "") { ?>
-<a href='?action=editrack&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-<?php } else {?>
-	<a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-<?php }?>
 </td>
 </tr>
+
+
+<tr>
+<td colspan=2>
+<button type="submit"><img src="images/save.png" alt="Save"> <?php te("Save");?></button>
+<?php 
+echo "\n<button type='button' onclick='javascript:delconfirm2(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid=$id\");'>".
+     "<img title='delete' src='images/delete.png' border=0>".t("Delete"). "</button>\n";
+?>
+
+</td>
+</tr>
+
+
 </table>
 
 <input type=hidden name='id' value='<?php echo $id ?>'>

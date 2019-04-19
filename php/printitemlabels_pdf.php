@@ -21,25 +21,8 @@ for ($i=0;$i<count($selitems);$i++)  {
 
 //$sql="SELECT items.id,model,sn,sn3,itemtypeid,dnsname,ipv4,ipv6,label, agents.title as agtitle FROM items,agents ".
 //     " WHERE agents.id=items.manufacturerid AND items.id in ($ids) order by itemtypeid, agtitle, model,sn,sn2,sn3";
-$sql="SELECT items.id,model,sn,sn2,sn3,itemtypeid,dnsname,ipv4,ipv6,label,asset, agents.title as agtitle, locareas.areaname, locations.abbr
-		FROM items
-		JOIN agents
-		ON agents.id = items.manufacturerid
-		JOIN locations
-		ON locations.id = items.locationid
-		LEFT OUTER JOIN locareas
-		ON items.locareaid = locareas.id
-        WHERE items.id in ($ids)
-        ORDER BY items.id";
-
-/*$sql="SELECT items.id,model,sn,sn2,sn3,itemtypeid,dnsname,ipv4,ipv6,label, agents.title as agtitle, locareas.areaname, locations.abbr
-		FROM items
-		JOIN agents
-		ON agents.id = items.manufacturerid
-		LEFT OUTER JOIN locareas
-		ON items.locareaid = locareas.id 
-          WHERE items.id in ($ids)
-          ORDER BY items.id";*/
+$sql="SELECT items.id,model,sn,sn3,itemtypeid,dnsname,ipv4,ipv6,label, agents.title as agtitle FROM items,agents ".
+     " WHERE agents.id=items.manufacturerid AND items.id in ($ids) order by items.id";
 $sth=db_execute($dbh,$sql);
 $idx=0;
 
@@ -56,7 +39,9 @@ $pdf=new PDF_Label(array(
   'SpaceY'=>($vpitch-$lheight),
   'width'=>$lwidth,
   'height'=>$lheight,
-  'font-size'=>$fontsize));
+  'font-size'=>$fontsize,
+  'font-family'=>$tcpdf_font, 
+  ));
 
 $pdf->AddPage();
 $pdf->SetAuthor('ITDB Asset Management');
@@ -81,9 +66,7 @@ for ($row=1;$row<=$rows;$row++) {
     if (!$r) break;
 
     $idesc=$itypes[$r['itemtypeid']]['typedesc'];
-    $id=$r['sn'];
-	$asset=$r['asset'];
-    $sn2=$r['sn2'];
+    $id=sprintf("%04d",$r['id']);
     $dnsname=$r['dnsname'];
     $ipv4=$r['ipv4'];
     $ipv4=mb_substr($ipv4,0,15);
@@ -91,26 +74,26 @@ for ($row=1;$row<=$rows;$row++) {
     $agtitle=$r['agtitle'];
     $model=$r['model'];
     $label=$r['label'];
-    $areaname=$r['areaname'];
-    $abbr=$r['abbr'];
 
-//    $desc="$agtitle/$model";
+    $desc="$agtitle/$model";
     $desc=mb_substr($desc,0,37);
     $desc=trim($desc);
     $sn=strlen($r['sn'])>0?$r['sn']:$r['sn3'];
 
     $labeltext="";
-    $labeltext.=sprintf("SN:  $sn\n");
-    $labeltext.=sprintf("Asset:  $asset\n");
-    $labeltext.=sprintf("Location:  $abbr"."$areaname\n");
-    //if (strlen($label)) $labeltext.=sprintf("LBL:$label\n");
+    $labeltext.=sprintf("ID:$id\n");
+    if (strlen($label)) $labeltext.=sprintf("LBL:$label\n");
 
-    //if (strlen($desc)) { $labeltext.=$desc."\n"; }
+    if (strlen($sn)) $labeltext.=sprintf("SN:$sn\n");
 
-    //if (strlen($ipv4)) { $labeltext.="IPv4:$ipv4\n"; }
-    //if (strlen($ipv6)) { $labeltext.="IPv6:$ipv6\n"; }
+    if (strlen($desc)) { $labeltext.=$desc."\n"; }
 
-    //if (strlen($dnsname)) { $labeltext.="Name:$dnsname\n"; }
+    if (strlen($ipv4)) { $labeltext.="IPv4:$ipv4\n"; }
+    if (strlen($ipv6)) { $labeltext.="IPv6:$ipv6\n"; }
+
+    if (strlen($dnsname)) { 
+       $labeltext.="HName:$dnsname\n";
+    }
     $labeltext=rtrim($labeltext);
 
     if (!$wantheadertext)
@@ -120,14 +103,14 @@ for ($row=1;$row<=$rows;$row++) {
       $image="";
 
     if ($wantbarcode) {
-      $barcode=$qrtext.$sn.",".$asset.",".$abbr.$areaname;
+      $barcode=$qrtext.$id;
       //$barcode = mb_strtoupper($barcode, 'UTF-8');
     }
     else {
       $barcode="";
 	}
 
-    /*$headertext=str_replace('_NL_',"\n",$headertext);*/
+    $headertext=str_replace('_NL_',"\n",$headertext);
 
     $nbw=0.30; //code39 narrow bar width (mm). 15+1 narrow bars/character (+1=spacing)
     $barcodewidth=((strlen($barcode)+3)*(15+2)+20)*$nbw;

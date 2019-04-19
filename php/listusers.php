@@ -32,7 +32,7 @@ $sth=db_execute($dbh,$sql);
 <table class='display' width="100%" id='userslisttbl'>
 <thead>
 <tr>
-  <th width='2%'><?php te("Edit");?></th>
+  <th width='2%'><?php te("Edit/Delete");?></th>
   <th width='5%'><?php te("Username");?></th>
   <th><?php te("User Description");?></th>
   <th><?php te("Type");?></th>
@@ -51,7 +51,7 @@ while ($r=$sth->fetch(PDO::FETCH_ASSOC)) {
   $i++;
   $itemcount=countitemsofuser($r['id']);
   echo "\n<tr>";
-  echo "<td><a class='editiditm icon edit' href='$scriptname?action=edituser&amp;id=".$r['id']."'><span>Edit</span></a></td>\n";
+  echo "<td><div class='editiditm icon edit'><center><a href='$scriptname?action=edituser&amp;id=".$r['id']."'><img src='../images/edit2.png'></a><a href='../php/deluser.php?id=".$r['id']."'><img src='../images/delete.png' border=0></a></center></div></td>";
   echo "<td>{$r['username']}</td>\n";
   echo "<td>{$r['userdesc']}</td>\n";
   echo "<td>{$usertype[$r['usertype']]}</td>\n";

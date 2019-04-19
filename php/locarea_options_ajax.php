@@ -5,7 +5,7 @@ include('../init.php');
 if(is_numeric($_POST['locationid'])) {
   $id=$_POST['locationid'];
 
-  $sql="SELECT * FROM locareas WHERE locationid='$id' order by areaname";
+  $sql="SELECT * FROM locareas WHERE locationid=$id order by areaname";
   $sth=$dbh->query($sql);
   $locareas=$sth->fetchAll(PDO::FETCH_ASSOC);
 

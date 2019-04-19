@@ -154,52 +154,8 @@ if (isset($_POST['id'])) { //if we came from a post (save) the update software
 
 }//save pressed
 
-if ($id!="new") {
-  //get current item data
-  $id=$_GET['id'];
-  $sql="SELECT * FROM software WHERE id='$id'";
-  $sth=db_execute($dbh,$sql);
-  $dept=$sth->fetchAll(PDO::FETCH_ASSOC);
-  
-	//  Next & Previous Buttons' Function
-	$curid = intval($dept[0]);
-
-    // Select contents from the selected id
-    $sql = "SELECT * FROM software WHERE id='$curid'";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $info = $result->fetchAll(PDO::FETCH_ASSOC);
-    } else {
-        die('Not found');
-    }
-
-    // Next Record
-    $sql = "SELECT id FROM software WHERE id>'$id' LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $nextresults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$nextid = strval($nextresults[0]['id']);
-    }
-
-    // Previous Record
-    $sql = "SELECT id FROM software WHERE id<'$id' ORDER BY id DESC LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $prevresults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$previd = strval($prevresults[0]['id']);
-    }
-} else {
-    // No form has been submitted so use the lowest id and grab its info
-    $sql = "SELECT * FROM software WHERE id > 0 LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $inforesults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$info =  strval($inforesults[0]['id']);
-		
-    }
-}
-
-///////////////////////////////// display data now
+/////////////////////////////
+//// display data now
 
 
 if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
@@ -305,7 +261,7 @@ else
       <tr><td class="tdt">ID:</td> <td><input  class='input2' type=text name='id' value='<?php echo $id?>' readonly size=3></td></tr>
       <tr><td class="tdt">
      <?php   if (is_numeric($manufacturerid))
-       echo "<a title='edit manufacturer (agent)' href='$scriptname?action=editagent&amp;id=$manufacturerid'><img src='images/edit2.png'></a> "; ?>
+       echo "<a title='edit manufacturer (agent)' href='$scriptname?action=editagent&amp;id=$manufacturerid'><img src='images/edit.png'></a> "; ?>
       
       <?php te('Manufacturer');?>:</td> <td title='Add more manufacturers at the "Agents" menu'>
 	   <select validate='required:true' class='mandatory' name='manufacturerid'>
@@ -493,15 +449,9 @@ else
     <div style='margin-left:auto;margin-right:auto;' class='scrltblcontainer2'>
        <table width='100%' class='sortable'  id='itemslisttbl'>
 	 <thead>
-	    <tr><th><?php te("Installed");?></th>
-        	<th style='width:Auto'><?php te("ID");?></th>
-        	<th style='width:10em'><?php te("Type");?></th>
-			<th style='width:25em'><?php te("Manufacturer");?></th>
-            <th style='width:20em'><?php te("Model");?></th>
-	        <th style='width:10em'><?php te("Label");?></th>
-            <th style='width:10em'><?php te("DNS");?></th>
-            <th style='width:10em'><?php te("User");?></th>
-            <th style='width:10em'><?php te("S/N");?></th>
+	    <tr><th><?php te("Installed");?></th><th style='width:70px'><?php te("ID");?></th><th><?php te("Type");?></th>
+                <th><?php te("Manufacturer");?></th><th><?php te("Model");?></th>
+	        <th><?php te("Label");?></th><th><?php te("DNS");?></th><th><?php te("User");?></th><th><?php te("S/N");?></th>
 	    </tr>
 	  </thead>
 	  <tbody>
@@ -519,22 +469,24 @@ else
       $attr=$x[0];
       $statustxt=$x[1];
 
-		if ($ir['islinked'])
-		echo " checked ";
-echo	"\n <tr>
-		<td><center><input name='softlnk[]' value='".$ir['id']."' type='checkbox' /></center></td>
-		<td $cls><a class='editiditm icon edit' title='Edit item {$ir['id']} in a new window' target=_blank href='$scriptname?action=edititem&id=".$ir['id']."'><span>".$r['id']."</span></a><span $attr></span></td>
-		<td><center>".$typeid2name[$ir['itemtypeid']]."</center></td>
-		<td $cls>".$agents[$ir['manufacturerid']]['title']."</td>
-		<td $cls>".$ir['model'].  "</td>
-		<td><center>".$ir['label']."</center></td>
-		<td $cls>".$ir['dnsname']."</td>
-		<td $cls>".$ir['username']."</td>
-		<td><center>".$ir['sn']."</center></td></tr>\n";
-		}
-echo "\n</tbody></table>\n";
-echo "</div>\n";
-	?>
+      echo "\n <tr><td><input name='softlnk[]' value='".$ir['id']."' ";
+      if ($ir['islinked']) echo " checked ";
+      echo  " type='checkbox' /></td>".
+       "<td nowrap $cls style='white-space: nowrap;'><span $attr>&nbsp;</span><a title='Edit item {$ir['id']} in a new window' ".
+       "target=_blank href='$scriptname?action=edititem&id=".$ir['id']."'><div class='editid'>".
+       $ir['id'].
+       "</div></a></td>";
+       echo "<td $cls>".$typeid2name[$ir['itemtypeid']].
+       "<td $cls>".$agents[$ir['manufacturerid']]['title']. "&nbsp;</td>".
+       "<td $cls>".$ir['model'].  "&nbsp;</td>".
+       "<td $cls>".$ir['label']."&nbsp;</td>".
+       "<td $cls>".$ir['dnsname']."&nbsp;</td>".
+       "<td $cls>".$ir['username']."&nbsp;</td>".
+       "<td $cls>".$ir['sn']."&nbsp;</td></tr>\n";
+    }
+    echo "\n</tbody></table>\n";
+    echo "</div>\n";
+    ?>
 
     <sup>1</sup><?php te("Select systems where this software is currently installed. Only items with 'software support' in their item type are shown.");?>
     </td>
@@ -579,16 +531,18 @@ echo "</div>\n";
     else
       $cls="";
 
+    echo "<tr><td><input name='invlnk[]' value='".$ir['id']."' ";
     if ($ir['islinked']) echo " checked ";
-    echo "<tr>
-			<td><center><input name='invlnk[]' value='".$ir['id']."' type='checkbox' /></center></td>
-			<td $cls><a title='Edit invoice {$ir['id']} in a new window' target=_blank href='$scriptname?action=editinvoice&amp;id=".$ir['id']."'><div class='editiditm icon edit'><span>".$r['id']."</span></a></td>
-			<td $cls>".$ir['agtitle']."</td>
-			<td $cls>".$ir['number']."</td>
-			<td $cls>".$ir['invdesc']."</td>
-			<td $cls>". date("Y-m-d",$ir['date'])."</td>
-		  </tr>\n";
-		}
+    echo  " type='checkbox' /></td>".
+     "<td $cls><a title='Edit invoice {$ir['id']} in a new window' ".
+     "target=_blank href='$scriptname?action=editinvoice&amp;id=".$ir['id']."'><div class='editid'>";
+    echo $ir['id'];
+    echo "</div></a></td>".
+     "<td $cls>".$ir['agtitle'].  "&nbsp;</td>".
+     "<td $cls>".$ir['number'].  "&nbsp;</td>".
+     "<td $cls>".$ir['invdesc'].  "&nbsp;</td>".
+     "<td $cls>". date("Y-m-d",$ir['date'])."&nbsp;</td></tr>\n";
+  }
   ?>
   </tbody>
   </table>
@@ -628,14 +582,16 @@ echo "</div>\n";
     else
       $cls="";
 
+    echo "<tr><td><input name='contrlnk[]' value='".$ir['id']."' ";
     if ($ir['islinked']) echo " checked ";
-    echo "<tr>
-			<td><center><input name='contrlnk[]' value='".$ir['id']."' type='checkbox' /></center></td>
-			<td $cls><a class='editiditm icon edit' title='Edit Contract {$ir['id']} in a new window' target=_blank href='$scriptname?action=editcontract&amp;id=".$ir['id']."'><span>".$r['id']."</span></a></td>
-			<td $cls>".$ir['agtitle']."</td>
-			<td $cls>".$ir['ctitle']."</td>
-		  </tr>\n";
-		  }
+    echo  " type='checkbox' /></td>".
+     "<td $cls><a title='Edit Contract {$ir['id']} in a new window' ".
+     "target=_blank href='$scriptname?action=editcontract&amp;id=".$ir['id']."'><div class='editid'>";
+    echo $ir['id'];
+    echo "</div></a></td>".
+     "<td $cls>".$ir['agtitle'].  "&nbsp;</td>".
+     "<td $cls>".$ir['ctitle']."&nbsp;</td></tr>\n";
+  }
   ?>
   </tbody>
   </table>
@@ -661,37 +617,15 @@ echo "</div>\n";
 
 </div> <!-- tab container -->
 
-<table width="100%"><!-- save buttons -->
-<tr>
-<td>
-<?php if ($previd != "") { ?>
-	<a href='?action=editsoftware&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php } else {?>
-	<a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php }?>
-</td>
-<td style='text-align: center' colspan=1><button type="submit"><img src="images/save.png" alt="Save" > <?php te("Save");?></button></td>
+<table>
+<tr><td colspan=2><button type="submit"><img src="images/save.png" alt="Save"> <?php te("Save");?></button></td>
+
 <?php 
-if ($id!="new") {
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:delconfirm2(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;delid={$_GET['id']}\");'>".
-       "<img title='Delete' src='images/delete.png' border=0>".t("Delete")."</button></td>\n";
-
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:cloneconfirm(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;cloneid={$_GET['id']}\");'>".
-       "<img  src='images/copy.png' border=0>". t("Clone")."</button></td>\n";
-} 
-else 
-  echo "\n<td>&nbsp;</td>";
+echo "\n<td><button type='button' onclick='javascript:delconfirm2(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid={$r['id']}\");'>".
+     "<img title='delete' src='images/delete.png' border=0> ".t("Delete")."</button></td>\n</tr>\n";
 ?>
-<td style="text-align:right;">
-<?php if ($nextid != "") { ?>
-<a href='?action=editsoftware&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-<?php } else {?>
-	<a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-<?php }?>
-</td>
-</tr>
-</table>
 
+</table>
 <input type=hidden name='action' value='<?php echo $action?>'>
 <input type=hidden name='id' value='<?php echo $id?>'>
 </form>

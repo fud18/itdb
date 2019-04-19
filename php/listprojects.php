@@ -1,433 +1,70 @@
 <SCRIPT LANGUAGE="JavaScript"> 
+$(function () {
+  $('table#projectlisttbl').dataTable({
+                "sPaginationType": "full_numbers",
+                "bJQueryUI": true,
+                "iDisplayLength": 25,
+                "aLengthMenu": [[10,25, 50, 100, -1], [10,25, 50, 100, "All"]],
+                "bLengthChange": true,
+                "bFilter": true,
+                "bSort": true,
+                "bInfo": true,
+                "sDom": '<"H"Tlpf>rt<"F"ip>',
+                "oTableTools": {
+                        "sSwfPath": "swf/copy_cvs_xls_pdf.swf"
+                }
 
-  function confirm_filled($row)
-  {
-	  var filled = 0;
-	  $row.find('input,select').each(function() {
-		  if (jQuery(this).val()) filled++;
-	  });
-	  if (filled) return confirm('Do you really want to remove this row?');
-	  return true;
-  };
-
- $(document).ready(function() {
-
-    //delete table row on image click
-    $('.delrow').click(function(){
-        var answer = confirm("Are you sure you want to delete this row ?")
-        if (answer) 
-	  $(this).parent().parent().remove();
-    });
-
-    $("#caddrow").click(function($e) {
-	var row = $('#contactstable tr:last').clone(true);
-        $e.preventDefault();
-	row.find("input:text").val("");
-	row.find("img").css("display","inline");
-	row.insertAfter('#contactstable tr:last');
-    });
-    $("#uaddrow").click(function($e) {
-	var row = $('#urlstable tr:last').clone(true);
-        $e.preventDefault();
-	row.find("input:text").val("");
-	row.find("img").css("display","inline");
-	row.insertAfter('#urlstable tr:last');
-    });
   });
-
-  $(document).ready(function() {
-    $("#locationid").change(function() {
-      var locationid=$(this).val();
-      var locareaid=$('#locareaid').val();
-      var dataString = 'locationid='+ locationid;
-	  
-      $.ajax ({
-	  type: "POST",
-	  url: "php/locarea_options_ajax.php",
-	  data: dataString,
-	  cache: false,
-	  success: function(html) {
-	    $("#locareaid").html(html);
-	  }
-      });
-    });
-  });
+});
 
 </SCRIPT>
 <?php 
 
 if (!isset($initok)) {echo "do not run this script directly";exit;}
-/* Cory Funk 2015, cfunk@fhsu.edu */
 
-//error_reporting(E_ALL);
-//ini_set('display_errors', '1');
+/* Spiros Ioannou 2009 , sivann _at_ gmail.com */
 
-//delete department
-if (isset($_GET['delid'])) { //Deletes the record in the current row 
-	$delid=$_GET['delid'];
-	$sql="DELETE from projects WHERE id=".$_GET['delid'];
-	$sth=db_exec($dbh,$sql);
-	echo "<script>document.location='$scriptname?action=listprojects'</script>";
-	echo "<a href='$scriptname?action=listprojects'></a>"; 
-	exit;
-}
-
-if (!isset($initok)) {echo "do not run this script directly";exit;}
-
-/* Cory Funk 2015 , cafunk@fhsu.edu */
-
-// Get Project information
-$sql="SELECT * FROM projects WHERE id = '' OR id != '' ";
-$sth=$dbh->query($sql);
-while ($r=$sth->fetch(PDO::FETCH_ASSOC)) $projects[$r['id']]=$r;
-$sth->closeCursor();
-
-// Get Location information
-$sql="SELECT * from locations order by name,floor";
-$sth=$dbh->query($sql);
-while ($r=$sth->fetch(PDO::FETCH_ASSOC)) $locations[$r['id']]=$r;
-$sth->closeCursor();
-
-// Get Area/Room information
-$sql="SELECT * from locareas order by areaname";
-$sth=$dbh->query($sql);
-while ($r=$sth->fetch(PDO::FETCH_ASSOC)) $locareas[$r['id']]=$r;
-$sth->closeCursor();
-
-//export: export to excel (as html table readable by excel)
-if (isset($_GET['export']) && $_GET['export']==1) {
-  header('Content-Type: application/vnd.ms-excel; charset=UTF-8');
-  header("Expires: Thu, 01 Dec 1994 16:00:00 GMT");
-  header("Cache-Control: Must-Revalidate");
-  header('Content-Disposition: attachment; filename=itdb.xls');
-  header('Connection: close');
-  $export=1;
-  $expand=1;//always export expanded view
-}
-else 
-  $export=0;
-
-
-if (!$export) 
-  $perpage=25;
-else 
-  $perpage=100000;
-
-if ($page=="all") {
-  $perpage=100000;
-}
-
-
-
-if ($export)  {
-  echo "<html>\n<head><meta http-equiv=\"Content-Type\"".
-     " content=\"text/html; charset=UTF-8\" /></head>\n<body>\n";
-}
-
-
-
-// Display list
-if ($export) 
-  echo "\n<table border='1'>\n";
-else {
-  echo "<h1>Projects <a title='Add new project' href='$scriptname?action=editproject&amp;id=new'>".
-       "<img border=0 src='images/add.png'></a></h1>\n";
-  echo "<form name='frm'>\n";
-  echo "\n<table class='brdr'>\n";
-}
-
-if (!$export) {
-  $get2=$_GET;
-  unset($get2['orderby']);
-  $url=http_build_query($get2);
-}
-
-if (!isset($orderby) && empty($orderby)) 
-  $orderby="projects.id desc";
-elseif (isset($orderby)) {
-
-  if (stristr($orderby,"FROM")||stristr($orderby,"WHERE")) {
-    $orderby="id";
-  }
-  if (strstr($orderby,"DESC"))
-    $ob="+ASC";
-  else
-    $ob="+DESC";
-}
-
-echo "<thead>\n";
-$thead= "\n<tr style='height:4em'><th><a href='$fscriptname?$url&amp;orderby=projects.id$ob'>ID</a></th>".
-     "<th><a href='$fscriptname?$url&amp;orderby=projectname$ob'>Project Name</a></th>".
-     "<th><a href='$fscriptname?$url&amp;orderby=locationname$ob'>Building</a></th>".
-     "<th><a href='$fscriptname?$url&amp;orderby=locareaname$ob'>Area / Room</a></th>".
-     "<th><a href='$fscriptname?$url&amp;orderby=summary$ob'>Brief Summary</a></th>".
-     "<th><a href='$fscriptname?$url&amp;orderby=proj_status$ob'>Project Status</a></th>".
-	 "<th><button type='submit'><img border=0 src='images/search.png'></button></th>";
-
-if ($export) {
- //clean links from excel export
-  $thead = preg_replace('@<a[^>]*>([^<]+)</a>@si', '\\1 ', $thead); 
-  $thead = preg_replace('@<img[^>]*>@si', ' ', $thead); 
-}
-
-echo $thead;
-echo "</tr>\n</thead>\n";
-echo "\n<tbody>\n";
-echo "\n<tr>";
-
-//create pre-fill form box vars
-$id=isset($_GET['id'])?($_GET['id']):"";
-$projectname=isset($_GET['projectname'])?($_GET['projectname']):"";
-$locationid=isset($_GET['locationid'])?($_GET['locationid']):"";
-$locareaid=isset($_GET['locareaid'])?($_GET['locareaid']):"";
-$summary=isset($_GET['summary'])?($_GET['summary']):"";
-
-// Display search boxes
-if (!$export) {
-
-
-  echo "<td title='ID'><input type=text size=3 style='width:8em' value='$id' name='id'></td>";
-  echo "<td title='Project Name'><input type=text size=3 style='min-width:35em' value='$projectname' name='projectname'></td>";?>
-		<td><select style='width:auto' id='locationid' name='locationid'>
-			<option value=''><?php te("Select");?></option>
-			<?php 
-			foreach ($locations  as $key=>$location ) {
-				$dbid=$location['id']; 
-				$itype=$location['name'];
-				$s="";
-				if (($locationid=="$dbid")) $s=" SELECTED "; 
-				echo "    <option $s value='$dbid'>$itype</option>\n";
-			}
-			?>
-			</select>
-		</td>
-<!-- end, Location Information -->
-
-<!-- Room/Area Information -->
-		<?php if (is_numeric($locationid))?>
-		<td><select style='width:8em' id='locareaid' name='locareaid'>
-			<option value=''><?php te("Select");?></option>
-			<?php 
-			foreach ($locareas  as $key=>$locarea ) {
-				$dbid=$locarea['id']; 
-				$itype=$locarea['areaname'];
-				$s="";
-				if (($locareaid=="$dbid")) $s=" SELECTED "; 
-				echo "    <option $s value='$dbid'>$itype</option>\n";
-			}
-			?>
-			</select>
-		</td>
-<?php
-	echo "<td title='Brief Description'><input type=text' style='min-width:55em' value='$summary' name='summary'></td>";?>
-		  <td title='<?php te("What is the current status of the project?");?>'>
-			<select style='width:16em' id='proj_status' name='proj_status' />
-        		<option value=''><?php echo $r['proj_status']?></option>
-                <option title='<?php te("Cost, Best Possible Method, Time/Time Constraints, etc...");?>' value='Planning'>Planning</option>
-                <option title='<?php te("Steps towards completing the project.");?>' value='In Progress'>In Progress</option>
-                <option title='<?php te("Final touches to complete project.");?>' value='Finalizing'>Finalizing</option>
-                <option title='<?php te("Nothing more needed.");?>' value='Complete'>Complete</option>
-			</select>
-		  </td>
-          
-<?php
-}//if not export to excel: searchboxes
-
-// Create WHERE clause
-if (strlen($id)) $where.="AND id = '$id' ";
-if (isset($projectname) && strlen($projectname)) $where.="AND projectname LIKE '%$projectname%' ";
-if (isset($locationid) && strlen($locationid)) $where.="AND locationid = '$locationid' ";
-if (isset($locareaid) && strlen($locareaid)) $where.="AND (locareaid = '$locareaid') ";
-if (isset($summary) && strlen($summary)) $where.="AND summary LIKE '%$summary%' ";
-if (isset($proj_status) && strlen($proj_status)) $where.="AND proj_status LIKE '%$proj_status%' ";
-
-///////////////////////////////////////////////////////////							Pagination							///////////////////////////////////////////////////////////
-
-//	How many records are in table
-$sth=db_execute($dbh,"SELECT count(projects.id) as totalrows FROM projects WHERE id = '' OR id != '' $where");
-$totalrows=$sth->fetchColumn();
-
-//	Page Links
-//	Get's the current page number
-$get2=$_GET;
-unset($get2['page']);
-$url=http_build_query($get2);
-
-//	Previous and Next Links
-	$prev = $page - 1;
-	$next = $page + 1;
-
-//	Previous Page
-	if ($page > 1){
-	$prevlink .="<a href='$fscriptname?$url&amp;page=$prev'><img src='../images/previous-button.png' width='64' height='25' alt='previous' /></a> ";
-	}else{
-	$prevlink .="<img src='../images/previous-button.png' width='64' height='25' alt='previous' /> ";
-	}
-
-//	Numbers
-	for ($plinks="",$pc=1;$pc<=ceil($totalrows/$perpage);$pc++){
-		if ($pc==$page){
-			$plinks.="<b><u><a href='$fscriptname?$url&amp;page=$pc'>[$pc]</a></u></b> ";
-		}else{
-			$plinks.="<a href='$fscriptname?$url&amp;page=$pc'>$pc</a> ";
-		}
-	}
-
-//	Next Page
-	if ($page < ceil($totalrows/$perpage)){
-	$nextlink .="<a href='$fscriptname?$url&amp;page=$next'><img src='../images/next-button.png' width='64' height='25' alt='next' /></a> ";
-	}else{
-	$nextlink .=" <img src='../images/next-button.png' width='64' height='25' alt='next' />";
-	}
-
-//	Show All
-	$alllink .="<a href='$fscriptname?$url&amp;page=all'><br /><img src='../images/view-all-button.gif' width='64' height='25' alt='show all' /></a> ";
-
-///////////////////////////////////////////////////////////							end, Pagination							///////////////////////////////////////////////////////////
-
-//page links
-$get2=$_GET;
-unset($get2['page']);
-$url=http_build_query($get2);
-
-for ($plinks="",$pc=1;$pc<=ceil($totalrows/$perpage);$pc++) {
- if ($pc==$page)
-   $plinks.="<b><u><a href='$fscriptname?$url&amp;page=$pc'>$pc</a></u></b> ";
- else
-   $plinks.="<a href='$fscriptname?$url&amp;page=$pc'>$pc</a> ";
-}
-$plinks.="<a href='$fscriptname?$url&amp;page=all'>[show all]</a> ";
-
-$t=time();
-$sql="SELECT * FROM projects WHERE id = '' OR id != '' $where order by $orderby LIMIT $perpage OFFSET ".($perpage*($page-1));
+$sql="SELECT * from projects";
 $sth=db_execute($dbh,$sql);
-
-// Display Results
-$currow=0;
-while ($r=$sth->fetch(PDO::FETCH_ASSOC)) {
-$currow++;
-
-// Table Row
-  if ($currow%2) $c="class='dark'";
-  else $c="";
-
-  echo "\n<tr $c>".
-       "<td><a class='editiditm icon edit' title='Edit' href='$fscriptname?action=editproject&amp;id=".$r['id']."'><span>Edit</span></a></td>".
-       "\n  <td>".$r['projectname']."</td>".
-       "\n  <td>".$locations[$r['locationid']]['name']."</td>".	   
-       "\n  <td><center>".$locareas[$r['locareaid']]['areaname']."</center></td>".
-       "\n  <td>".$r['summary']."</td>".
-       "\n  <td>".$r['proj_status']."</td>";
-
-			echo "<td><center><input type='image' src='images/delete.png' onclick='javascript:delconfirm2(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid={$r['id']}\");'></td>\n</tr>\n";
-			echo "\n<input type=hidden name='action' value='$action'>";
-			echo "\n<input type=hidden name='id' value='$id'>";
-		?>
-        </tr>
-<?php        
-}
-
-$sth->closeCursor();
-
-if ($export) {
-  echo "</tbody>\n</table>\n";
-  exit;
-}
-else {
-    $cs=7;
-
 ?>
-  <tr><tr><td colspan='<?php echo $cs?>' class=tdc></td></tr>
-  </tbody>
-  </table>
-  <tr><td colspan='<?php echo $cs?>' class=tdc><button type=submit><img src='images/search.png'>Search</button></td></tr>
-  <input type='hidden' name='action' value='<?php echo $_GET['action']?>'>
-  </form>
 
-<?php  ///////////////////////////////////////////////////////////							Pagination Links							///////////////////////////////////////////////////////////?>
+<h1><?php te("Projects");?> <a title='<?php te("Add new projects");?>' href='<?php echo $scriptname?>?action=editproject&amp;id=new'><img border=0 src='images/add.png' ></a>
+</h1>
 
-<div class='gray'>
-  <br /><b><?php echo $totalrows?> results<br>
-	<?php if ($page >= 1 && $page != "all" && $totalrows != 0){
-		echo $prevlink;
-	}
-	if ($page != "all"){
-	// Function to generate pagination array - that is a list of links for pages navigation
-    function paginate ($base_url, $query_str, $total_pages, $page, $perpage)
-    {
-        // Array to store page link list
-        $page_array = array ();
-        // Show dots flag - where to show dots?
-        $dotshow = true;
-        // walk through the list of pages
-        for ( $i = 1; $i <= $total_pages; $i ++ )
-        {
-           // If first or last page or the page number falls 
-           // within the pagination limit
-           // generate the links for these pages
-           if ($i == 1 || $i == $total_pages || 
-                 ($i >= $page - $perpage && $i <= $page + $perpage) )
-           {
-              // reset the show dots flag
-              $dotshow = true;
-              // If it's the current page, leave out the link
-              // otherwise set a URL field also
-              if ($i != $page)
-                  $page_array[$i]['url'] = $base_url . $query_str .
-                                             "=" . $i;
-              $page_array[$i]['text'] = strval ($i);
-           }
-           // If ellipses dots are to be displayed
-           // (page navigation skipped)
-           else if ($dotshow == true)
-           {
-               // set it to false, so that more than one 
-               // set of ellipses is not displayed
-               $dotshow = false;
-               $page_array[$i]['text'] = "...";
-           }
-        }
-        // return the navigation array
-        return $page_array;
-    }
-    // To use the pagination function in a 
-    // PHP script to display the list of links
-    // paginate total number of pages ($pc) - current page is $page and show
-    // 3 links around the current page
-    $pages = paginate ("?$url&amp;", "page", ($pc - 1), $page, 3); ?>
+<table  class='display' width='100%' border=0 id='projectlisttbl'>
 
-    <?php 
-    // list display
-    foreach ($pages as $page) {
-        // If page has a link
-        if (isset ($page['url'])) { ?>
-            <a href="<?php echo $page['url']?>">
-    		<?php echo $page['text'] ?>
-    	</a>
-    <?php }
-        // no link - just display the text
-         else 
-            echo $page['text'];
-    }
-	}?>
-	<?php if ($page >= 1 && $page != "all" && $totalrows != 0){
-		echo $nextlink."<br />";
-	}else
-	?>
-	<?php if ($page != "all" && $totalrows != 0){
-		echo $alllink."<br />";
-	}else
-	?>
-	<a href='<?php echo "$fscriptname?action=$action&amp;export=1"?>'><img src='images/xcel2.jpg' height=25 border=0>Export to Excel
-    
-<?php  ///////////////////////////////////////////////////////////							end, Pagination	Links						///////////////////////////////////////////////////////////?>
-
+<thead>
+<tr>
+  <th style='width:70px'><?php te("Edit/Delete");?></th>
+  <th><?php te("Project Name");?></th>
+  <th><?php te("Building");?></th>
+  <th><?php te("Area / Room");?></th>
+  <th><?php te("Brief Summary");?></th>
+  <th><?php te("Project Status");?></th>
+</tr>
+</thead>
+<tbody>
 <?php 
-}
 
-if ($export) {
-  echo "\n</body>\n</html>\n";
-  exit;
-}
+$i=0;
+/// print actions list
+while ($r=$sth->fetch(PDO::FETCH_ASSOC)) {
+  $i1++;
+  $type="";
 
+  echo "\n<tr id='trid{$r['id']}'>";
+  echo "<td><div class='editiditm icon edit'><center><a href='$scriptname?action=editproject&amp;id=".$r['id']."'><img src='../images/edit2.png'></a><a href='../php/delproject.php?id=".$r['id']."'><img src='../images/delete.png' border=0></a></center></div></td>";
+  echo "<td>".$r['projectname']."</td>";
+  echo "<td>".$locations[$r['locationid']]['name']."</td>";
+  echo "<td><center>".$locareas[$r['locareaid']]['areaname']."</center></td>";
+  echo "<td>".$r['summary']."</td>";
+  echo "<td>".$r['proj_status']."</td></tr>";
+  }
 ?>
+
+</tbody>
+</table>
+
+</form>
+</body>
+</html>

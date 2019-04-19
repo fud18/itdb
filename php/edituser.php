@@ -1,8 +1,8 @@
-<?php
-/* Spiros Ioannou 2009-2010 , sivann _at_ gmail.com */
+<?php 
 
-//error_reporting(E_ALL);				//***UNCOMMENT THESE 2 LINES TO SEE ERRORS ON THE PAGE***
-//ini_set('display_errors', '1');
+if (!isset($initok)) {echo "do not run this script directly";exit;}
+
+/* Spiros Ioannou 2009-2010 , sivann _at_ gmail.com */
 
 //delete user
 if (isset($_GET['delid'])) {
@@ -42,15 +42,17 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the user
          "<a href='javascript:history.go(-1);'>Go back</a></body></html>";
     exit;
   }
-  if ($_POST['id']=="new")  {//if we came from a post (save) the add user
+
+
+  if ($_POST['id']=="new")  {//if we came from a post (save) the add user 
     $sql="INSERT into users (username , userdesc , pass, usertype) ".
-	 " VALUES ('$username','$userdesc','$hashedPass', '$usertype')";
+	 " VALUES ('$username','$userdesc','$pass', '$usertype')";
     db_exec($dbh,$sql,0,0,$lastid);
     $lastid=$dbh->lastInsertId();
     print "<br><b>Added user <a href='$scriptname?action=$action&amp;id=$lastid'>$lastid</a></b><br>";
     echo "<script>window.location='$scriptname?action=$action&id=$lastid'</script> "; //go to the new user
     echo "\n</body></html>";
-    $id=$lastid;
+    //$id=$lastid;
     exit;
 
   }//new rack
@@ -64,82 +66,30 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the user
     if ($c) {
       echo "<b>Not saved -- Username already exists</b>";
     }
+    //else if ($_POST['id']==1 && $_POST['username']!="admin") { echo "<b>Cannot change admin username</b>"; }
     else {
-		$hashedPass = password_hash($pass, PASSWORD_BCRYPT);
         if ($username=='admin' && $usertype) {
-            echo "<h2>".t("User Admin has always full access")."</h2><br>";
+            echo "<h2>".t("user admin has always full access")."</h2><br>";
             $usertype=0;
         }
-			if ($chngpass==''){
           $sql="UPDATE users set ".
         " username='".$_POST['username']."', ".
         " userdesc='".$_POST['userdesc']."', ".
+        " pass='".$_POST['pass']."', ".
         " usertype='".$usertype."' ".
         " WHERE id=$id";
           db_exec($dbh,$sql);
-		}else{
-			  $sql="UPDATE users set ".
-			" username='".$_POST['username']."', ".
-			" userdesc='".$_POST['userdesc']."', ".
-			" pass='".$hashedPass."', ".
-			" usertype='".$usertype."' ".
-			" WHERE id=$id";
-			  db_exec($dbh,$sql);
-		}
     }
   }
 }//save pressed
 
-if ($id!="new") {
-  //get current item data
-  $id=$_GET['id'];
-  $sql="SELECT * FROM users WHERE id='$id'";
-  $sth=db_execute($dbh,$sql);
-  $user=$sth->fetchAll(PDO::FETCH_ASSOC);
-  
-	//  Next & Previous Buttons' Function
-	$curid = intval($user[0]);
-
-    // Select contents from the selected id
-    $sql = "SELECT * FROM users WHERE id='$curid'";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $info = $result->fetchAll(PDO::FETCH_ASSOC);
-    } else {
-        die('Not found');
-    }
-
-    // Next Record
-    $sql = "SELECT id FROM users WHERE id>'$id' LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $nextresults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$nextid = strval($nextresults[0]['id']);
-    }
-
-    // Previous Record
-    $sql = "SELECT id FROM users WHERE id<'$id' ORDER BY id DESC LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $prevresults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$previd = strval($prevresults[0]['id']);
-    }
-} else {
-    // No form has been submitted so use the lowest id and grab its info
-    $sql = "SELECT * FROM users WHERE id > 0 LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $inforesults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$info =  strval($inforesults[0]['id']);
-		
-    }
-}
-
-///////////////////////////////// display data 
+/////////////////////////////
+//// display data 
 
 if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
 $id=$_REQUEST['id'];
 
+//$sql="SELECT * FROM racks where racks.id='$id'";
 $sql="SELECT * from users where users.id='$id'";
 $sth=db_execute($dbh,$sql);
 $r=$sth->fetch(PDO::FETCH_ASSOC);
@@ -194,60 +144,14 @@ else
         </td></tr>
     <tr><td class="tdt"><?php te("Password");?>:</td> 
         <td><input autocomplete="off" class='input2' size=20 type="password"
-	     name='pass' value="">
-	 </td></tr>
-	<?php
-    function IsChecked($chkname,$value)
-    {
-        if(!empty($_POST[$chkname]))
-        {
-            foreach($_POST[$chkname] as $chkval)
-            {
-                if($chkval == $value)
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-?>
-    <tr><td class="tdt"><?php te("Change Password");?>:</td> 
-        <td><input type="checkbox" name="chngpass" value="Yes" />
+	     name='pass' value="<?php echo $r['pass']?>">
 	 </td></tr>
     <tr><td class="tdt"><?php te("Items");?>:</td> <td><?php echo countitemsofuser($r['id']) ?></td>
     </table>
     <ul>
       <li><b><?php te("Users are used for both web login and as item assignees");?></b></li>
       <li><sup>1</sup><?php te("Blank passwords prohibit login");?></li>
-      <li><?php te("Add user image from the files page Type = Avatar");?></li>
     </ul>
-    <br />
-    <br />
-    
-    <?php
-	$sql="SELECT *
-	FROM users, files
-	WHERE fname LIKE '%{$r['username']}%'
-	AND username='".$r['username']."'
-	AND type='12'";
-  $sth=db_execute($dbh,$sql);
-  $u=$sth->fetchAll(PDO::FETCH_ASSOC);
-	?>
-    
-		<center>
-				    <?php 
-					$pictureName=$u[0]['fname'];
-					if ($pictureName != ""){
-						echo "<a href='../data/files/avatar/".$pictureName."'><img style='max-width: 400px; max-height: 200px' src='data/files/avatar/".$pictureName."'><br />";$pictureName;	
-					}else{
-						echo "<a href='../data/files/avatar/na-avatar.png'><img style='max-width: 400px; max-height: 200px' src='data/files/avatar/na-avatar.png'>";
-					}
-					?>
-		</center>
-	<br />
-    <br />
-
 </td>
 
 <td class='smallrack' style='padding-left:10px;border-left:1px dashed #aaa'>
@@ -277,37 +181,19 @@ else
     </div>
 </td>
 </tr>
-</table>
-
-<table width="100%"><!-- save buttons -->
 <tr>
-<td>
-<?php if ($previd != "") { ?>
-	<a href='?action=edituser&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php } else {?>
-	<a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php }?>
-</td>
-<td style='text-align: center' colspan=1><button type="submit"><img src="images/save.png" alt="Save" > <?php te("Save");?></button></td>
+<td colspan=2>
+<button type="submit"><img src="images/save.png" alt="Save"> <?php te("Save");?></button>
 <?php 
-if ($id!="new") {
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:delconfirm2(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;delid={$_GET['id']}\");'>".
-       "<img title='Delete' src='images/delete.png' border=0>".t("Delete")."</button></td>\n";
-
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:cloneconfirm(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;cloneid={$_GET['id']}\");'>".
-       "<img  src='images/copy.png' border=0>". t("Clone")."</button></td>\n";
-} 
-else 
-  echo "\n<td>&nbsp;</td>";
+ if ($id!=1)
+echo "\n<button type='button' onclick='javascript:delconfirm2(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid=$id\",\"All items will be assigned to user [id:1].\");'>".
+     "<img title='delete' src='images/delete.png' border=0>".t("Delete"). "</button>\n";
 ?>
-<td style="text-align:right;">
-<?php if ($nextid != "") { ?>
-<a href='?action=edituser&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-<?php } else {?>
-	<a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-<?php }?>
+
 </td>
 </tr>
+
+
 </table>
 
 <input type=hidden name='id' value='<?php echo $id ?>'>

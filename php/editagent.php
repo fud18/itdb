@@ -41,8 +41,7 @@
 <?php 
 if (!isset($initok)) {echo "do not run this script directly";exit;}
 
-//error_reporting(E_ALL);
-//ini_set('display_errors', '1');
+/* Spiros Ioannou 2009-2010 , sivann _at_ gmail.com */
 
 //delete agent
 if (isset($_GET['delid'])) { //if we came from a post (save) the update agent 
@@ -100,6 +99,8 @@ if (isset($_POST['id'])) { //if we came from a post (save) then update agent
   }
   $contacts=implode("|",$row);
 
+
+
   $row=array();
   $urows=count($_POST['url_url']);
   for ($i=0;$i<$urows;$i++) {
@@ -113,7 +114,7 @@ if (isset($_POST['id'])) { //if we came from a post (save) then update agent
 
 
   $title=$_POST['title'];
-  $contactadd=$_POST['contactadd'];
+  $contactinfo=$_POST['contactinfo'];
   //don't accept empty fields
   if ((!strlen($title))) {
     echo "<br><b>Name and type are missing.</b><br><a href='javascript:history.go(-1);'>Go back</a></body></html>"; 
@@ -121,73 +122,25 @@ if (isset($_POST['id'])) { //if we came from a post (save) then update agent
   }
 
   if ($_POST['id']=="new")  {//if we came from a post (save) then add agent 
-    $sql="INSERT into agents (type,title,contactadd,contactadd2,contactcity,contactstate,contactzip,urls,salescontactname,salescontactphone,salescontactcellphone,salescontactfax,salescontactemail,salescontacturl,salescontactnotes,supportcontactname,supportcontactphone,supportcontactcellphone,supportcontactfax,supportcontactemail,supportcontacturl,supportcontactnotes)".
-         " VALUEs ('$type','$title','$contactadd','$contactadd2','$contactcity','$contactstate','$contactzip','$urls','$salescontactname','$salescontactphone','$salescontactcellphone','$salescontactfax','$salescontactemail','$salescontacturl','$salescontactnotes',
-		 		   '$supportcontactname','$supportcontactphone','$supportcontactcellphone','$supportcontactfax','$supportcontactemail','$supportcontacturl','$supportcontactnotes')";
-    $lastid=$dbh->lastInsertId();
+    $sql="INSERT into agents (type,title,contactinfo,contacts,urls)".
+         " VALUEs ('$type','$title','$contactinfo','$contacts','$urls')";
     db_exec($dbh,$sql,0,0,$lastid);
+    $lastid=$dbh->lastInsertId();
     print "<br><b>Added Agent <a href='$scriptname?action=$action&amp;id=$lastid'>$lastid</a></b><br>";
     echo "<script>window.location='$scriptname?action=$action&id=$lastid'</script> "; //go to the new item
     $id=$lastid;
   }
   else {
     $sql="UPDATE agents SET type='$type', title='$title', ".
-       " contactadd='$contactadd',contactadd2='$contactadd2',contactcity='$contactcity',contactstate='$contactstate',contactzip='$contactzip', urls='$urls',
-	   	 salescontactname='$salescontactname', salescontactphone='$salescontactphone', salescontactcellphone='$salescontactcellphone', salescontactfax='$salescontactfax', salescontactemail='$salescontactemail', 
-		 salescontacturl='$salescontacturl', salescontactnotes='$salescontactnotes', supportcontactname='$supportcontactname', supportcontactphone='$supportcontactphone', supportcontactcellphone='$supportcontactcellphone', 
-		 supportcontactfax='$supportcontactfax', supportcontactemail='$supportcontactemail', supportcontacturl='$supportcontacturl', supportcontactnotes='$supportcontactnotes' WHERE id=$id";
+       " contactinfo='$contactinfo', contacts='$contacts', urls='$urls' WHERE id=$id";
     db_exec($dbh,$sql);
   }
 
 
 }//save pressed
 
-if ($id!="new") {
-  //get current item data
-  $id=$_GET['id'];
-  $sql="SELECT * FROM agents WHERE id='$id'";
-  $sth=db_execute($dbh,$sql);
-  $agent=$sth->fetchAll(PDO::FETCH_ASSOC);
-  
-	//  Next & Previous Buttons' Function
-	$curid = intval($agent[0]);
-
-    // Select contents from the selected id
-    $sql = "SELECT * FROM agents WHERE id='$curid'";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $info = $result->fetchAll(PDO::FETCH_ASSOC);
-    } else {
-        die('Not found');
-    }
-
-    // Next Record
-    $sql = "SELECT id FROM agents WHERE id>'$id' LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $nextresults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$nextid = strval($nextresults[0]['id']);
-    }
-
-    // Previous Record
-    $sql = "SELECT id FROM agents WHERE id<'$id' ORDER BY id DESC LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $prevresults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$previd = strval($prevresults[0]['id']);
-    }
-} else {
-    // No form has been submitted so use the lowest id and grab its info
-    $sql = "SELECT * FROM agents WHERE id > 0 LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $inforesults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$info =  strval($inforesults[0]['id']);
-		
-    }
-}
-
-///////////////////////////////// display data now
+/////////////////////////////
+//// display data now
 
 
 if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
@@ -198,7 +151,7 @@ $sth=db_execute($dbh,$sql);
 $r=$sth->fetch(PDO::FETCH_ASSOC);
 if (($id !="new") && (count($r)<5)) {echo "ERROR: non-existent ID";exit;}
 
-$type=$r['type'];$title=$r['title'];$contactadd=$r['contactadd'];$contactadd2=$r['contactadd2'];$contactcity=$r['contactcity'];$contactstate=$r['contactstate'];$contactzip=$r['contactzip'];$contacts=$r['contacts'];$urls=$r['urls'];$salescontactname=$r['salescontactname'];$salescontactphone=$r['salescontactphone'];$salescontactcellphone=$r['salescontactcellphone'];$salescontactfax=$r['salescontactfax'];$salescontactemail=$r['salescontactemail'];$salescontacturl=$r['salescontacturl'];$salescontactnotes=$r['salescontactnotes'];$supportcontactname=$r['supportcontactname'];$supportcontactphone=$r['supportcontactphone'];$supportcontactcellphone=$r['supportcontactcellphone'];$supportcontactfax=$r['supportcontactfax'];$supportcontactemail=$r['supportcontactemail'];$supportcontacturl=$r['supportcontacturl'];$supportcontactnotes=$r['supportcontactnotes'];
+$type=$r['type'];$title=$r['title'];$contactinfo=$r['contactinfo'];$contacts=$r['contacts'];$urls=$r['urls'];
 
 echo "\n<form method=post  action='$scriptname?action=$action&amp;id=$id' enctype='multipart/form-data'  name='addfrm'>\n";
 
@@ -208,113 +161,65 @@ else
   echo "\n<h1>".t("Edit Agent")."</h1>\n";
 
 ?>
-<!-- Agent Properties -->
-<td><table width="65%" border="0">
-      <tr>
-        <td><table width="100%" border="0">
-          <tr>
-            <td valign="top"><table width="100%" border="0">
-              <tr>
-                <td><table width="100%" border="0" class="tbl2" >
-                  <tr>
-                    <td colspan="2" class="tdtop"><h3>
-                      <?php te("Agent Properties");?>
-                    </h3></td>
-                  </tr>
-                  <tr>
-                    <td class="tdt" width="20px"><?php te("ID");?>:</td>
-                    <td><input class='input1' type="text" name='id' value='<?php echo $id?>' size="3" /></td>
-                  </tr>
-                  <tr>
-                    <td class="tdt"><?php te("Name");?>
-                      :</td>
-                    <td><input style="width:25em" class='input1 mandatory' size="20" type="text" name='title' value="<?php echo $title?>" /></td>
-                  </tr>
-                  <tr>
-                    <td class="tdt"><?php te("Type(s)");?>
-                      :</td>
-                    <td title='<?php te("Ctrl+Click to select multiple roles for an agent ".
-                               "<br><br><u>Vendor &amp; Buyer</u>: will be listed in invoices &amp; Contracts ".
-                               "<br><br><u>H/W Manuf.</u>: will be listed in items editing ".
-                               "<br><br><u>S/W Manuf.</u>: will be listed in software editing ".
-                               "<br><br><u>Contractor</u>: will be listed in contracts");?>'><select style="width:27em" class='mandatory' multiple="multiple" size="5" name='types[]'>
-                      <?php 
-                                if (empty($type)) $type=0;
-                                $s1=($type&1)?"SELECTED":"";
-                                $s2=($type&2)?"SELECTED":"";
-                                $s4=($type&4)?"SELECTED":"";
-                                $s8=($type&8)?"SELECTED":"";
-                                $s16=($type&16)?"SELECTED":"";
-                                
-                                // ONLY POWER OF 2 VALUES HERE ?>
-                      <option <?php echo $s4?> value='4'>
-                        <?php te("Vendor");?>
-                        </option>
-                      <option <?php echo $s2?> value='2'>
-                        <?php te("S/W Manufacturer");?>
-                        </option>
-                      <option <?php echo $s8?> value='8'>
-                        <?php te("H/W Manufacturer");?>
-                        </option>
-                      <option <?php echo $s1?> value='1'>
-                        <?php te("Buyer");?>
-                        </option>
-                      <option <?php echo $s16?> value='16'>
-                        <?php te("Contractor");?>
-                        </option>
-                    </select></td>
-                  </tr>
-                </table></td>
-              </tr>
-              <tr>
-<td class="tdtop" title="Address, Phone, Other Info, etc" style="width:50em"><h3>
-              <?php te("Company Info");?>
-            </h3>
-              <table border=0 class="tbl2" width='100%'>
-              <tr>
-                  <td class="tdt"><?php te("Address 1");?>
-                  :</td>
-                  <td><input style="width:25em !important" name='contactadd' value='<?php echo $contactadd ?>' /></td>
-                </tr>
-              <tr>
-                  <td class="tdt"><?php te("Address 2");?>
-                  :</td>
-                  <td><input style="width:25em !important" name='contactadd2' value='<?php echo $contactadd2 ?>' /></td>
-                </tr>
-              <tr>
-                  <td class="tdt"><?php te("City");?>
-                  :</td>
-                  <td><input style="width:25em !important" name='contactcity' value='<?php echo $contactcity ?>' /></td>
-                </tr>
-              <tr>
-                  <td class="tdt"><?php te("State");?>
-                  :</td>
-                  <td><input style="width:25em !important" name='contactstate' value='<?php echo $contactstate ?>' /></td>
-                </tr>
-              <tr>
-                  <td class="tdt"><?php te("ZIP Code");?>
-                  :</td>
-                  <td><input style="width:25em !important" name='contactzip' value='<?php echo $contactzip ?>' /></td>
-                </tr>
-              <tr>
-                  <td class="tdt"><?php te("URL");?>
-                  :</td>
-                  <td><input style="width:25em !important" name='contacturl' value='<?php echo $urls ?>' /></td>
-                </tr>
-            </table></td>              </tr>
-              <tr>
-<td style='vertical-align:top;width:25%;' rowspan=2>
-  <h3> Related:</h3>
+
+
+<table >
+
+
+<tr>
+<td class="tdtop">
+    <h3><?php te("Agent Properties");?></h3>
+    <table border=0 class="tbl2" width='100%'>
+    <tr><td class="tdt"><?php te("ID");?>:</td> <td><input  class='input1' type=text name='id' value='<?php echo $id?>' readonly size=3></td></tr>
+    <tr><td class="tdt"><?php te("Name");?>:</td> <td><input  class='input1 mandatory' size=20 type=text name='title' value="<?php echo $title?>"></td></tr>
+    <tr><td class="tdt"><?php te("Type(s)");?>:</td> 
+        <td title='<?php te("Cntrl+Click to select multiple roles for an agent ".
+                   "<br><br><u>Vendor &amp; Buyer</u>: will be listed in invoices &amp; Contracts ".
+                   "<br><br><u>H/W Manuf.</u>: will be listed in items editing ".
+                   "<br><br><u>S/W Manuf.</u>: will be listed in software editing ".
+                   "<br><br><u>Contractor</u>: will be listed in contracts");?>'>
+    <select class='mandatory' multiple size=5 name='types[]'>
+    <?php 
+    if (empty($type)) $type=0;
+    $s1=($type&1)?"SELECTED":"";
+    $s2=($type&2)?"SELECTED":"";
+    $s4=($type&4)?"SELECTED":"";
+    $s8=($type&8)?"SELECTED":"";
+    $s16=($type&16)?"SELECTED":"";
+    ?>
+
+    <?php  // ONLY POWER OF 2 VALUES HERE ?>
+    <option <?php echo $s4?> value='4'><?php te("Vendor");?></option>
+    <option <?php echo $s2?> value='2'><?php te("S/W Manufacturer");?></option>
+    <option <?php echo $s8?> value='8'><?php te("H/W Manufacturer");?></option>
+    <option <?php echo $s1?> value='1'><?php te("Buyer");?></option>
+    <option <?php echo $s16?> value='16'><?php te("Contractor");?></option>
+    </select>
+    </td></tr>
+    </table>
+</td>
+
+<td class="tdtop" title='<?php te("Address, Phone number, other info, etc");?>' >
+  <h3><?php te("Contact Info");?></h3>
+   <textarea name='contactinfo' style='height: 90px;width:550px;' wrap='soft'><?php echo $contactinfo?></textarea> 
+</td>
+</tr>
+
+
+<!-- relevant item & software links -->
+<tr> 
+<td  style='vertical-align:top;' rowspan=2>
+  <h3> Related: </h3>
   <div>
     <span class="tita" onclick='showid("items");'><?php te("Items");?></span>  ,
     <span class="tita" onclick='showid("software");'><?php te("Software");?></span>  ,
-    <span class="tita" onclick='showid("invoices1");'><?php te("Invoices (Vendors)");?></span>  ,
-    <span class="tita" onclick='showid("invoices2");'><?php te("Invoices (Buyers)");?></span> 
+    <span class="tita" onclick='showid("invoices1");'><?php te("Invoices (vendors)");?></span>  ,
+    <span class="tita" onclick='showid("invoices2");'><?php te("Invoices (buyers)");?></span> 
   </div>
 
   <div class="scrltblcontainer4">
 
-  <div id='items' class='relatedlist'><?php te("ITEMS");?></div>
+  <div  id='items' class='relatedlist'><?php te("ITEMS");?></div>
   <?php 
   if (is_numeric($id)) {
     //print a table row
@@ -391,23 +296,25 @@ else
     echo $institems;
   }
   ?>
+
+
   
   </div><!-- scrlbcontainer -->
-<!--</td> 
+</td> 
 <td><h3> <?php te("Contacts");?> <img id='caddrow' src='images/add.png' title="<?php te("Add Row");?>"> </h3>
   <div class="scrltblcontainer3">
 	<table class=tbl2 id="contactstable">
 	<tr> 
 	    <th>-</th> 
 	    <th><?php te("Name");?></th> 
-	    <th><?php te("Phone Number");?></th> 
+	    <th><?php te("Phone numbers");?></th> 
 	    <th><?php te("Email");?></th> 
 	    <th><?php te("Role");?></th> 
 	    <th><?php te("Comments");?></th> 
 	</tr> 
 
 	<?php 
-/*	$allcontacts=explode("|",$contacts);
+	$allcontacts=explode("|",$contacts);
 	for ($i=0;$i<count($allcontacts);$i++) {
 	  $row=explode("#",$allcontacts[$i]);
 	  $name=$row[0];
@@ -415,7 +322,7 @@ else
 	  $email=$row[2];
 	  $role=$row[3];
 	  $comments=$row[4];
-*/	?>
+	?>
 	  <tr> 
 	      <td><img <?php  if (!$i) echo "style='display:none'";?> class='delrow' src='images/delete.png'></td>
 	      <td><input type="text" name="cont_name[]" size="15" value='<?php echo $name?>' ></td> 
@@ -425,16 +332,16 @@ else
 	      <td><textarea name="cont_comments[]" size="20" ><?php echo $comments?></textarea></td> 
 	  </tr> 
 	<?php 
-//	}
+	}
 	?>
 
 
 	</table><br>
 
-  </div>--><!-- scrlbcontainer -->
+  </div><!-- scrlbcontainer -->
 
 
-<!--</td>
+</td>
 
 </tr>
 <tr>
@@ -451,12 +358,12 @@ else
 	</tr> 
 
 	<?php 
-/*	$allurls=explode("|",$urls);
+	$allurls=explode("|",$urls);
 	for ($i=0;$i<count($allurls);$i++) {
 	  $row=explode("#",$allurls[$i]);
 	  $description=$row[0];
 	  $url=urldecode($row[1]);
-*/	?>
+	?>
 	  <tr> 
 	      <td><img <?php  if (!$i) echo "style='display:none'";?> class='delrow' src='images/delete.png'></td>
 	      <td><input type="text" name="url_description[]" size="25" value='<?php echo $description?>' ></td> 
@@ -464,78 +371,23 @@ else
 	      <td><a target="_blank" href='<?php echo $url?>'><?php te("GO");?></a></td> 
 	  </tr> 
 	<?php 
-//	}
+	}
 	?>
 	</table><br>
 	<sup>*</sup>
 	<?php te("Use the string 'service'  on the description to display this url on the item edit page");?>
--->
-	</table>
 </td>
-<td>
-</td>
-<td class="tdtop" title="Address, Phone, Other Info, etc"><h3><?php te("Sales Contact Info");?></h3>
-	<table border=0 class="tbl2" width='100%'>
-        <tr><td class="tdt"><?php te("Name");?>:</td><td><input style="width:25em !important" name='salescontactname' value='<?php echo $salescontactname ?>' /></td></tr>
-        <tr><td class="tdt"><?php te("Phone");?>:</td><td><input style="width:25em !important" name='salescontactphone' value='<?php echo $salescontactphone ?>' /></td></tr>
-        <tr><td class="tdt"><?php te("Mobile Phone");?>:</td><td><input style="width:25em !important" name='salescontactcellphone' value='<?php echo $salescontactcellphone ?>' /></td></tr>
-        <tr><td class="tdt"><?php te("Fax");?>:</td><td><input style="width:25em !important" name='salescontactfax' value='<?php echo $salescontactfax ?>' /></td></tr>
-        <tr><td class="tdt"><?php te("Email");?>:</td><td><input style="width:25em !important" name='salescontactemail' value='<?php echo $salescontactemail ?>' /></td></tr>
-        <tr><td class="tdt"><?php te("URL");?>:</td><td><input style="width:25em !important" name='salescontacturl' value='<?php echo $salescontacturl ?>' /></td></tr>
-        <tr><td class="tdt"><?php te("Notes");?>:</td><td><textarea style='width:25em !important;height:10em' name='salescontactnotes' ><?php echo $salescontactnotes ?></textarea></td></tr>
-	</table>
-</td>
-<td class="tdtop" title="Address, Phone, Other Info, etc"><h3><?php te("Support Contact Info");?></h3>
-    <table border=0 class="tbl2" width='100%'>
-        <tr><td class="tdt"><?php te("Name");?>:</td><td><input style="width:25em !important" name='supportcontactname' value='<?php echo $supportcontactname ?>' /></td></tr>
-        <tr><td class="tdt"><?php te("Phone");?>:</td><td><input style="width:25em !important" name='supportcontactphone' value='<?php echo $supportcontactphone ?>' /></td></tr>
-        <tr><td class="tdt"><?php te("Mobile Phone");?>:</td><td><input style="width:25em !important" name='supportcontactcellphone' value='<?php echo $supportcontactcellphone ?>' /></td></tr>
-        <tr><td class="tdt"><?php te("Fax");?>:</td><td><input style="width:25em !important" name='supportcontactfax' value='<?php echo $supportcontactfax ?>' /></td></tr>
-        <tr><td class="tdt"><?php te("Email");?>:</td><td><input style="width:25em !important" name='supportcontactemail' value='<?php echo $supportcontactemail ?>' /></td></tr>
-        <tr><td class="tdt"><?php te("URL");?>:</td><td><input style="width:25em !important" name='supportcontacturl' value='<?php echo $supportcontacturl ?>' /></td></tr>
-        <tr><td class="tdt"><?php te("Notes");?>:</td><td><textarea style='width:25em !important;height:10em' name='supportcontactnotes' ><?php echo $supportcontactnotes ?></textarea>
-    </table>
-</td>          
 </tr>
-        </table></td>
-      </tr>
-      <tr>
-        <td>&nbsp;</td>
-      </tr>
 
-<table width="100%"><!-- save buttons -->
-<tr>
-<td>
-<?php if ($previd != "") { ?>
-	<a href='?action=editagent&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php } else {?>
-	<a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php }?>
-</td>
-<td style='text-align: center' colspan=1><button type="submit"><img src="images/save.png" alt="Save" > <?php te("Save");?></button></td>
+<tr><td ><button type="submit"><img src="images/save.png" alt="Save" > <?php te("Save");?></button></td>
 <?php 
-if ($id!="new") {
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:delconfirm2(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;delid={$_GET['id']}\");'>".
-       "<img title='Delete' src='images/delete.png' border=0>".t("Delete")."</button></td>\n";
-
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:cloneconfirm(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;cloneid={$_GET['id']}\");'>".
-       "<img  src='images/copy.png' border=0>". t("Clone")."</button></td>\n";
-} 
-else 
-  echo "\n<td>&nbsp;</td>";
+echo "\n<td><button type='button' onclick='javascript:delconfirm2(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid={$r['id']}\");'>".
+     "<img title='Delete' src='images/delete.png' border=0>".t("Delete")."</button></td>\n</tr>\n";
+echo "\n</table>\n";
+echo "\n<input type=hidden name='action' value='$action'>";
+echo "\n<input type=hidden name='id' value='$id'>";
 ?>
-<td style="text-align:right;">
-<?php if ($nextid != "") { ?>
-<a href='?action=editagent&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-<?php } else {?>
-	<a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-<?php }?>
-</td>
-</tr>
-</table>
 
-      </tr>
-    </table>
-    </form>
+</form>
 </body>
 </html>

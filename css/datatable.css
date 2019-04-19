@@ -191,6 +191,7 @@ table.display {
 	width: 100%;
 	clear: both;
 	border-collapse: collapse;
+	vertical-align:middle;
 }
 
 table.display tfoot th {
@@ -209,6 +210,7 @@ table.display td {
 
 table.display td.center {
 	text-align: center;
+	vertical-align:middle;
 }
 
 

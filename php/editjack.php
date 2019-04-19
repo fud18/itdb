@@ -112,9 +112,8 @@ if (isset($_GET['delid'])) { //if we came from a post (save) the update jack
 if (isset($_POST['id'])) { //if we came from a post (save) then update jack 
   $id=$_POST['id'];
   if ($_POST['id']=="new")  {//if we came from a post (save) then add jack 
-    $sql="INSERT INTO jacks (switchname, locareaid, locationid, jackname, departmentsid, departmentabbrsid, userdev, modport, pubipnet, pubiphost, vlanname, privipnet, priviphost, groupname, vlanid, notes, temp_perm, userid,
-		  wallcoord) VALUES ('$switchname', '$locareaid', '$locationid', '$jackname', '$departmentsid', '$departmentabbrsid', '$userdev', '$modport', '$pubipnet', '$pubiphost', '$vlanname', '$privipnet', '$priviphost',
-		  '$groupname', '$vlanid', '$notes', '$temp_perm', '$userid', '$wallcoord')";
+    $sql="INSERT INTO jacks (switchname, locareaid, locationid, jackname, departmentsid, departmentabbrsid, userdev, modport, mod, port, pubipnet, pubiphost, vlanname, privipnet, priviphost, groupname, vlanid, notes, temp_perm, userid,
+		  wallcoord) VALUES ('$switchname', '$locareaid', '$locationid', '$jackname', '$departmentsid', '$departmentabbrsid', '$userdev', '$modport', SUBSTR('$modport',1,1), SUBSTR('00' || SUBSTR('$modport',2,2),-2,2), '$pubipnet', '$pubiphost', '$vlanname', '$privipnet', '$priviphost', '$groupname', '$vlanid', '$notes', '$temp_perm', '$userid', '$wallcoord')";
 		  
     db_exec($dbh,$sql,0,0,$lastid);
     $lastid=$dbh->lastInsertId();
@@ -125,8 +124,7 @@ if (isset($_POST['id'])) { //if we came from a post (save) then update jack
   else {
     $sql="UPDATE jacks SET ".
        " switchname='$switchname',locareaid='$locareaid',locationid='$locationid',jackname='$jackname',departmentsid='$departmentsid', departmentabbrsid='$departmentabbrsid',
-	   	 userdev='$userdev', modport='$modport', pubipnet='$pubipnet', pubiphost='$pubiphost', vlanname='$vlanname', privipnet='$privipnet', priviphost='$priviphost', groupname='$groupname', vlanid='$vlanid', notes='$notes',	
-		 temp_perm='$temp_perm', userid='$userid', wallcoord='$wallcoord' WHERE id=$id";
+	   	 userdev='$userdev', modport='$modport', mod=SUBSTR(modport,1,1), port=SUBSTR('00' || SUBSTR(modport,2,2),-2,2), pubipnet='$pubipnet', pubiphost='$pubiphost', vlanname='$vlanname', privipnet='$privipnet', priviphost='$priviphost', groupname='$groupname', vlanid='$vlanid', notes='$notes',	temp_perm='$temp_perm', userid='$userid', wallcoord='$wallcoord' WHERE id=$id";
     db_exec($dbh,$sql);
   }
 }//save pressed

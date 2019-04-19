@@ -72,11 +72,10 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the file
       $path_parts = pathinfo($_FILES['file']["name"]);
       $fileext=$path_parts['extension'];
       $ftypestr=ftype2str($_POST['type'],$dbh);
-      //$unique=substr(uniqid(),-4,4);
+      $unique=substr(uniqid(),-4,4);
 
-      $filefn=strtolower("$ftypestr-".validfn($title).".$fileext");
-	  $lowftype=strtolower($ftypestr);
-      $uploadfile = $uploaddir.$lowftype."/".$filefn;
+      $filefn=strtolower("$ftypestr-".validfn($title)."-$unique.$fileext");
+      $uploadfile = $uploaddir.$filefn;
       $result = '';
 
       //Move the file from the stored location to the new location
@@ -128,11 +127,10 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the file
       $path_parts = pathinfo($_FILES['file']["name"]);
       $fileext=$path_parts['extension'];
       $ftypestr=ftype2str($_POST['type'],$dbh);
-      //$unique=substr(uniqid(),-4,4);
+      $unique=substr(uniqid(),-4,4);
 
-      $filefn=strtolower("$ftypestr-".validfn($title).".$fileext");
-	  $lowftype=strtolower($ftypestr);
-      $uploadfile = $uploaddir.$lowftype."/".$filefn;
+      $filefn=strtolower("$ftypestr-".validfn($title)."-$unique.$fileext");
+      $uploadfile = $uploaddir.$filefn;
       $result = '';
 
       //Move the file from the stored location to the new location
@@ -143,7 +141,7 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the file
 	  } elseif(!is_writable($uploaddir)) {
 	      $result .= " : Folder not writable.";
 	  } elseif(!is_writable($uploadfile)) {
-	      $result .= " : File not writable<br /><font color='red'>Possibility the file size is too large.</font>";
+	      $result .= " : File not writable.";
 	  }
 	  $filefn = '';
 
@@ -164,7 +162,7 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the file
   /* Redefine associations here */
 
 //echo "<pre>"; print_r($_REQUEST); echo "</pre>";
-//************************************************************
+
   //update item - file links 
   //remove old links for this object
   $sql="delete from item2file where fileid=$id";
@@ -197,7 +195,10 @@ if (isset($_POST['id'])) { //if we came from a post (save), update the file
 
 }//save pressed
 
-///////////////////////////////// display data now
+/////////////////////////////
+//// display data now
+
+
 if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
 $id=$_REQUEST['id'];
 
@@ -211,7 +212,7 @@ else
   $mytype="";
 
 if (($id !="new") && (count($r)<3)) {echo "ERROR: non-existent ID<br>($sql)";exit;}
-echo "\n<form id='mainform' method=post action='$scriptname?action=$action&amp;id=$id' enctype='multipart/form-data'  name='addfrm'>\n";
+echo "\n<form id='mainform' method=post  action='$scriptname?action=$action&amp;id=$id' enctype='multipart/form-data'  name='addfrm'>\n";
 
 ?>
 
@@ -266,7 +267,7 @@ else
     <tr><td class="tdt"><?php te("Title");?>:</td> <td><input  class='input2 mandatory' validate='required:true' size=20 type=text name='title' value="<?php echo $r['title']?>"></td></tr>
     <tr><td class="tdt"><?php te("Issue Date");?>:</td> <td><input  class='input2 dateinp mandatory' validate='required:true' id='date' size=20 type=text name='date' 
         value="<?php  if (!empty($r['date'])) echo date($dateparam,$r['date'])?>"></td></tr>
-    <tr><td class="tdt"><?php te("Filename");?>:</td><td><a target=_blank href="<?php echo $uploaddirwww.$r['typedesc']."/".$r['fname'] ?>"><?php echo $r['fname']?></a></td></tr>
+    <tr><td class="tdt"><?php te("Filename");?>:</td><td><a target=_blank href="<?php  echo $uploaddirwww.$r['fname'] ?>"><?php echo $r['fname']?></a></td></tr>
     <tr><td title='Number of items/software/invoices/etc which reference this file'
             class="tdt"><?php te("Associations");?>:</td> <td><b><?php  if ($_GET['id']!="new") echo countfileidlinks($_GET['id'],$dbh);?></b></td></tr>
     <tr><td class="tdt"><?php te("Uploaded by");?>:</td> <td><?php echo $r['uploader']?> on <?php  if (!empty($r['uploaddate'])) echo date($dateparam." H:m",$r['uploaddate'])?></td></tr>
@@ -399,26 +400,6 @@ else
     </table>
 <?php echo $tip?>
 </td>
-	<td class='tdtop'>
-<!-- 4-Device Image -->
-
-		<table border='0' class=tbl2> 
-		<tr>
-			<td colspan=2 ><h3><?php te("Device Image");?></h3></td>
-		</tr>
-		<tr>
-			<td>
-				    <?php 
-					      $pictureName=$r['fname'];
-					echo "<a href='../data/files/".$r['typedesc']."/".$r['fname']."'><img style='max-width: 400px; max-height: 200px' src='data/files/".$r['typedesc']."/".$r['fname']."'>";
-					?>
-			</td>
-		</tr>
-	</td>
-    </tr>
-      </table>
-
-    </td>
 <!-- upload -->
 </tr>
 
@@ -446,7 +427,7 @@ else
 
 	  <div class='scrltblcontainer' style='height:30em'>
 	  <table width='100%' class='sortable brdr' id='itemslisttbl'>
-	  <thead><tr><th><?php te("Rel");?></th><th><?php te("ID");?></th><th><?php te("Type");?></th><th><?php te("Manufacturer");?><th><?php te("Model");?></th></th>
+	  <thead><tr><th><?php te("Rel");?></th><th><?php te("ID");?></th><th><?php te("Type");?></th><th><?php te("Manuf.-Model");?></th>
                      <th><?php te("Label");?></th><th>DNS</th><th><?php te("Users");?></th><th><?php te("S/N");?></th></tr></thead>
 	  <tbody>
 	  <?php 
@@ -478,11 +459,10 @@ else
 	    echo "\n <tr><td><input name='itlnk[]' value='".$r['id'].
 	     "' checked type='checkbox' /></td>".
 	     "<td class='bld' style='white-space:nowrap'><a title='Edit item {$r['id']} in new window' ".
-	     "target=_blank href='$scriptname?action=edititem&id=".$r['id']."'><img src='images/edit2.png'>".
+	     "target=_blank href='$scriptname?action=edititem&id=".$r['id']."'><img src='images/edit.png'>".
 	     $r['id']."</a></b></td>".
 	     "<td class='bld'>".$r['typedesc']."</td>".
-	     "<td class='bld'>".$r['agtitle']."</td>".
-		 "<td class='bld'>".$r['model']."</td>".
+	     "<td class='bld'>".$r['agtitle']."&nbsp;".$r['model']."</td>".
 	     "<td class='bld'>".$r['label']."&nbsp;</td>".
 	     "<td class='bld'>".$r['dnsname']."&nbsp;</td>".
 	     "<td class='bld'>".$r['username']."&nbsp;</td>".
@@ -502,15 +482,14 @@ else
 	    echo "\n  <tr><td><input name='itlnk[]' value='".$r['id'].
 	     "' type='checkbox' /></td>".
 	     "<td style='white-space:nowrap'><a title='Edit item {$r['id']} in new window' ".
-	     "target=_blank href='$scriptname?action=edititem&id=".$r['id']."'><img src='images/edit2.png'>".
+	     "target=_blank href='$scriptname?action=edititem&id=".$r['id']."'><img src='images/edit.png'>".
 	     $r['id']."</a>&nbsp;</td>".
 	     "<td>".$r['typedesc']."</td>".
-		 "<td>".$r['agtitle']."</td>".
-	     "<td>".$r['model']."</td>".
+	     "<td>".$r['agtitle']."&nbsp;".$r['model']."</td>".
 	     "<td>".$r['label']."&nbsp;</td>".
-	     "<td>".$r['dnsname']."&nbsp;</td>".
-	     "<td>".$r['username']."&nbsp;</td>".
-	     "<td>".$r['sn']."&nbsp;</td></tr>\n";
+	     "<td >".$r['dnsname']."&nbsp;</td>".
+	     "<td >".$r['username']."&nbsp;</td>".
+	     "<td >".$r['sn']."&nbsp;</td></tr>\n";
 	  }
 	?>
 
@@ -572,7 +551,7 @@ else
 	    echo "\n <tr><td><input name='softlnk[]' value='".$r['id'].
 	     "' checked type='checkbox' /></td>".
 	     "<td class='bld' style='white-space:nowrap'><a title='Edit Software {$r['id']} in new window' ".
-	     "target=_blank href='$scriptname?action=editsoftware&id=".$r['id']."'><img src='images/edit2.png'>".
+	     "target=_blank href='$scriptname?action=editsoftware&id=".$r['id']."'><img src='images/edit.png'>".
 	     $r['id']."</a></b></td>".
 	     "<td class='bld'>".$r['agtitle']."&nbsp;</td>".
 	     "<td class='bld'>".$r['stitle']."&nbsp;".$r['sversion']."&nbsp;</td>";
@@ -590,7 +569,7 @@ else
 	    echo "\n  <tr><td><input name='softlnk[]' value='".$r['id'].
 	     "' type='checkbox' /></td>".
 	     "<td style='white-space:nowrap'><a title='Edit Software {$r['id']} in new window' ".
-	     "target=_blank href='$scriptname?action=editsoftware&id=".$r['id']."'><img src='images/edit2.png'>".
+	     "target=_blank href='$scriptname?action=editsoftware&id=".$r['id']."'><img src='images/edit.png'>".
 	     $r['id']."</a>&nbsp;</td>".
 	     "<td>".$r['agtitle']."&nbsp;</td>".
 	     "<td>".$r['stitle']."&nbsp;".$r['sversion']."&nbsp;</td>";
@@ -656,7 +635,7 @@ else
 	    echo "\n <tr><td><input name='contrlnk[]' value='".$r['id'].
 	     "' checked type='checkbox' /></td>".
 	     "<td class='bld' style='white-space:nowrap'><a title='Edit Contract {$r['id']} in new window' ".
-	     "target=_blank href='$scriptname?action=editcontract&id=".$r['id']."'><img src='images/edit2.png'>".
+	     "target=_blank href='$scriptname?action=editcontract&id=".$r['id']."'><img src='images/edit.png'>".
 	     $r['id']."</a></b></td>".
 	     "<td class='bld'>".$r['agtitle']."&nbsp;</td>".
 	     "<td class='bld'>".$r['ctitle']."&nbsp;".$r['sversion']."&nbsp;</td>";
@@ -674,7 +653,7 @@ else
 	    echo "\n  <tr><td><input name='contrlnk[]' value='".$r['id'].
 	     "' type='checkbox' /></td>".
 	     "<td style='white-space:nowrap'><a title='Edit Contract {$r['id']} in new window' ".
-	     "target=_blank href='$scriptname?action=editcontract&id=".$r['id']."'><img src='images/edit2.png'>".
+	     "target=_blank href='$scriptname?action=editcontract&id=".$r['id']."'><img src='images/edit.png'>".
 	     $r['id']."</a>&nbsp;</td>".
 	     "<td>".$r['agtitle']."&nbsp;</td>".
 	     "<td>".$r['ctitle']."&nbsp;".$r['sversion']."&nbsp;</td>";
@@ -695,85 +674,33 @@ else
      echo t("<br>-Files of type 'invoice' can be associated only with invoices and only using the 'invoice' menu ");
   }
 ?>
+
+
+
+
+
 </div><!-- tab3 contracts associations -->
 
 </div><!-- tab container -->
+
+
+
 </td></tr>
-<?php
-if ($id!="new") {
-  //get current item data
-  $id=$_GET['id'];
-  $sql="SELECT * FROM files WHERE id='$id'";
-  $sth=db_execute($dbh,$sql);
-  $file=$sth->fetchAll(PDO::FETCH_ASSOC);
-  
-	//  Next & Previous Buttons' Function
-	$curid = intval($dept[0]);
 
-    // Select contents from the selected id
-    $sql = "SELECT * FROM files WHERE id='$curid'";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $info = $result->fetchAll(PDO::FETCH_ASSOC);
-    } else {
-        die('Not found');
-    }
+<tr><td colspan=1><button type="submit"><img src="images/save.png" alt="Save"> <?php te("Save");?></button></td>
 
-    // Next Record
-    $sql = "SELECT id FROM files WHERE id>'$id' LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $nextresults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$nextid = strval($nextresults[0]['id']);
-    }
-
-    // Previous Record
-    $sql = "SELECT id FROM files WHERE id<'$id' ORDER BY id DESC LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $prevresults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$previd = strval($prevresults[0]['id']);
-    }
-} else {
-    // No form has been submitted so use the lowest id and grab its info
-    $sql = "SELECT * FROM files WHERE id > 0 LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $inforesults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$info =  strval($inforesults[0]['id']);
-		
-    }
-}
-?>
-<table width="100%"><!-- save buttons -->
-<tr>
-<td>
-<?php if ($previd != "") { ?>
-	<a href='?action=editfile&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php } else {?>
-	<a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php }?>
-</td>
-<td><button type="submit"><img src="images/save.png" alt="Save"> <?php te("Save");?></button></td>
 <?php 
-
 echo "\n<td style='text-align:right'><button type='button' onclick='javascript:delconfirm2(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid=$id\");'>".
-     "<img title='delete' src='images/delete.png' border=0>".t("Delete"). "</button></td>";?>
-     
-<td style="text-align:right;">
-<?php if ($nextid != "") { ?>
-<a href='?action=editfile&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-<?php } else {?>
-	<a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-<?php }?>
-</td></tr>
-<?php
+     "<img title='delete' src='images/delete.png' border=0>".t("Delete"). "</button></td>\n</tr>\n";
+
 // end of item links
 //////////////////////////////////////////////
 echo "\n</table>\n";
 echo "\n<input type=hidden name='action' value='$action'>";
 echo "\n<input type=hidden name='id' value='$id'>";
+
 ?>
+
 </form>
 </body>
 </html>

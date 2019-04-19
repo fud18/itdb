@@ -9,7 +9,7 @@
 	/* Array of database columns which should be read and sent back to DataTables. Use a space where
 	 * you want to insert a non-database field (for example a counter or static image)
 	 */
-	$aColumns = array('id','jackname','locationid','locareaid','vlanid','modport','departments','switchname','vlanname','userdev','pubipnet','pubiphost','privipnet','priviphost','groupname','wallcoord');
+	$aColumns = array('id','jackname','locationid','locareaid','vlanid','mpsort','departments','switchname','vlanname','userdev','pubipnet','pubiphost','privipnet','priviphost','groupname','wallcoord','notes');
 	
 	include( '../init.php');
 
@@ -150,12 +150,12 @@ $sql="SELECT
   jacks.userdev,
   jacks.userid,
   jacks.switchname,
-  jacks.modport,
   jacks.pubipnet,
   jacks.pubiphost,
   jacks.privipnet,
   jacks.priviphost,
   jacks.groupname,
+  substr(substr(modport,1,1) || substr('000000' || substr(modport,2),-7),-8) AS mpsort,
   departments.name AS departmentsid,
   locations.name AS locationid,
   locareas.areaname AS locareaid,

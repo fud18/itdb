@@ -65,37 +65,31 @@ $sth=db_execute($dbh,$sql);
 <thead>
 
 <tr>
-  <th width='5%'><?php te("Edit ID");?></th>
-  <th width='5%'><?php te("Parent ID");?></th>
+  <th style='width:70px'><?php te("ID");?></th>
+  <th><?php te("Parent ID");?></th>
   <th><?php te("Type");?></th>
   <th><?php te("Number");?></th>
-  <th width='40%'><?php te("Title");?></th>
+  <th><?php te("Title");?></th>
   <th><?php te("Start Date");?></th>
   <th><?php te("End Date");?></th>
 </tr>
 </thead>
+
 <tbody>
 <?php 
-
 $i=0;
 /// print actions list
 while ($r=$sth->fetch(PDO::FETCH_ASSOC)) {
   $i++;
   echo "\n<tr id='trid{$r['id']}'>";
-  echo "<td><a class='editiditm icon edit' href='$scriptname?action=editcontract&amp;id=".$r['id']."'><span>Edit</span></a></td>\n";
+  echo "<td class='editiditm icon edit'><center><a href='$scriptname?action=editcontract&amp;id=".$r['id']."'><img src='../images/edit2.png'></a><a href='../php/delcontract.php?id=".$r['id']."'><img src='../images/delete.png' border=0></a></center></td>";
   echo "<td>{$r['parentid']}</td>\n";
   echo "<td>{$r['name']}</td>\n";
   echo "<td>{$r['number']}</td>\n";
   echo "<td>{$r['title']}</td>\n";
   echo "<td><span title='{$r['startdate']}'></span>".date($dateparam,$r['startdate'])."</td>\n";
   echo "<td><span title='{$r['currentenddate']}'></span>".date($dateparam,$r['currentenddate'])."</td>\n";
-  echo "</tr>\n";
-}
-?>
+}?>
 
 </tbody>
 </table>
-
-</form>
-</body>
-</html>

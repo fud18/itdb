@@ -32,7 +32,7 @@ else {
 
 if ((isset($_GET['export']) && ($_GET['export']==1))) {
   $action = "listitems"; 
-  require ("php/listitems.php");
+  require ("php/listitems.php.bak");
   exit;
 }
 

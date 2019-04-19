@@ -44,6 +44,10 @@ if (isset($_GET['delid'])) { //if we came from delete
 
 
 if (isset($_POST['id'])) { //if we came from a post (save), update 
+  $id=$_POST['id'];
+  $name=$_POST['name'];
+  $floor=$_POST['floor'];
+
 
   //don't accept empty fields
   if ((empty($_POST['name']))|| empty($_POST['floor']) ) {
@@ -54,8 +58,7 @@ if (isset($_POST['id'])) { //if we came from a post (save), update
 
   if ($_POST['id']=="new")  {//if we came from a post (save) the add software 
     if (strlen($_FILES['file']['name'])>2) { //insert file
-	$filefn=strtolower("floorplan-"."$name.[$floor].$fileext");
-      //$filefn=strtolower("floorplan-".validfn($name)."-$unique.$fileext");
+      $filefn=strtolower("floorplan-".validfn($name)."-$unique.$fileext");
       $uploadfile = $uploaddir.$filefn;
       $result = '';
 
@@ -75,8 +78,8 @@ if (isset($_POST['id'])) { //if we came from a post (save), update
       }
       else { //file ok
 
-	  $sql="INSERT into locations (name,abbr,floor,floorplanfn,sortid)".
-	       " VALUES ('$name','$abbr','$floor','$filefn','$sortid')";
+	  $sql="INSERT into locations (name,floor,floorplanfn)".
+	       " VALUES ('$name','$floor','$filefn')";
 	  db_exec($dbh,$sql,0,0,$lastid);
 	  $lastid=$dbh->lastInsertId();
 	  print "<br><b>Added Location <a href='$scriptname?action=$action&amp;id=$lastid'>$lastid</a></b><br>";
@@ -89,8 +92,8 @@ if (isset($_POST['id'])) { //if we came from a post (save), update
 
     }//insert file
     else { //new and no file defined
-	  $sql="INSERT into locations (name,abbr,floor,sortid)".
-	       " VALUES ('$name','$abbr','$floor','$sortid')";
+	  $sql="INSERT into locations (name,floor)".
+	       " VALUES ('$name','$floor')";
 	  db_exec($dbh,$sql,0,0,$lastid);
 	  $lastid=$dbh->lastInsertId();
 	  print "<br><b>Added Location <a href='$scriptname?action=$action&amp;id=$lastid'>$lastid</a></b><br>";
@@ -102,7 +105,8 @@ if (isset($_POST['id'])) { //if we came from a post (save), update
     }
   }//new location
   else {
-    $sql="UPDATE locations SET name='$name',abbr='$abbr', floor='$floor', sortid='$sortid' WHERE locations.id='$id'";
+    $sql="UPDATE locations set name='$name', floor='$floor' ".
+       " WHERE id=$id";
     db_exec($dbh,$sql);
 
     if (strlen($_FILES['file']['name'])>2) { //update file
@@ -114,10 +118,9 @@ if (isset($_POST['id'])) { //if we came from a post (save), update
       $path_parts = pathinfo($_FILES['file']["name"]);
       $fileext=$path_parts['extension'];
       $ftypestr=ftype2str($_POST['type'],$dbh);
-      //$unique=substr(uniqid(),-4,4);
+      $unique=substr(uniqid(),-4,4);
 
-      $filefn=strtolower("floorplan-"."$name.[$floor].$fileext");
-      //$filefn=strtolower("floorplan-".validfn($name)."-$unique.$fileext");
+      $filefn=strtolower("floorplan-".validfn($name)."-$unique.$fileext");
       $uploadfile = $uploaddir.$filefn;
       $result = '';
 
@@ -150,59 +153,17 @@ if (isset($_POST['id'])) { //if we came from a post (save), update
 
 }//save pressed
 
-if ($id!="new") {
-  //get current item data
-  $id=$_GET['id'];
-  $sql="SELECT * FROM locations WHERE id='$id'";
-  $sth=db_execute($dbh,$sql);
-  $locs=$sth->fetchAll(PDO::FETCH_ASSOC);
-  
-	//  Next & Previous Buttons' Function
-	$curid = intval($locs[0]);
+/////////////////////////////
+//// display data now
 
-    // Select contents from the selected id
-    $sql = "SELECT * FROM locations WHERE id='$curid'";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $info = $result->fetchAll(PDO::FETCH_ASSOC);
-    } else {
-        die('Not found');
-    }
-
-    // Next Record
-    $sql = "SELECT id FROM locations WHERE id>'$id' LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $nextresults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$nextid = strval($nextresults[0]['id']);
-    }
-
-    // Previous Record
-    $sql = "SELECT id FROM locations WHERE id<'$id' ORDER BY id DESC LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $prevresults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$previd = strval($prevresults[0]['id']);
-    }
-} else {
-    // No form has been submitted so use the lowest id and grab its info
-    $sql = "SELECT * FROM locations WHERE id > 0 LIMIT 1";
-    $result = db_execute($dbh,$sql);
-    if ($result>0) {
-        $inforesults = $result->fetchAll(PDO::FETCH_ASSOC);
-		$info =  strval($inforesults[0]['id']);
-		
-    }
-}
-
-///////////////////////////////// display data now
 if (!isset($_REQUEST['id'])) {echo "ERROR:ID not defined";exit;}
+$id=$_REQUEST['id'];
 
-$sql="SELECT * FROM locations WHERE locations.id='$id'";
+$sql="SELECT * FROM locations where  locations.id='$id'";
 $sth=db_execute($dbh,$sql);
 $r=$sth->fetch(PDO::FETCH_ASSOC);
 
-if (($r['id'] !="new") && (count($r)<3)) {echo "ERROR: non-existent ID<br>($sql)";exit;}
+if (($id !="new") && (count($r)<3)) {echo "ERROR: non-existent ID<br>($sql)";exit;}
 echo "\n<form method=post  action='$scriptname?action=$action&amp;id=$id' enctype='multipart/form-data'  name='addfrm'>\n";
 
 ?>
@@ -221,9 +182,7 @@ else
     <table class="tbl2" style='width:300px;'>
     <tr><td colspan=2><h3><?php te("Location Properties");?></h3></td></tr>
     <tr><td class="tdt"><?php te("ID");?>:</td> <td><input  class='input2' type=text name='id' value='<?php echo $id?>' readonly size=3></td></tr>
-    <tr><td class="tdt"><?php te("Sortable ID");?>:</td> <td><input  class='input2' type=text name='sortid' value='<?php echo $r['sortid']?>' </td></tr>
     <tr><td class="tdt"><?php te("Building Name");?>:</td> <td><input  class='input2 mandatory' size=20 type=text name='name' value="<?php echo $r['name']?>"></td></tr>
-    <tr><td class="tdt"><?php te("Building Abbr.");?>:</td> <td><input  class='input2' size=20 type=text name='abbr' value="<?php echo $r['abbr']?>"></td></tr>
     <tr><td class="tdt"><?php te("Floor");?>:</td> <td><input  class='input2 mandatory' size=20 type=text name='floor' value="<?php echo $r['floor']?>"></td></tr>
     <tr><td class="tdt"><?php te("Filename");?>:</td><td><a target=_blank href="<?php  echo $uploaddirwww.$r['floorplanfn']; ?>"><?php echo $r['floorplanfn']?></a></td></tr>
     <tr><td title="Number of items/software/invoices/etc which reference this file" 
@@ -281,7 +240,19 @@ else
     </div>
 
   <br>
-  
+
+  <button type="submit"><img src="images/save.png" alt="Save"> <?php te("Save");?></button>
+  <?php 
+  echo "\n<button type='button' onclick='javascript:delconfirm2(\"{$r['id']}\",\"$scriptname?action=$action&amp;delid=$id\");'>".
+     "<img title='delete' src='images/delete.png' border=0> ".t("Delete")." </button>\n";
+  ?>
+
+  <input type=hidden name='action' value='<?php echo $action?>'>
+  <input type=hidden name='id' value='<?php echo $id?>'>
+  </form>
+
+</td>
+
 <td class="tdtop">
 <h3><?php te("Areas: rooms, offices");?></h3>
   <div class='scrltblcontainer4'  id='locareas'>
@@ -302,49 +273,16 @@ else
 
 <td>
 <?php 
-if (strlen($r['floorplanfn'])) {
-echo "<a href='".$fuploaddirwww."floorplan/".$r['floorplanfn']."' target='_new'><img style=max-height:700px;max-width:600px; src='".$fuploaddirwww."floorplan/".$r['floorplanfn']."'>";
-}?>
+if (strlen($r['floorplanfn'])) {?>
+<img width=600 src='<?php  echo $fuploaddirwww.$r['floorplanfn']; ?>'>
+<?php  }?>
+
 </td>
 
 
 </tr>
 </table>
 
-<table width="100%"><!-- save buttons -->
-<tr>
-<td>
-<?php if ($previd != "") { ?>
-	<a href='?action=editlocation&amp;id=<?php echo $previd?>'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php } else {?>
-	<a href='#'><button type="button"><img title='Previous Record' src='images/prev_rec.png' border=0><?php echo t("&nbsp; Previous Record")?></button></a>
-<?php }?>
-</td>
-<td style='text-align: center' colspan=1><button type="submit"><img src="images/save.png" alt="Save" > <?php te("Save");?></button></td>
-<?php 
-if ($id!="new") {
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:delconfirm2(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;delid={$_GET['id']}\");'>".
-       "<img title='Delete' src='images/delete.png' border=0>".t("Delete")."</button></td>\n";
-
-  echo "\n<td style='text-align: center' ><button type='button' onclick='javascript:cloneconfirm(\"Item {$_GET['id']}\",\"$scriptname?action=$action&amp;cloneid={$_GET['id']}\");'>".
-       "<img  src='images/copy.png' border=0>". t("Clone")."</button></td>\n";
-} 
-else 
-  echo "\n<td>&nbsp;</td>";
-?>
-<td style="text-align:right;">
-<?php if ($nextid != "") { ?>
-<a href='?action=editlocation&amp;id=<?php echo $nextid?>'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-<?php } else {?>
-	<a href='#'><button type="button"><?php echo t("Next Record &nbsp;")?><img title='Next Record' src='images/next_rec.png' border=0></button></a>
-<?php }?>
-</td>
-</tr>
-</table>
-
-  <input type=hidden name='action' value='<?php echo $action?>'>
-  <input type=hidden name='id' value='<?php echo $id?>'>
-  </form>
 
 </body>
 </html>
