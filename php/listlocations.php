@@ -39,7 +39,7 @@ $sth=db_execute($dbh,$sql);
 <thead>
 
 <tr>
-  <th width='2%'><?php te("Edit");?></th>
+  <th width='2%'><?php te("Edit/Delete");?></th>
   <th width='20%' nowrap><?php te("Location/Building Name");?></th>
   <th width='10%'><?php te("Floor");?></th>
   <th width='40%'><?php te("Areas/Rooms");?></th>

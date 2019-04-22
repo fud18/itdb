@@ -67,8 +67,14 @@ $sth=db_execute($dbh,$sql);
 <div class='scrtblcontainerlist'>
 <table class="display" width='100%' border=0 id="invlisttbl">
 <thead>
-<tr><th style='width:80px' nowrap><?php te("ID");?></th><th><?php te("Vendor");?></th><th><?php te("Buyer");?></th><th><?php te("Date");?></th>
-     <th><?php te("Order No");?></th><th><?php te("Description");?></th><th><?php te("Associated Files");?></th></tr>
+<tr>
+	<th style='width:80px' nowrap><?php te("Edit/Delete");?></th>
+    <th><?php te("Vendor");?></th><th><?php te("Buyer");?></th>
+    <th><?php te("Date");?></th>
+	<th><?php te("Order No");?></th>
+	<th><?php te("Description");?></th>
+	<th><?php te("Associated Files");?></th>
+</tr>
 </thead>
 <tbody>
 <?php 

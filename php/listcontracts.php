@@ -65,7 +65,7 @@ $sth=db_execute($dbh,$sql);
 <thead>
 
 <tr>
-  <th style='width:70px'><?php te("ID");?></th>
+  <th style='width:70px'><?php te("Edit/Delete");?></th>
   <th><?php te("Parent ID");?></th>
   <th><?php te("Type");?></th>
   <th><?php te("Number");?></th>

@@ -37,7 +37,7 @@ $sth=db_execute($dbh,$sql);
 
 <thead>
 <tr>
-  <th style='width:70px'><?php te("ID");?></th>
+  <th style='width:70px'><?php te("Edit/Delete");?></th>
   <th><?php te("Fiber Type");?></th>
   <th><?php te("Intra/Inter<br/>Building");?></th>
   <th><?php te("Light<br/>Guide");?></th>

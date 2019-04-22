@@ -37,7 +37,7 @@ $sth=db_execute($dbh,$sql);
 
 <thead>
 <tr>
-  <th style='width:70px'><?php te("ID");?></th>
+  <th style='width:70px'><?php te("Edit/Delete");?></th>
   <th><?php te("Type");?></th>
   <th><?php te("Title");?></th>
   <th><?php te("File");?></th>
