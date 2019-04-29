@@ -1,6 +1,7 @@
 <SCRIPT LANGUAGE="JavaScript"> 
 $(function () {
-  $('table#EXjacklisttbl').dataTable({
+  $('table#<?php echo $_GET['abbr'] ?>jacklisttbl').dataTable({
+	  			"bDestroy": true,
                 "sPaginationType": "full_numbers",
                 "bJQueryUI": true,
                 "iDisplayLength": 25,
@@ -13,10 +14,8 @@ $(function () {
                 "oTableTools": {
                         "sSwfPath": "swf/copy_cvs_xls_pdf.swf"
                 }
-
   });
 });
-
 </SCRIPT>
 <?php 
 /* Cory Funk 2019, cafunk@fhsu.edu */
@@ -28,13 +27,13 @@ $initok=1;
 require("../../init.php");
 
 // Get jack information
-$sql="SELECT jacks.*, locations.nameid FROM jacks JOIN locations WHERE locations.id = locationid";
+$sql="SELECT jacks.*, locations.abbr FROM jacks JOIN locations WHERE locations.id = locationid";
 $sth=$dbh->query($sql);
 while ($r=$sth->fetch(PDO::FETCH_ASSOC)) $jacks[$r['id']]=$r;
 $sth->closeCursor();
 
 // Get Location information
-$sql="SELECT * from locations order by name,floor";
+$sql="SELECT * from locations order by abbr,floor";
 $sth=$dbh->query($sql);
 while ($r=$sth->fetch(PDO::FETCH_ASSOC)) $locations[$r['id']]=$r;
 $sth->closeCursor();
@@ -61,7 +60,7 @@ $sth->closeCursor();
 <h1><?php te("Jacks");?> <a title='<?php te("Add new jack");?>' href='../../index.php?action=editjack&amp;id=new'><img border=0 src='images/add.png' ></a>
 </h1>
 
-<table  class='display' width='100%' border=0 id='EXjacklisttbl'>
+<table  class='display' width='100%' border=0 id='<?php echo $_GET['abbr'] ?>jacklisttbl'>
 
 <thead>
 <tr>
@@ -82,11 +81,11 @@ $sth->closeCursor();
 <tbody>
 <?php 
 //	How many records are in table
-$sth=db_execute($dbh,"SELECT count(jacks.id) as totalrows, locations.nameid FROM jacks JOIN locations WHERE locations.id = locationid AND nameid = 00000");
+$sth=db_execute($dbh,"SELECT count(jacks.id) as totalrows, locations.abbr FROM jacks JOIN locations WHERE locations.id = locationid AND abbr = '".$_GET['abbr']."'");
 $totalrows=$sth->fetchColumn();
 
 $t=time();
-$sql="SELECT jacks.*, locations.nameid FROM jacks JOIN locations WHERE locations.id = locationid AND nameid = 00000 $where ORDER BY switchname,mod,port LIMIT $totalrows";
+$sql="SELECT jacks.*, locations.abbr FROM jacks JOIN locations WHERE locations.id = locationid AND abbr = '".$_GET['abbr']."' $where ORDER BY switchname,mod,port LIMIT $totalrows";
 
 $sth=db_execute($dbh,$sql);
 
