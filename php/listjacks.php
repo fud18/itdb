@@ -11,26 +11,10 @@ a{
 	}
 </style>
 
-<?php
-  $sql="SELECT * FROM locations GROUP BY abbr ORDER BY abbr";
-  $sth=db_execute($dbh,$sql);
-?>
-
 <div id="tabs"><!-- tab container -->
   <ul>
 	<li style="display:none"><a href="../php/locations/UA.php" target="import" style="width:35px"><?php te("Start Here");?></a></li>
-    <tbody>
-<?php 
-$i=0;
-/// print actions list
-while ($r=$sth->fetch(PDO::FETCH_ASSOC)) {
-  $i++;
-  echo "<li style='width:60px'><a title='".$r['name']."' href='../php/locations/locations.php?abbr=".$r['abbr']."' target='import' style='width:35px'>".$r['abbr']."</a></li>";
-}?>
-</tbody>
-
-    
-<!--    <li style="width:60px"><a title="Akers Energy Center" href="../php/locations/AEC.php" target="import" style="width:35px"><?php te("AEC");?></a></li>
+    <li style="width:60px"><a title="Akers Energy Center" href="../php/locations/AEC.php" target="import" style="width:35px"><?php te("AEC");?></a></li>
     <li style="width:60px"><a title="Agnew Hall" href="../php/locations/AG.php" target="import" style="width:35px"><?php te("AG");?></a></li>
     <li style="width:60px"><a title="Albertson Hall" href="../php/locations/AH.php" target="import" style="width:35px"><?php te("AH");?></a></li>
     <li style="width:60px"><a title="Center for Applied Technology" href="../php/locations/AT.php" target="import" style="width:35px"><?php te("AT");?></a></li>
@@ -77,11 +61,11 @@ while ($r=$sth->fetch(PDO::FETCH_ASSOC)) {
     <li style="width:60px"><a title="Wooster Place #1" href="../php/locations/WP1.php" target="import" style="width:35px"><?php te("WP1");?></a></li>
     <li style="width:60px"><a title="Wooster Place A" href="../php/locations/WPA.php" target="import" style="width:35px"><?php te("WPA");?></a></li>
     <li style="width:60px"><a title="Wooster Place B" href="../php/locations/WPB.php" target="import" style="width:35px"><?php te("WPB");?></a></li>
-<!--    <br /><br /> 
+<!--    <br /><br /> -->
     <li style="width:60px"><a title="Wooster Place C" href="../php/locations/WPC.php" target="import" style="width:35px"><?php te("WPC");?></a></li>
     <li style="width:60px"><a title="Wooster Place D" href="../php/locations/WPD.php" target="import" style="width:35px"><?php te("WPD");?></a></li>
     <li style="width:60px"><a title="Wooster Place E" href="../php/locations/WPE.php" target="import" style="width:35px"><?php te("WPE");?></a></li>
-    <li style="width:60px"><a title="Wooster Place F" href="../php/locations/WPF.php" target="import" style="width:35px"><?php te("WPF");?></a></li>-->
+    <li style="width:60px"><a title="Wooster Place F" href="../php/locations/WPF.php" target="import" style="width:35px"><?php te("WPF");?></a></li>
 
 </div><!-- tab container -->
 	<iframe style="height:100%" width="100%" id="locations" name="locations" frameborder="0"></iframe>

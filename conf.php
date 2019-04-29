@@ -19,7 +19,6 @@ $trans_showmissing=0;
 $dblogsize=1000; /* how many database log entries to keep */
 $uploaddir="$scriptdir/data/files/"; /* how to access uploaded files from filesystem (absolute path, trailing slash)*/
 $uploaddirwww="data/files/"; /* how to access uploaded files from web browser (may be relative)*/
-$locpages="php/locations/"; /* how to access uploaded files from web browser (may be relative)*/
 $dbfile="$scriptdir/data/itdb.db"; /* sqlite db file */
 $demomode=0;
 

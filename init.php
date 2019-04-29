@@ -45,8 +45,6 @@ else
 
 $fscriptname="$prot://$servername:$serverport$scriptname";
 $fuploaddirwww="$prot://$servername:$serverport".dirname($scriptname)."/".$uploaddirwww;
-$puploaddirwww="$prot://$servername:$serverport".dirname($scriptname)."/".$locpages;
-
 
 // find out our username
 $procusername="";

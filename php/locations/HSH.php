@@ -1,6 +1,6 @@
 <SCRIPT LANGUAGE="JavaScript"> 
 $(function () {
-  $('table#UAjacklisttbl').dataTable({
+  $('table#HSHjacklisttbl').dataTable({
                 "sPaginationType": "full_numbers",
                 "bJQueryUI": true,
                 "iDisplayLength": 25,
@@ -28,7 +28,7 @@ $initok=1;
 require("../../init.php");
 
 // Get jack information
-$sql="SELECT jacks.*, locations.nameid FROM jacks JOIN locations WHERE locations.id IS NULL";
+$sql="SELECT jacks.*, locations.nameid FROM jacks JOIN locations WHERE locations.id = locationid";
 $sth=$dbh->query($sql);
 while ($r=$sth->fetch(PDO::FETCH_ASSOC)) $jacks[$r['id']]=$r;
 $sth->closeCursor();
@@ -61,7 +61,7 @@ $sth->closeCursor();
 <h1><?php te("Jacks");?> <a title='<?php te("Add new jack");?>' href='../../index.php?action=editjack&amp;id=new'><img border=0 src='images/add.png' ></a>
 </h1>
 
-<table  class='display' width='100%' border=0 id='UAjacklisttbl'>
+<table  class='display' width='100%' border=0 id='HSHjacklisttbl'>
 
 <thead>
 <tr>
@@ -82,11 +82,11 @@ $sth->closeCursor();
 <tbody>
 <?php 
 //	How many records are in table
-$sth=db_execute($dbh,"SELECT count(jacks.id) as totalrows FROM jacks WHERE locationid IS NULL");
+$sth=db_execute($dbh,"SELECT count(jacks.id) as totalrows, locations.nameid FROM jacks JOIN locations WHERE locations.id = locationid AND nameid = 58000");
 $totalrows=$sth->fetchColumn();
 
 $t=time();
-$sql="SELECT * FROM jacks WHERE locationid IS NULL $where LIMIT $totalrows";
+$sql="SELECT jacks.*, locations.nameid FROM jacks JOIN locations WHERE locations.id = locationid AND nameid = 58000 $where ORDER BY switchname,mod,port LIMIT $totalrows";
 
 $sth=db_execute($dbh,$sql);
 

@@ -46,12 +46,11 @@ if (isset($_GET['delid'])) { //if we came from delete
 if (isset($_POST['id'])) { //if we came from a post (save), update 
   $id=$_POST['id'];
   $name=$_POST['name'];
-  $abbr=$_POST['abbr'];
   $floor=$_POST['floor'];
 
 
   //don't accept empty fields
-  if ((empty($_POST['name']))|| empty($_POST['abbr'])|| empty($_POST['floor']) ) {
+  if ((empty($_POST['name']))|| empty($_POST['floor']) ) {
     echo "<br><b>".t("Some <span class='mandatory'> mandatory</span> fields are missing").".</b><br>".
          "<a href='javascript:history.go(-1);'>Go back</a></body></html>";
     exit;
@@ -59,15 +58,9 @@ if (isset($_POST['id'])) { //if we came from a post (save), update
 
   if ($_POST['id']=="new")  {//if we came from a post (save) the add software 
     if (strlen($_FILES['file']['name'])>2) { //insert file
-      $filefn=strtolower("floorplan-".validfn($abbr)."[".validfn($floor)."].$fileext");
+      $filefn=strtolower("floorplan-".validfn($name)."-$unique.$fileext");
       $uploadfile = $uploaddir.$filefn;
       $result = '';
-
-if (file_put_contents($newFileName, $newFileContent) !== false) {
-    echo "File created (" . basename($newFileName) . ")";
-} else {
-    echo "Cannot create file (" . basename($newFileName) . ")";
-}
 
       //Move the file from the stored location to the new location
       if (!move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
@@ -85,26 +78,22 @@ if (file_put_contents($newFileName, $newFileContent) !== false) {
       }
       else { //file ok
 
-	  $sql="INSERT into locations (name,abbr,floor,floorplanfn)".
-	       " VALUES ('$name','$abbr','$floor','$filefn')";
+	  $sql="INSERT into locations (name,floor,floorplanfn)".
+	       " VALUES ('$name','$floor','$filefn')";
 	  db_exec($dbh,$sql,0,0,$lastid);
 	  $lastid=$dbh->lastInsertId();
-
-		$my_file = '../php/locations/file.txt';
-		$handle = fopen($my_file, 'w') or die('Cannot open file:  '.$my_file); //implicitly creates file
-
 	  print "<br><b>Added Location <a href='$scriptname?action=$action&amp;id=$lastid'>$lastid</a></b><br>";
 	  echo "<script>window.location='$scriptname?action=$action&id=$lastid'</script> "; //go to the new item
 	  echo "\n</body></html>";
-	  $id=$lastid;	
+	  $id=$lastid;
 	  exit;
 
 	}
 
     }//insert file
     else { //new and no file defined
-	  $sql="INSERT into locations (name,abbr,floor)".
-	       " VALUES ('$name','$abbr','$floor')";
+	  $sql="INSERT into locations (name,floor)".
+	       " VALUES ('$name','$floor')";
 	  db_exec($dbh,$sql,0,0,$lastid);
 	  $lastid=$dbh->lastInsertId();
 	  print "<br><b>Added Location <a href='$scriptname?action=$action&amp;id=$lastid'>$lastid</a></b><br>";
@@ -114,10 +103,9 @@ if (file_put_contents($newFileName, $newFileContent) !== false) {
 	  exit;
       echo "<br><b>No file uploaded.</b><br>";
     }
-
   }//new location
   else {
-    $sql="UPDATE locations set name='$name', abbr='$abbr', floor='$floor' ".
+    $sql="UPDATE locations set name='$name', floor='$floor' ".
        " WHERE id=$id";
     db_exec($dbh,$sql);
 
@@ -132,7 +120,7 @@ if (file_put_contents($newFileName, $newFileContent) !== false) {
       $ftypestr=ftype2str($_POST['type'],$dbh);
       $unique=substr(uniqid(),-4,4);
 
-      $filefn=strtolower("floorplan-".validfn($abbr)."{".validfn($floor)."}.$fileext");
+      $filefn=strtolower("floorplan-".validfn($name)."-$unique.$fileext");
       $uploadfile = $uploaddir.$filefn;
       $result = '';
 
@@ -195,12 +183,12 @@ else
     <tr><td colspan=2><h3><?php te("Location Properties");?></h3></td></tr>
     <tr><td class="tdt"><?php te("ID");?>:</td> <td><input  class='input2' type=text name='id' value='<?php echo $id?>' readonly size=3></td></tr>
     <tr><td class="tdt"><?php te("Building Name");?>:</td> <td><input  class='input2 mandatory' size=20 type=text name='name' value="<?php echo $r['name']?>"></td></tr>
-    <tr><td class="tdt"><?php te("Building Abbr");?>:</td> <td><input  class='input2 mandatory' size=20 type=text name='abbr' value="<?php echo $r['abbr']?>"></td></tr>
     <tr><td class="tdt"><?php te("Floor");?>:</td> <td><input  class='input2 mandatory' size=20 type=text name='floor' value="<?php echo $r['floor']?>"></td></tr>
     <tr><td class="tdt"><?php te("Filename");?>:</td><td><a target=_blank href="<?php  echo $uploaddirwww.$r['floorplanfn']; ?>"><?php echo $r['floorplanfn']?></a></td></tr>
     <tr><td title="Number of items/software/invoices/etc which reference this file" 
             class="tdt"><?php te("Associations (items/racks)");?>:</td> <td><b><?php  if ($_GET['id']!="new") echo countloclinks($_GET['id'],$dbh);?></b></td></tr>
     </table>
+
     <table class="tbl2" width='90%'>
     <tr><td colspan=2 colspan=2><h3>
       <?php 

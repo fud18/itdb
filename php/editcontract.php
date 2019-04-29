@@ -359,7 +359,7 @@ else
       <tr><td class="tdt">
       <?php   
        if (is_numeric($r['contractorid']))
-	 echo "<a title='edit vendor (agent)' href='$scriptname?action=editagent&amp;id={$r['contractorid']}'><img src='../images/edit2.png'></a> "; 
+	 echo "<a title='edit vendor (agent)' href='$scriptname?action=editagent&amp;id={$r['contractorid']}'><img src='images/edit.png'></a> "; 
       ?>
       Contractor:</td> <td>
 	   <select class='mandatory' validate='required:true' name='contractorid' title='Agent of Type Contractor'>
@@ -382,7 +382,7 @@ else
 
       <?php   
        if (is_numeric($r['parentid']))
-	 echo "<a title='edit parent' href='$scriptname?action=editcontract&id={$r['parentid']}'><img src='../images/edit2.png'></a> "; 
+	 echo "<a title='edit parent' href='$scriptname?action=editcontract&id={$r['parentid']}'><img src='images/edit.png'></a> "; 
       ?>
       <?php te("Parent");?>:</td> <td>
       <select class=''  name='parentid'>
@@ -651,15 +651,9 @@ else
   <div style='margin-left:auto;margin-right:auto;' class='scrltblcontainer2'>
      <table width='100%' class='brdr sortable'  id='itemslisttbl'>
        <thead>
-          <tr><th width='5%'><?php te("Associated");?></th>
-          	<th style='width:65px;'><?php te("Edit/Delete");?></th>
-            <th><?php te("Type");?></th>
-			<th><?php te("Manufacturer");?></th>
-            <th><?php te("Model");?></th>
-			<th><?php te("Label");?></th>
-            <th>DNS</th>
-            <!--<th><?php te("User");?></th>-->
-            <th><?php te("S/N");?></th>
+          <tr><th width='5%'><?php te("Associated");?></th><th style='width:65px;'><?php te("ID");?></th><th><?php te("Type");?></th>
+                  <th><?php te("Manufacturer");?></th><th><?php te("Model");?></th>
+                   <th><?php te("Label");?></th><th>DNS</th><th><?php te("User");?></th><th><?php te("S/N");?></th>
           </tr>
         </thead>
         <tbody>
@@ -679,13 +673,16 @@ else
     echo "<tr><td><input name='itlnk[]' value='".$ir['id']."' ";
     if ($ir['islinked']) echo " checked ";
     echo  " type='checkbox'></td>".
-     "<td><div class='editiditm icon edit'><center><a href='$scriptname?action=edititem&amp;id=".$ir['id']."'><img src='../images/edit2.png'></a><a href='../php/delitem.php?id=".$ir['id']."'><img src='../images/delete.png' border=0></a></center></div></td>".
+     "<td nowrap $cls><span $attr>&nbsp;</span><a title='Edit item {$ir['id']} in a new window' ".
+     "target=_blank href='$scriptname?action=edititem&amp;id=".$ir['id']."'><div class='editid'>";
+    echo $ir['id'];
+    echo "</div></a></td>".
      "<td $cls>".$ir['typedesc']."</td>".
      "<td $cls>".$agents[$ir['manufacturerid']]['title']. "&nbsp;</td>".
      "<td $cls>".$ir['model'].  "&nbsp;</td>".
      "<td $cls>".$ir['label']."&nbsp;</td>".
      "<td $cls>".$ir['dnsname']."&nbsp;</td>".
-     //"<td $cls>".$ir['username']."&nbsp;</td>".
+     "<td $cls>".$ir['username']."&nbsp;</td>".
      "<td $cls>".$ir['sn']."&nbsp;</td></tr>\n";
   }
   ?>
@@ -717,10 +714,7 @@ else
   <div style='margin-left:auto;margin-right:auto;' class='scrltblcontainer2'>
      <table width='100%' class='tbl2 brdr sortable'  id='softlisttbl'>
        <thead>
-          <tr><th width='5%'><?php te("Associated");?></th>
-		  <th style='width:65px;'><?php te("Edit/Delete");?></th>
-          <th><?php te("Manufacturer");?></th>
-          <th><?php te("Title/Ver.");?></th>
+          <tr><th width='5%'><?php te("Associated");?></th><th>ID</th><th><?php te("Manufacturer");?></th><th><?php te("Title/Ver.");?></th>
           </tr>
         </thead>
         <tbody>
@@ -736,7 +730,10 @@ else
     echo "<tr><td><input name='softlnk[]' value='".$ir['id']."' ";
     if ($ir['islinked']) echo " checked ";
     echo  " type='checkbox' /></td>".
-     "<td $cls><div class='editiditm icon edit'><center><a href='$scriptname?action=editsoftware&amp;id=".$ir['id']."'><img src='../images/edit2.png'></a><a href='../php/delsoftware.php?id=".$ir['id']."'><img src='../images/delete.png' border=0></a></center></div></td>".
+     "<td $cls><a title='Edit software {$ir['id']} in a new window' ".
+     "target=_blank href='$scriptname?action=editsoftware&amp;id=".$ir['id']."'>";
+    echo $ir['id'];
+    echo "</a></td>".
      "<td $cls>".$ir['agtitle'].  "&nbsp;</td>".
      "<td $cls>".$ir['titver']."&nbsp;</td></tr>\n";
   }
@@ -769,11 +766,8 @@ else
   <div style='margin-left:auto;margin-right:auto;' class='scrltblcontainer2'>
      <table width='100%' class='tbl2 brdr sortable'  id='invlisttbl'>
        <thead>
-          <tr><th width='5%'><?php te("Associated");?></th>
-		  <th style='width:65px;'><?php te("Edit/Delete");?></th>
-          <th><?php te("Vendor");?></th>
-		  <th><?php te("Number");?></th>
-		  <th><?php te("Date");?></th>
+          <tr><th width='5%'><?php te("Associated");?></th><th><?php te("ID");?></th><th><?php te("Vendor");?></th>
+              <th><?php te("Number");?></th><th><?php te("Date");?></th>
           </tr>
         </thead>
         <tbody>
@@ -789,7 +783,10 @@ else
     echo "<tr><td><input name='invlnk[]' value='".$ir['id']."' ";
     if ($ir['islinked']) echo " checked ";
     echo  " type='checkbox' /></td>".
-     "<td $cls><div class='editiditm icon edit'><center><a href='$scriptname?action=editinvoice&amp;id=".$ir['id']."'><img src='../images/edit2.png'></a><a href='../php/delinvoice.php?id=".$ir['id']."'><img src='../images/delete.png' border=0></a></center></div></td>".
+     "<td $cls><a title='Edit invoice {$ir['id']} in a new window' ".
+     "target=_blank href='$scriptname?action=editinvoice&amp;id=".$ir['id']."'>";
+    echo $ir['id'];
+    echo "</a></td>".
      "<td $cls>".$ir['agtitle'].  "&nbsp;</td>".
      "<td $cls>".$ir['number'].  "&nbsp;</td>".
      "<td $cls>". date("Y-m-d",$ir['date'])."&nbsp;</td></tr>\n";
